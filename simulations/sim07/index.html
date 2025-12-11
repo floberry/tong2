@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>통합과학2 에너지 전환 O/X 퀴즈</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 15px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            padding: 25px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            font-size: 22px;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 13px;
+            margin-bottom: 25px;
+        }
+
+        .instruction {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 4px solid #667eea;
+        }
+
+        .instruction-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+
+        .question-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .question-number {
+            color: #667eea;
+            font-weight: bold;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+
+        .question-text {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #333;
+            flex-grow: 1;
+            margin-left: 10px;
+        }
+
+        .answer-boxes {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+
+        .answer-box {
+            width: 60px;
+            height: 50px;
+            border: 3px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            user-select: none;
+        }
+
+        .answer-box:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .answer-box.o {
+            color: #28a745;
+        }
+
+        .answer-box.x {
+            color: #dc3545;
+        }
+
+        .answer-box.selected {
+            border-width: 4px;
+            transform: scale(1.08);
+        }
+
+        .answer-box.o.selected {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .answer-box.x.selected {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .answer-box.correct {
+            border-color: #28a745 !important;
+            background: #d4edda !important;
+            animation: pulse 0.5s;
+        }
+
+        .answer-box.incorrect {
+            border-color: #dc3545 !important;
+            background: #f8d7da !important;
+            animation: shake 0.5s;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .result-section {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ffc107;
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+        }
+
+        .result-title {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 15px;
+            font-size: 17px;
+            text-align: center;
+        }
+
+        .result-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .result-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .result-question {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .result-answer {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .result-answer.correct {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .result-answer.incorrect {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .score-display {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .submit-btn, .new-problem-btn {
+            flex: 1;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.6);
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .new-problem-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .new-problem-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px 15px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            .question-text {
+                font-size: 15px;
+            }
+
+            .answer-box {
+                width: 55px;
+                height: 45px;
+                font-size: 18px;
+            }
+
+            .submit-btn, .new-problem-btn {
+                padding: 14px;
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ 에너지 전환 O/X 퀴즈</h1>
+        <div class="subtitle">2022 개정 교육과정 통합과학2</div>
+        
+        <div class="instruction">
+            <div class="instruction-title">📝 에너지 전환에 대한 설명으로 옳은 것은 O, 옳지 않은 것은 X로 표시하시오.</div>
+        </div>
+
+        <div id="questions-container"></div>
+
+        <div class="result-section" id="result-section">
+            <div class="result-title">📊 채점 결과</div>
+            <div class="score-display" id="score-display"></div>
+            <div id="results-container"></div>
+        </div>
+
+        <div class="button-group">
+            <button class="submit-btn" id="submit-btn" onclick="submitAnswers()">✓ 채점하기</button>
+            <button class="new-problem-btn" onclick="newProblem()">🔄 새 문제</button>
+        </div>
+    </div>
+
+    <script>
+        // 모든 가능한 문제들 (정답 포함)
+        const allProblems = [
+            {
+                question: "한 형태의 에너지는 다른 형태의 에너지로 전환될 수 있다.",
+                answer: true,
+                explanation: "에너지는 한 형태에서 다른 형태로 전환될 수 있습니다. 예: 전기 에너지 → 빛에너지(전구), 화학 에너지 → 운동 에너지(자동차)"
+            },
+            {
+                question: "노트북을 사용할 때 발생하는 열에너지는 다시 사용할 수 있다.",
+                answer: false,
+                explanation: "노트북 사용 시 발생하는 열에너지는 주변으로 흩어져 다시 사용하기 어렵습니다. 이는 에너지 전환 시 유용한 에너지가 감소하는 예입니다."
+            },
+            {
+                question: "에너지가 전환될 때 일부가 항상 열에너지로 전환되어 버려진다.",
+                answer: true,
+                explanation: "에너지 전환 과정에서 일부는 항상 열에너지로 전환되어 주변으로 흩어지므로, 에너지 전환 효율은 100%가 될 수 없습니다."
+            },
+            {
+                question: "태양 전지는 빛에너지를 직접 전기 에너지로 전환한다.",
+                answer: true,
+                explanation: "태양 전지는 광전 효과를 이용하여 빛에너지를 중간 단계 없이 직접 전기 에너지로 전환합니다."
+            },
+            {
+                question: "화력 발전소에서는 화석 연료의 화학 에너지가 직접 전기 에너지로 전환된다.",
+                answer: false,
+                explanation: "화력 발전은 화학 에너지 → 열에너지 → 운동 에너지 → 전기 에너지 순서로 여러 단계를 거쳐 에너지가 전환됩니다."
+            },
+            {
+                question: "발전기에서 전기 에너지를 생산할 때는 전자기 유도 현상이 이용된다.",
+                answer: true,
+                explanation: "발전기는 코일 주위의 자기장 변화로 전류가 유도되는 전자기 유도 현상을 이용하여 운동 에너지를 전기 에너지로 전환합니다."
+            },
+            {
+                question: "식물은 광합성을 통해 빛에너지를 화학 에너지로 전환한다.",
+                answer: true,
+                explanation: "식물은 엽록체에서 광합성을 통해 태양의 빛에너지를 포도당 같은 화학 에너지로 전환하여 저장합니다."
+            },
+            {
+                question: "에너지 전환 과정에서 에너지의 총량은 항상 감소한다.",
+                answer: false,
+                explanation: "에너지 보존 법칙에 따라 에너지의 총량은 일정하게 보존됩니다. 다만 사용 가능한 에너지는 감소할 수 있습니다."
+            },
+            {
+                question: "수력 발전에서는 물의 위치 에너지가 전기 에너지로 전환된다.",
+                answer: true,
+                explanation: "수력 발전은 높은 곳의 물이 가진 위치 에너지 → 운동 에너지 → 전기 에너지 순서로 에너지를 전환합니다."
+            },
+            {
+                question: "원자력 발전에서는 핵분열 시 발생하는 열에너지를 이용한다.",
+                answer: true,
+                explanation: "원자력 발전소는 우라늄의 핵분열 반응에서 발생하는 열에너지로 물을 끓여 증기를 만들고, 터빈을 돌려 전기를 생산합니다."
+            },
+            {
+                question: "풍력 발전에서는 바람의 열에너지가 전기 에너지로 전환된다.",
+                answer: false,
+                explanation: "풍력 발전은 바람의 운동 에너지를 이용합니다. 바람의 운동 에너지 → 날개의 회전 운동 에너지 → 전기 에너지로 전환됩니다."
+            },
+            {
+                question: "전기 난로는 전기 에너지를 열에너지로 전환한다.",
+                answer: true,
+                explanation: "전기 난로는 전열선에 전류가 흐를 때 전기 저항에 의해 전기 에너지가 열에너지로 전환되는 원리를 이용합니다."
+            },
+            {
+                question: "태양 에너지는 태양 내부의 핵융합 반응으로 생성된다.",
+                answer: true,
+                explanation: "태양 내부에서는 수소 원자핵이 융합하여 헬륨을 만드는 핵융합 반응이 일어나며, 이 과정에서 막대한 에너지가 방출됩니다."
+            },
+            {
+                question: "배터리는 전기 에너지를 화학 에너지로 저장한다.",
+                answer: true,
+                explanation: "충전식 배터리는 충전 시 전기 에너지를 화학 에너지로 저장하고, 사용 시 화학 에너지를 다시 전기 에너지로 전환합니다."
+            },
+            {
+                question: "마찰에 의해 발생하는 열은 모두 유용한 일로 전환될 수 있다.",
+                answer: false,
+                explanation: "마찰에 의해 발생한 열에너지는 주변으로 흩어져 다시 유용한 일로 전환하기 매우 어렵습니다. 이것이 에너지 효율이 100%가 될 수 없는 이유입니다."
+            },
+            {
+                question: "지열 발전은 지구 내부의 열에너지를 전기 에너지로 전환한다.",
+                answer: true,
+                explanation: "지열 발전은 지구 내부의 열에너지로 물을 끓여 증기를 만들고, 이 증기로 터빈을 돌려 전기를 생산합니다."
+            },
+            {
+                question: "전기 모터는 전기 에너지를 운동 에너지로 전환한다.",
+                answer: true,
+                explanation: "전기 모터는 전자기력을 이용하여 전기 에너지를 회전 운동 에너지로 전환하는 장치입니다."
+            },
+            {
+                question: "에너지 효율이 높다는 것은 전환 과정에서 손실되는 에너지가 많다는 의미이다.",
+                answer: false,
+                explanation: "에너지 효율이 높다는 것은 원하는 형태의 에너지로 더 많이 전환되고 손실이 적다는 의미입니다."
+            },
+            {
+                question: "음식물을 소화하는 과정은 화학 에너지를 다른 형태로 전환하는 것이다.",
+                answer: true,
+                explanation: "음식물의 화학 에너지는 소화 과정을 거쳐 우리 몸에서 사용할 수 있는 ATP 형태의 화학 에너지, 열에너지, 운동 에너지 등으로 전환됩니다."
+            },
+            {
+                question: "조력 발전은 달의 인력에 의한 바닷물의 운동 에너지를 이용한다.",
+                answer: true,
+                explanation: "조력 발전은 달과 태양의 인력으로 인한 밀물과 썰물 때 바닷물의 위치 에너지와 운동 에너지를 전기 에너지로 전환합니다."
+            }
+        ];
+
+        let currentProblems = [];
+        let userAnswers = {};
+        let submitted = false;
+
+        function shuffleArray(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+
+        function selectRandomProblems() {
+            // 전체 문제 중 랜덤으로 3개 선택
+            const shuffled = shuffleArray(allProblems);
+            return shuffled.slice(0, 3);
+        }
+
+        function loadProblems() {
+            currentProblems = selectRandomProblems();
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+            
+            currentProblems.forEach((problem, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-item';
+                questionDiv.innerHTML = `
+                    <div class="question-header">
+                        <span class="question-number">(${index + 1})</span>
+                        <span class="question-text">${problem.question}</span>
+                    </div>
+                    <div class="answer-boxes">
+                        <div class="answer-box o" onclick="selectAnswer(${index}, true)">O</div>
+                        <div class="answer-box x" onclick="selectAnswer(${index}, false)">X</div>
+                    </div>
+                `;
+                container.appendChild(questionDiv);
+            });
+        }
+
+        function selectAnswer(questionIndex, answer) {
+            if (submitted) return;
+            
+            userAnswers[questionIndex] = answer;
+            
+            const questionItem = document.getElementsByClassName('question-item')[questionIndex];
+            const boxes = questionItem.getElementsByClassName('answer-box');
+            
+            Array.from(boxes).forEach(box => box.classList.remove('selected'));
+            
+            if (answer) {
+                boxes[0].classList.add('selected');
+            } else {
+                boxes[1].classList.add('selected');
+            }
+            
+            updateSubmitButton();
+        }
+
+        function updateSubmitButton() {
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = Object.keys(userAnswers).length !== currentProblems.length;
+        }
+
+        function submitAnswers() {
+            if (submitted) return;
+            
+            let correctCount = 0;
+            
+            currentProblems.forEach((problem, index) => {
+                const questionItem = document.getElementsByClassName('question-item')[index];
+                const boxes = questionItem.getElementsByClassName('answer-box');
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === problem.answer;
+                
+                if (isCorrect) {
+                    correctCount++;
+                    if (userAnswer) {
+                        boxes[0].classList.add('correct');
+                    } else {
+                        boxes[1].classList.add('correct');
+                    }
+                } else {
+                    if (userAnswer) {
+                        boxes[0].classList.add('incorrect');
+                    } else {
+                        boxes[1].classList.add('incorrect');
+                    }
+                }
+            });
+            
+            showResults(correctCount);
+            submitted = true;
+            document.getElementById('submit-btn').disabled = true;
+        }
+
+        function showResults(correctCount) {
+            const resultSection = document.getElementById('result-section');
+            const scoreDisplay = document.getElementById('score-display');
+            const resultsContainer = document.getElementById('results-container');
+            
+            scoreDisplay.textContent = `${correctCount} / ${currentProblems.length} 정답`;
+            
+            resultsContainer.innerHTML = '';
+            currentProblems.forEach((problem, index) => {
+                const userAnswer = userAnswers[index];
+                const isCorrect = userAnswer === problem.answer;
+                
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item';
+                resultItem.innerHTML = `
+                    <div class="result-question">(${index + 1}) ${problem.question}</div>
+                    <div class="result-answer ${isCorrect ? 'correct' : 'incorrect'}">
+                        ${isCorrect ? '✓ 정답' : '✗ 오답'} (정답: ${problem.answer ? 'O' : 'X'})
+                    </div>
+                    <div class="result-answer">${problem.explanation}</div>
+                `;
+                resultsContainer.appendChild(resultItem);
+            });
+            
+            resultSection.classList.add('show');
+            resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function newProblem() {
+            userAnswers = {};
+            submitted = false;
+            
+            document.getElementById('result-section').classList.remove('show');
+            document.getElementById('submit-btn').disabled = true;
+            
+            loadProblems();
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 초기 문제 로드
+        loadProblems();
+    </script>
+</body>
+</html>

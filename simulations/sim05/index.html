@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>에너지 효율 시뮬레이션</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            padding: 30px 25px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c2c2c;
+            font-size: 24px;
+            margin-bottom: 10px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #666;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+        
+        .problem-section {
+            background: #f8f8f8;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 2px solid #ccc;
+        }
+        
+        .problem-number {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .problem-text {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #444;
+            margin-bottom: 20px;
+        }
+        
+        .input-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .answer-box {
+            width: 120px;
+            height: 50px;
+            font-size: 24px;
+            text-align: center;
+            border: 3px solid #888;
+            border-radius: 8px;
+            background: #fff;
+            padding: 5px;
+        }
+        
+        .answer-box:focus {
+            outline: none;
+            border-color: #555;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .percent-sign {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .check-btn {
+            background: #666;
+            color: white;
+        }
+        
+        .check-btn:hover {
+            background: #555;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .new-problem-btn {
+            background: #888;
+            color: white;
+        }
+        
+        .new-problem-btn:hover {
+            background: #777;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .result-section {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .result-section.show {
+            display: block;
+        }
+        
+        .result-correct {
+            background: #e8e8e8;
+            border: 2px solid #666;
+        }
+        
+        .result-incorrect {
+            background: #f0f0f0;
+            border: 2px solid #999;
+        }
+        
+        .result-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .result-title.correct {
+            color: #333;
+        }
+        
+        .result-title.incorrect {
+            color: #555;
+        }
+        
+        .feedback {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+        
+        .feedback-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .feedback-content {
+            color: #444;
+            line-height: 1.8;
+            font-size: 15px;
+        }
+        
+        .formula {
+            background: #f5f5f5;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>에너지 효율 시뮬레이션</h1>
+        <div class="subtitle">2022 개정 교육과정 - 통합과학2</div>
+        
+        <div class="problem-section">
+            <div class="problem-number">3.</div>
+            <div class="problem-text" id="problemText"></div>
+            <div class="input-section">
+                <input type="number" class="answer-box" id="answerInput" placeholder="답 입력">
+                <span class="percent-sign">%</span>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button class="check-btn" onclick="checkAnswer()">확인</button>
+            <button class="new-problem-btn" onclick="generateNewProblem()">새 문제</button>
+        </div>
+        
+        <div class="result-section" id="resultSection">
+            <div class="result-title" id="resultTitle"></div>
+            <div class="feedback">
+                <div class="feedback-title">📝 풀이 과정</div>
+                <div class="feedback-content" id="feedbackContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentProblem = {};
+        
+        function generateNewProblem() {
+            const totalEnergy = Math.floor(Math.random() * 10 + 1) * 10;
+            const usefulWork = Math.floor(Math.random() * (totalEnergy / 10)) * 10;
+            
+            if (usefulWork === 0 || usefulWork === totalEnergy) {
+                return generateNewProblem();
+            }
+            
+            const efficiency = (usefulWork / totalEnergy) * 100;
+            
+            currentProblem = {
+                totalEnergy: totalEnergy,
+                usefulWork: usefulWork,
+                efficiency: efficiency
+            };
+            
+            document.getElementById('problemText').innerHTML = 
+                `어떤 열기관이 <strong>${totalEnergy} J</strong>의 에너지를 공급받아서 <strong>${usefulWork} J</strong>의 일을 하였다. 이 열기관의 열효율은 몇 %인지 쓰시오.`;
+            
+            document.getElementById('answerInput').value = '';
+            document.getElementById('resultSection').classList.remove('show');
+            document.getElementById('resultSection').className = 'result-section';
+            document.getElementById('answerInput').focus();
+        }
+        
+        function checkAnswer() {
+            const userAnswer = parseFloat(document.getElementById('answerInput').value);
+            
+            if (isNaN(userAnswer) || userAnswer === '') {
+                alert('답을 입력해주세요!');
+                return;
+            }
+            
+            const correctAnswer = currentProblem.efficiency;
+            const isCorrect = Math.abs(userAnswer - correctAnswer) < 0.1;
+            
+            const resultSection = document.getElementById('resultSection');
+            const resultTitle = document.getElementById('resultTitle');
+            const feedbackContent = document.getElementById('feedbackContent');
+            
+            if (isCorrect) {
+                resultSection.className = 'result-section result-correct show';
+                resultTitle.className = 'result-title correct';
+                resultTitle.textContent = '✓ 정답입니다!';
+            } else {
+                resultSection.className = 'result-section result-incorrect show';
+                resultTitle.className = 'result-title incorrect';
+                resultTitle.textContent = '✗ 오답입니다';
+            }
+            
+            feedbackContent.innerHTML = `
+                <strong>【 열효율 이론 】</strong><br>
+                열효율(η)은 열기관이 공급받은 에너지 중에서 실제로 유용한 일로 전환된 비율을 나타냅니다.
+                
+                <div class="formula">
+                    열효율(η) = (한 일 / 공급받은 에너지) × 100%
+                </div>
+                
+                <strong>【 문제 풀이 】</strong><br>
+                • 공급받은 에너지: ${currentProblem.totalEnergy} J<br>
+                • 한 일(유용한 일): ${currentProblem.usefulWork} J<br><br>
+                
+                <div class="formula">
+                    η = (${currentProblem.usefulWork} J ÷ ${currentProblem.totalEnergy} J) × 100%<br>
+                    η = ${(currentProblem.usefulWork / currentProblem.totalEnergy).toFixed(2)} × 100%<br>
+                    η = ${correctAnswer.toFixed(0)}%
+                </div>
+                
+                <strong>【 핵심 개념 】</strong><br>
+                열효율은 에너지 전환 과정에서 얼마나 효율적으로 에너지가 사용되었는지를 나타내는 지표입니다. 열기관에서는 공급된 에너지의 일부만 유용한 일로 전환되고, 나머지는 열 등의 형태로 손실됩니다. 따라서 열효율은 항상 100%보다 작으며, 열효율이 높을수록 에너지를 효율적으로 사용하는 것입니다.
+                ${!isCorrect ? `<br><br><strong>정답: ${correctAnswer.toFixed(0)}%</strong><br>입력하신 답: ${userAnswer}%` : ''}
+            `;
+            
+            resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        document.getElementById('answerInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+        
+        generateNewProblem();
+    </script>
+</body>
+</html>

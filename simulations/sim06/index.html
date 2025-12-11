@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>에너지 효율 시뮬레이션</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background: linear-gradient(135deg, #4a4a4a 0%, #2c2c2c 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        
+        h1 {
+            color: #333;
+            font-size: 22px;
+            margin-bottom: 20px;
+            text-align: center;
+            line-height: 1.4;
+        }
+        
+        .problem-text {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            line-height: 1.8;
+            font-size: 15px;
+            color: #333;
+        }
+        
+        .cars-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 30px;
+            gap: 15px;
+        }
+        
+        .car {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .car-label {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #555;
+        }
+        
+        .car-diagram {
+            background: #e8e8e8;
+            border: 2px solid #999;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 10px;
+            position: relative;
+            min-height: 250px;
+        }
+        
+        .energy-item {
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            position: relative;
+        }
+        
+        .supplied {
+            background: linear-gradient(135deg, #d0d0d0, #e8e8e8);
+            color: #333;
+            border: 2px solid #999;
+        }
+        
+        .released {
+            background: linear-gradient(135deg, #6c6c6c, #888);
+            color: #fff;
+            border: 2px solid #444;
+        }
+        
+        .car-icon {
+            font-size: 40px;
+            margin: 15px 0;
+        }
+        
+        .energy-value {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .question-section {
+            background: linear-gradient(135deg, #5a5a5a, #3a3a3a);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .question-title {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .efficiency-inputs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .input-group {
+            flex: 1;
+            background: rgba(255,255,255,0.15);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .input-label {
+            font-size: 14px;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .efficiency-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 18px;
+            font-weight: bold;
+            border: 2px solid white;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .efficiency-input:focus {
+            outline: none;
+            border-color: #bbb;
+        }
+        
+        .comparison-section {
+            background: rgba(255,255,255,0.15);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .comparison-label {
+            font-size: 14px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .comparison-options {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .comparison-btn {
+            flex: 1;
+            padding: 12px;
+            background: white;
+            color: #333;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .comparison-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .comparison-btn.selected {
+            background: #888;
+            color: white;
+        }
+        
+        .comparison-btn.correct {
+            background: #666;
+            color: white;
+        }
+        
+        .comparison-btn.wrong {
+            background: #444;
+            color: white;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .new-problem-btn {
+            background: linear-gradient(135deg, #5a5a5a, #3a3a3a);
+            color: white;
+        }
+        
+        .new-problem-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #787878, #585858);
+            color: white;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .submit-btn:disabled {
+            background: #adb5bd;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result {
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 16px;
+            display: none;
+            line-height: 1.8;
+        }
+        
+        .result.show {
+            display: block;
+        }
+        
+        .result.correct {
+            background: #e8e8e8;
+            color: #2c2c2c;
+            border: 2px solid #888;
+        }
+        
+        .result.wrong {
+            background: #d4d4d4;
+            color: #1a1a1a;
+            border: 2px solid #666;
+        }
+        
+        .result-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .solution-step {
+            background: rgba(255,255,255,0.5);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        
+        .step-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        
+        .step-content {
+            font-size: 15px;
+            line-height: 1.6;
+        }
+        
+        .formula {
+            background: rgba(0,0,0,0.05);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 8px 0;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>전기 자동차 에너지 효율 비교</h1>
+        
+        <div class="problem-text">
+            그림 (가), (나)는 각각 전기 자동차 A, B의 모터에 공급된 에너지와 방출된 열에너지를 나타낸 것이다. A, B에 공급된 에너지는 모두 운동 에너지와 열에너지로만 전환된다. 각 전기 자동차의 에너지 효율을 계산하고 비교하시오.
+        </div>
+        
+        <div class="cars-container">
+            <div class="car">
+                <div class="car-label">전기 자동차 A</div>
+                <div class="car-diagram">
+                    <div class="energy-item supplied">
+                        공급된<br>에너지<br>
+                        <span class="energy-value" id="supplied-a">30</span>J
+                    </div>
+                    <div class="car-icon">⚡🚗</div>
+                    <div style="font-weight: bold; margin: 10px 0;">모터 A</div>
+                    <div class="energy-item released">
+                        방출된<br>열에너지<br>
+                        <span class="energy-value" id="released-a">12</span>J
+                    </div>
+                </div>
+            </div>
+            
+            <div class="car">
+                <div class="car-label">전기 자동차 B</div>
+                <div class="car-diagram">
+                    <div class="energy-item supplied">
+                        공급된<br>에너지<br>
+                        <span class="energy-value" id="supplied-b">25</span>J
+                    </div>
+                    <div class="car-icon">⚡🚗</div>
+                    <div style="font-weight: bold; margin: 10px 0;">모터 B</div>
+                    <div class="energy-item released">
+                        방출된<br>열에너지<br>
+                        <span class="energy-value" id="released-b">8</span>J
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="question-section">
+            <div class="question-title">각 전기 자동차의 에너지 효율을 입력하고 비교하시오</div>
+            
+            <div class="efficiency-inputs">
+                <div class="input-group">
+                    <label class="input-label">전기 자동차 A의 에너지 효율 (%)</label>
+                    <input type="number" class="efficiency-input" id="efficiency-a" min="0" max="100">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">전기 자동차 B의 에너지 효율 (%)</label>
+                    <input type="number" class="efficiency-input" id="efficiency-b" min="0" max="100">
+                </div>
+            </div>
+            
+            <div class="comparison-section">
+                <div class="comparison-label">같은 전기에너지를 공급했을 때 열에너지로 전환되는 양이 더 많은 자동차는?</div>
+                <div class="comparison-options">
+                    <button class="comparison-btn" id="compare-a" onclick="selectComparison('A')">A</button>
+                    <button class="comparison-btn" id="compare-equal" onclick="selectComparison('equal')">같다</button>
+                    <button class="comparison-btn" id="compare-b" onclick="selectComparison('B')">B</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="buttons">
+            <button class="new-problem-btn" onclick="generateProblem()">새 문제</button>
+            <button class="submit-btn" id="submit-btn" onclick="checkAnswer()" disabled>정답 확인</button>
+        </div>
+        
+        <div class="result" id="result"></div>
+    </div>
+    
+    <script>
+        let currentProblem = {};
+        let selectedComparison = null;
+        
+        function generateProblem() {
+            // 효율을 먼저 정하고 (5의 배수)
+            const efficiencies = [20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80];
+            const effA = efficiencies[Math.floor(Math.random() * efficiencies.length)];
+            const effB = efficiencies[Math.floor(Math.random() * efficiencies.length)];
+            
+            // 공급 에너지를 효율의 약수가 되도록 생성
+            // 예: 효율이 40%라면, 공급 에너지는 5의 배수여야 함 (40 = 2/5)
+            // 효율이 25%라면, 공급 에너지는 4의 배수여야 함 (25 = 1/4)
+            // 간단하게 20~100 범위의 5의 배수로 설정
+            const suppliedA = (Math.floor(Math.random() * 17) + 4) * 5; // 20~100, 5의 배수
+            const suppliedB = (Math.floor(Math.random() * 17) + 4) * 5; // 20~100, 5의 배수
+            
+            // 운동 에너지를 먼저 계산 (효율 기준)
+            const kineticA = (suppliedA * effA) / 100;
+            const kineticB = (suppliedB * effB) / 100;
+            
+            // 만약 소수점이 나오면 공급 에너지 재조정
+            let finalSuppliedA = suppliedA;
+            let finalKineticA = kineticA;
+            if (!Number.isInteger(kineticA)) {
+                // 효율에 맞는 공급 에너지 찾기
+                for (let s = 20; s <= 100; s += 5) {
+                    if (Number.isInteger((s * effA) / 100)) {
+                        finalSuppliedA = s;
+                        finalKineticA = (s * effA) / 100;
+                        break;
+                    }
+                }
+            }
+            
+            let finalSuppliedB = suppliedB;
+            let finalKineticB = kineticB;
+            if (!Number.isInteger(kineticB)) {
+                for (let s = 20; s <= 100; s += 5) {
+                    if (Number.isInteger((s * effB) / 100)) {
+                        finalSuppliedB = s;
+                        finalKineticB = (s * effB) / 100;
+                        break;
+                    }
+                }
+            }
+            
+            // 방출된 열에너지 = 공급 - 운동 (항상 정수)
+            const releasedA = finalSuppliedA - finalKineticA;
+            const releasedB = finalSuppliedB - finalKineticB;
+            
+            // 효율값 확인
+            const actualEffA = effA;
+            const actualEffB = effB;
+            
+            // 화면에 표시
+            document.getElementById('supplied-a').textContent = finalSuppliedA;
+            document.getElementById('released-a').textContent = releasedA;
+            document.getElementById('supplied-b').textContent = finalSuppliedB;
+            document.getElementById('released-b').textContent = releasedB;
+            
+            // 입력 필드 초기화
+            document.getElementById('efficiency-a').value = '';
+            document.getElementById('efficiency-b').value = '';
+            
+            // 비교 버튼 초기화
+            document.querySelectorAll('.comparison-btn').forEach(btn => {
+                btn.classList.remove('selected', 'correct', 'wrong');
+                btn.disabled = false;
+            });
+            
+            // 현재 문제 저장
+            currentProblem = {
+                suppliedA: finalSuppliedA,
+                releasedA,
+                suppliedB: finalSuppliedB,
+                releasedB,
+                kineticA: finalKineticA,
+                kineticB: finalKineticB,
+                efficiencyA: actualEffA,
+                efficiencyB: actualEffB
+            };
+            
+            // 결과 초기화
+            document.getElementById('result').className = 'result';
+            document.getElementById('submit-btn').disabled = true;
+            selectedComparison = null;
+            
+            // 입력 이벤트 리스너 추가
+            checkInputs();
+        }
+        
+        function checkInputs() {
+            const effA = document.getElementById('efficiency-a');
+            const effB = document.getElementById('efficiency-b');
+            
+            effA.oninput = updateSubmitButton;
+            effB.oninput = updateSubmitButton;
+        }
+        
+        function updateSubmitButton() {
+            const effA = document.getElementById('efficiency-a').value;
+            const effB = document.getElementById('efficiency-b').value;
+            
+            if (effA !== '' && effB !== '' && selectedComparison !== null) {
+                document.getElementById('submit-btn').disabled = false;
+            } else {
+                document.getElementById('submit-btn').disabled = true;
+            }
+        }
+        
+        function selectComparison(choice) {
+            if (document.getElementById('result').classList.contains('show')) {
+                return;
+            }
+            
+            document.querySelectorAll('.comparison-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            selectedComparison = choice;
+            document.getElementById('compare-' + (choice === 'equal' ? 'equal' : choice.toLowerCase())).classList.add('selected');
+            updateSubmitButton();
+        }
+        
+        function checkAnswer() {
+            const userEffA = parseFloat(document.getElementById('efficiency-a').value);
+            const userEffB = parseFloat(document.getElementById('efficiency-b').value);
+            
+            const correctEffA = currentProblem.efficiencyA;
+            const correctEffB = currentProblem.efficiencyB;
+            
+            // 효율 값 정답 확인 (±1% 허용)
+            const effACorrect = Math.abs(userEffA - correctEffA) <= 1;
+            const effBCorrect = Math.abs(userEffB - correctEffB) <= 1;
+            
+            // 비교 정답 확인 (효율이 낮을수록 열에너지가 많음)
+            let correctComparison;
+            if (correctEffA < correctEffB) {
+                correctComparison = 'A'; // A의 효율이 낮으면 열에너지가 더 많음
+            } else if (correctEffB < correctEffA) {
+                correctComparison = 'B'; // B의 효율이 낮으면 열에너지가 더 많음
+            } else {
+                correctComparison = 'equal';
+            }
+            
+            const comparisonCorrect = selectedComparison === correctComparison;
+            
+            // 버튼 색상 업데이트
+            document.querySelectorAll('.comparison-btn').forEach(btn => {
+                btn.disabled = true;
+            });
+            
+            const correctBtn = document.getElementById('compare-' + (correctComparison === 'equal' ? 'equal' : correctComparison.toLowerCase()));
+            correctBtn.classList.add('correct');
+            
+            if (!comparisonCorrect) {
+                const selectedBtn = document.getElementById('compare-' + (selectedComparison === 'equal' ? 'equal' : selectedComparison.toLowerCase()));
+                if (selectedBtn !== correctBtn) {
+                    selectedBtn.classList.add('wrong');
+                }
+            }
+            
+            const allCorrect = effACorrect && effBCorrect && comparisonCorrect;
+            const resultDiv = document.getElementById('result');
+            
+            if (allCorrect) {
+                resultDiv.className = 'result show correct';
+                resultDiv.innerHTML = `
+                    <div class="result-title">✅ 정답입니다!</div>
+                    ${generateSolution(true, userEffA, userEffB)}
+                `;
+            } else {
+                resultDiv.className = 'result show wrong';
+                let feedback = '<div class="result-title">❌ ';
+                if (!effACorrect || !effBCorrect) {
+                    feedback += '효율 계산이 틀렸습니다. ';
+                }
+                if (!comparisonCorrect) {
+                    feedback += '비교 결과가 틀렸습니다.';
+                }
+                feedback += '</div>';
+                resultDiv.innerHTML = feedback + generateSolution(false, userEffA, userEffB);
+            }
+            
+            document.getElementById('submit-btn').disabled = true;
+        }
+        
+        function generateSolution(isCorrect, userA, userB) {
+            const p = currentProblem;
+            
+            return `
+                <div class="solution-step">
+                    <div class="step-title">📋 1단계: 에너지 효율 공식</div>
+                    <div class="step-content">
+                        에너지 효율(%) = (운동 에너지 / 공급된 에너지) × 100<br>
+                        운동 에너지 = 공급된 에너지 - 방출된 열에너지
+                    </div>
+                </div>
+                
+                <div class="solution-step">
+                    <div class="step-title">🚗 2단계: 전기 자동차 A의 에너지 효율</div>
+                    <div class="step-content">
+                        <div class="formula">
+                        운동 에너지 = ${p.suppliedA}J - ${p.releasedA}J = ${p.kineticA}J
+                        </div>
+                        <div class="formula">
+                        에너지 효율 = (${p.kineticA}J / ${p.suppliedA}J) × 100 = ${p.efficiencyA}%
+                        </div>
+                        ${!isCorrect && Math.abs(userA - p.efficiencyA) > 1 ? 
+                        `<span style="color: #444;">입력한 값: ${userA}% (정답: ${p.efficiencyA}%)</span>` : 
+                        `<span style="color: #2c2c2c;">✓ ${p.efficiencyA}%</span>`}
+                    </div>
+                </div>
+                
+                <div class="solution-step">
+                    <div class="step-title">🚗 3단계: 전기 자동차 B의 에너지 효율</div>
+                    <div class="step-content">
+                        <div class="formula">
+                        운동 에너지 = ${p.suppliedB}J - ${p.releasedB}J = ${p.kineticB}J
+                        </div>
+                        <div class="formula">
+                        에너지 효율 = (${p.kineticB}J / ${p.suppliedB}J) × 100 = ${p.efficiencyB}%
+                        </div>
+                        ${!isCorrect && Math.abs(userB - p.efficiencyB) > 1 ? 
+                        `<span style="color: #444;">입력한 값: ${userB}% (정답: ${p.efficiencyB}%)</span>` : 
+                        `<span style="color: #2c2c2c;">✓ ${p.efficiencyB}%</span>`}
+                    </div>
+                </div>
+                
+                <div class="solution-step">
+                    <div class="step-title">📊 4단계: 열에너지 변환 비교</div>
+                    <div class="step-content">
+                        같은 에너지를 공급했을 때, 효율이 낮을수록 열에너지로 더 많이 변환됩니다.<br><br>
+                        전기 자동차 A: 효율 ${p.efficiencyA}% → 열손실 ${100-p.efficiencyA}%<br>
+                        전기 자동차 B: 효율 ${p.efficiencyB}% → 열손실 ${100-p.efficiencyB}%<br>
+                        <div class="formula">
+                        ${p.efficiencyA < p.efficiencyB ? 
+                        `A의 효율이 낮으므로 열에너지로 변환되는 양이 더 많습니다. (${100-p.efficiencyA}% > ${100-p.efficiencyB}%)` : 
+                        p.efficiencyB < p.efficiencyA ? 
+                        `B의 효율이 낮으므로 열에너지로 변환되는 양이 더 많습니다. (${100-p.efficiencyB}% > ${100-p.efficiencyA}%)` : 
+                        '두 자동차의 효율이 같으므로 열에너지로 변환되는 양도 같습니다.'}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 초기 문제 생성
+        generateProblem();
+    </script>
+</body>
+</html>

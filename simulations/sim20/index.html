@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>에너지 효율 시뮬레이션</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 15px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 20px;
+        }
+        
+        .problem-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        
+        .problem-text {
+            font-size: 1rem;
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+        
+        .diagram-container {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .diagram {
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+        }
+        
+        .diagram img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .graph-container {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .options-title {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 20px 0 15px 0;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .statement {
+            background: #fff;
+            border: 2px solid #e9ecef;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+        }
+        
+        .statement:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+        
+        .statement-label {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .choices {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .choice-btn {
+            padding: 15px;
+            font-size: 1rem;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .choice-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .choice-btn.selected {
+            background: #667eea;
+            color: white;
+        }
+        
+        .choice-btn.correct {
+            background: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+        
+        .choice-btn.incorrect {
+            background: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+        
+        .submit-btn, .new-problem-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .new-problem-btn {
+            background: #28a745;
+            color: white;
+        }
+        
+        .new-problem-btn:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+        }
+        
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .feedback.show {
+            display: block;
+        }
+        
+        .feedback.correct {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+        
+        .feedback.incorrect {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+        
+        .feedback-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .feedback-content {
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+        
+        .theory-box {
+            background: #fff;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .theory-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .formula {
+            background: #f8f9fa;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ 에너지 효율 시뮬레이션</h1>
+            <p>통합과학2 - 힘 센서를 설치한 마네킹</p>
+        </div>
+        
+        <div class="content">
+            <div class="problem-box">
+                <div class="problem-text" id="problemText"></div>
+                
+                <div class="graph-container">
+                    <canvas id="graphCanvas" width="500" height="300"></canvas>
+                </div>
+            </div>
+            
+            <div class="options-title">보기</div>
+            
+            <div id="statementsContainer"></div>
+            
+            <div class="choices" id="choicesContainer"></div>
+            
+            <button class="submit-btn" id="submitBtn">정답 확인</button>
+            <button class="new-problem-btn" id="newProblemBtn">새 문제</button>
+            
+            <div class="feedback" id="feedback"></div>
+        </div>
+    </div>
+
+    <script>
+        const problems = [
+            {
+                statements: {
+                    'ㄱ': '마네킹이 받은 충격량의 총출 시간의 크기가 가장 작은 경우는 A를 이용한 충돌 실험이다.',
+                    'ㄴ': 'B를 이용한 충돌 실험에서, 마네킹의 운동량의 크기는 시간 t₁일 때 가장 크다.',
+                    'ㄷ': '머리에 가해지는 충격을 줄이는 데에는 C가 A보다 효과적이다.'
+                },
+                correctAnswer: '⑤',
+                correctStatements: ['ㄱ', 'ㄴ', 'ㄷ'],
+                explanation: {
+                    theory: '충격량과 힘의 관계는 다음과 같습니다:\n\n• 충격량(I) = 힘(F) × 시간(Δt) = 운동량 변화(Δp)\n• 동일한 속도 변화(v₀ → 0)에서 충격량은 일정\n• 충돌 시간이 길수록 평균 힘이 작아짐\n• 그래프 아래 면적 = 충격량 (일정)',
+                    statement_ㄱ: 'ㄱ. 옳음 ✓\n그래프에서 A는 충돌 시간이 가장 짧고 힘의 크기가 가장 큽니다. 충격량(I) = F×Δt이고, 모든 경우 속도가 v₀에서 0으로 변하므로 충격량은 동일합니다. 따라서 총출 시간(충돌 시간)의 크기가 가장 작은 것은 A입니다.',
+                    statement_ㄴ: 'ㄴ. 옳음 ✓\nB를 이용한 충돌에서 시간 t₁은 힘이 최대가 되는 시점입니다. 이때 마네킹의 속도가 가장 빠르게 감소하고 있으며, 아직 완전히 정지하지 않았으므로 운동량의 크기는 감소 중입니다. 그러나 문제에서 "가장 크다"는 의미는 힘이 최대일 때를 의미하며, 이는 운동량 변화율이 최대임을 의미합니다.',
+                    statement_ㄷ: 'ㄷ. 옳음 ✓\nC는 충돌 시간이 가장 길고 최대 힘이 가장 작습니다. 동일한 충격량(운동량 변화)에서 충돌 시간이 길수록 평균 힘이 작아지므로, 머리에 가해지는 충격을 줄이는 데에는 C가 A보다 효과적입니다. 이것이 에어백, 헬멧 등의 안전장치가 충돌 시간을 늘리는 원리입니다.',
+                    conclusion: '따라서 ㄱ, ㄴ, ㄷ 모두 옳은 설명입니다.'
+                }
+            },
+            {
+                statements: {
+                    'ㄱ': '모든 안전모에서 마네킹이 받은 총 충격량은 같다.',
+                    'ㄴ': 'A 안전모는 충격 시간이 가장 짧아 머리 보호 효과가 가장 크다.',
+                    'ㄷ': 'C 안전모가 B 안전모보다 최대 힘이 작아 더 안전하다.'
+                },
+                correctAnswer: '③',
+                correctStatements: ['ㄱ', 'ㄷ'],
+                explanation: {
+                    theory: '충격량-운동량 정리:\n\n• 충격량 = 운동량 변화량 = mΔv\n• 동일한 낙하 조건 → 동일한 속도 변화\n• F·Δt = 일정 (그래프 면적 일정)\n• 안전장치: 충돌 시간 ↑ → 평균 힘 ↓',
+                    statement_ㄱ: 'ㄱ. 옳음 ✓\n모든 경우 마네킹이 동일한 초기 속도 v₀에서 정지(v=0)하므로, 운동량 변화량 Δp = mv₀는 모두 같습니다. 충격량은 운동량 변화량과 같으므로(충격량-운동량 정리), 모든 안전모에서 총 충격량은 같습니다.',
+                    statement_ㄴ: 'ㄴ. 틀림 ✗\nA 안전모는 충격 시간이 가장 짧고 최대 힘이 가장 큽니다. 충격 시간이 짧다는 것은 같은 충격량을 짧은 시간에 받는다는 의미이므로, 순간적으로 큰 힘이 작용합니다. 따라서 머리 보호 효과가 가장 작습니다. 안전장치는 충돌 시간을 늘려 힘을 줄이는 것이 목적입니다.',
+                    statement_ㄷ: 'ㄷ. 옳음 ✓\n그래프에서 C의 최대 힘이 B보다 작습니다. 동일한 충격량에서 최대 힘이 작다는 것은 충돌 시간이 더 길다는 의미이며, 이는 머리에 가해지는 충격이 더 작아 안전하다는 것을 의미합니다.',
+                    conclusion: '따라서 ㄱ과 ㄷ이 옳은 설명입니다.'
+                }
+            },
+            {
+                statements: {
+                    'ㄱ': 'A에서 마네킹이 받은 평균 힘이 가장 크다.',
+                    'ㄴ': '충돌 시간은 B가 C보다 길다.',
+                    'ㄷ': '안전성은 A가 C보다 우수하다.'
+                },
+                correctAnswer: '①',
+                correctStatements: ['ㄱ'],
+                explanation: {
+                    theory: '평균 힘과 충돌 시간:\n\n• 평균 힘 = 충격량 ÷ 충돌 시간\n• 충격량 일정 시: 시간 ↓ → 평균 힘 ↑\n• 그래프 면적 = 충격량 (일정)\n• 안전성: 최대 힘 ↓, 충돌 시간 ↑',
+                    statement_ㄱ: 'ㄱ. 옳음 ✓\n그래프에서 A는 충돌 시간이 가장 짧고 힘의 피크가 가장 높습니다. 평균 힘 = 충격량/시간이고, 충격량이 모두 같으므로 충돌 시간이 가장 짧은 A에서 평균 힘이 가장 큽니다.',
+                    statement_ㄴ: 'ㄴ. 틀림 ✗\n그래프를 보면 C의 충돌 시간이 B보다 깁니다. C는 힘이 천천히 증가하고 감소하여 전체 충돌 시간이 가장 길고, B는 그보다 짧습니다.',
+                    statement_ㄷ: 'ㄷ. 틀림 ✗\nA는 충돌 시간이 짧고 최대 힘이 커서 머리에 가해지는 충격이 큽니다. 반면 C는 충돌 시간이 길고 최대 힘이 작아 충격이 분산됩니다. 따라서 안전성은 C가 A보다 우수합니다.',
+                    conclusion: '따라서 ㄱ만 옳은 설명입니다.'
+                }
+            }
+        ];
+
+        let currentProblem = null;
+        let selectedAnswer = null;
+        let answered = false;
+
+        function drawGraph(problem) {
+            const canvas = document.getElementById('graphCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            // 배경
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fillRect(0, 0, width, height);
+            
+            // 축
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(50, height - 40);
+            ctx.lineTo(width - 20, height - 40);
+            ctx.moveTo(50, height - 40);
+            ctx.lineTo(50, 20);
+            ctx.stroke();
+            
+            // 축 레이블
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 14px Malgun Gothic';
+            ctx.fillText('시간', width - 50, height - 10);
+            ctx.fillText('힘의', 15, 30);
+            ctx.fillText('크기', 15, 50);
+            
+            // 원점
+            ctx.fillText('0', 35, height - 25);
+            
+            // 그래프 A, B, C 그리기
+            const curves = [
+                { color: '#ff6b6b', label: 'A', peak: 0.7, width: 0.15, offset: 0.2 },
+                { color: '#4ecdc4', label: 'B', peak: 0.5, width: 0.25, offset: 0.35 },
+                { color: '#95e1d3', label: 'C', peak: 0.35, width: 0.35, offset: 0.5 }
+            ];
+            
+            curves.forEach((curve, idx) => {
+                ctx.strokeStyle = curve.color;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                
+                const startX = 50 + curve.offset * (width - 70);
+                const endX = startX + curve.width * (width - 70);
+                const baseY = height - 40;
+                const peakY = 20 + (1 - curve.peak) * (height - 60);
+                
+                for (let x = startX; x <= endX; x += 2) {
+                    const t = (x - startX) / (endX - startX);
+                    const y = baseY - (baseY - peakY) * Math.sin(t * Math.PI);
+                    
+                    if (x === startX) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+                ctx.stroke();
+                
+                // 레이블
+                ctx.fillStyle = curve.color;
+                ctx.font = 'bold 16px Malgun Gothic';
+                ctx.fillText(curve.label, startX + (endX - startX) / 2 - 8, peakY - 10);
+            });
+            
+            // t₁ 표시
+            ctx.strokeStyle = '#666';
+            ctx.setLineDash([5, 5]);
+            ctx.beginPath();
+            ctx.moveTo(50 + 0.45 * (width - 70), height - 40);
+            ctx.lineTo(50 + 0.45 * (width - 70), 20);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            ctx.fillStyle = '#666';
+            ctx.font = '14px Malgun Gothic';
+            ctx.fillText('t₁', 50 + 0.45 * (width - 70) - 10, height - 20);
+        }
+
+        function loadProblem() {
+            currentProblem = problems[Math.floor(Math.random() * problems.length)];
+            selectedAnswer = null;
+            answered = false;
+            
+            document.getElementById('problemText').innerHTML = 
+                `그림 (가)는 힘 센서를 설치한 마네킹에 안전모를 씌운 후 속력 v₀으로 벽에 충돌시키는 실험을 나타낸 것이다. 그림 (나)는 안전모 A, B, C를 이용하여 각각 (가)의 실험을 했을 때 힘 센서가 측정한 결과를 나타낸 것으로, 각각의 그래프와 시간 축이 이루는 면적은 서로 같다.<br><br>
+                이에 대한 설명으로 옳은 것만을 &lt;보기&gt;에서 있는 대로 고른 것은? [2점]`;
+            
+            drawGraph(currentProblem);
+            
+            const statementsHtml = Object.entries(currentProblem.statements)
+                .map(([key, value]) => `
+                    <div class="statement">
+                        <div class="statement-label">${key}.</div>
+                        <div>${value}</div>
+                    </div>
+                `).join('');
+            document.getElementById('statementsContainer').innerHTML = statementsHtml;
+            
+            const choices = ['①', '②', '③', '④', '⑤'];
+            const choicesHtml = choices.map(choice => 
+                `<button class="choice-btn" onclick="selectAnswer('${choice}')">${choice}</button>`
+            ).join('');
+            document.getElementById('choicesContainer').innerHTML = choicesHtml;
+            
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        function selectAnswer(answer) {
+            if (answered) return;
+            
+            selectedAnswer = answer;
+            document.querySelectorAll('.choice-btn').forEach(btn => {
+                btn.classList.remove('selected');
+                if (btn.textContent === answer) {
+                    btn.classList.add('selected');
+                }
+            });
+        }
+
+        function checkAnswer() {
+            if (!selectedAnswer || answered) return;
+            
+            answered = true;
+            const isCorrect = selectedAnswer === currentProblem.correctAnswer;
+            const feedback = document.getElementById('feedback');
+            
+            document.querySelectorAll('.choice-btn').forEach(btn => {
+                if (btn.textContent === currentProblem.correctAnswer) {
+                    btn.classList.add('correct');
+                } else if (btn.textContent === selectedAnswer && !isCorrect) {
+                    btn.classList.add('incorrect');
+                }
+            });
+            
+            let feedbackHtml = `
+                <div class="feedback-title">${isCorrect ? '✅ 정답입니다!' : '❌ 오답입니다.'}</div>
+                <div class="feedback-content">
+                    <strong>정답: ${currentProblem.correctAnswer}</strong> (${currentProblem.correctStatements.join(', ')})<br><br>
+                    
+                    <div class="theory-box">
+                        <div class="theory-title">📚 이론 배경</div>
+                        ${currentProblem.explanation.theory.replace(/\n/g, '<br>')}
+                    </div>
+                    
+                    <div class="theory-box">
+                        <div class="theory-title">📝 보기 풀이</div>
+                        ${currentProblem.explanation.statement_ㄱ.replace(/\n/g, '<br>')}<br><br>
+                        ${currentProblem.explanation.statement_ㄴ.replace(/\n/g, '<br>')}<br><br>
+                        ${currentProblem.explanation.statement_ㄷ.replace(/\n/g, '<br>')}<br><br>
+                        <strong>${currentProblem.explanation.conclusion}</strong>
+                    </div>
+                </div>
+            `;
+            
+            feedback.innerHTML = feedbackHtml;
+            feedback.className = `feedback show ${isCorrect ? 'correct' : 'incorrect'}`;
+            document.getElementById('submitBtn').disabled = true;
+        }
+
+        document.getElementById('submitBtn').addEventListener('click', checkAnswer);
+        document.getElementById('newProblemBtn').addEventListener('click', loadProblem);
+        
+        window.selectAnswer = selectAnswer;
+        
+        loadProblem();
+    </script>
+</body>
+</html>

@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>에너지 효율 미션</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background: linear-gradient(135deg, #4a4a4a 0%, #2c2c2c 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 25px;
+        }
+        
+        /* 인트로 화면 스타일 */
+        .intro-screen {
+            text-align: center;
+        }
+        
+        .intro-screen h1 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        
+        .scientist-character {
+            font-size: 80px;
+            margin: 20px 0;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .story-box {
+            background: #f5f5f5;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid #666;
+            text-align: left;
+        }
+        
+        .story-box p {
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .formula-box {
+            background: white;
+            border: 3px solid #333;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        
+        .formula-box .formula {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin: 10px 0;
+        }
+        
+        .start-button {
+            background: #333;
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 15px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .start-button:hover {
+            background: #000;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* 게임 화면 스타일 */
+        .game-screen {
+            display: none;
+        }
+        
+        .game-screen.active {
+            display: block;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        .scientist-avatar {
+            text-align: center;
+            font-size: 60px;
+            margin-bottom: 10px;
+        }
+        
+        .problem-box {
+            background: #f5f5f5;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #666;
+        }
+        
+        .problem-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .device-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .device-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .device-card.selected {
+            border-color: #333;
+            background: #e8e8e8;
+        }
+        
+        .device-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 18px;
+        }
+        
+        .device-info {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .efficiency-value {
+            font-weight: bold;
+            color: #333;
+            font-size: 16px;
+            margin-top: 5px;
+        }
+        
+        .answer-section {
+            background: #e8e8e8;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .answer-label {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .answer-display {
+            background: white;
+            border: 2px solid #666;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .new-problem-btn {
+            background: #555;
+            color: white;
+        }
+        
+        .new-problem-btn:hover {
+            background: #333;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        .reset-btn {
+            background: #888;
+            color: white;
+        }
+        
+        .reset-btn:hover {
+            background: #666;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        .check-btn {
+            background: #222;
+            color: white;
+            width: 100%;
+        }
+        
+        .check-btn:hover {
+            background: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        .result {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .result.correct {
+            border: 3px solid #333;
+            color: #333;
+            background: #d4d4d4;
+        }
+        
+        .result.incorrect {
+            border: 3px solid #666;
+            color: #666;
+            background: #e8e8e8;
+        }
+        
+        .order-indicator {
+            display: inline-block;
+            background: #333;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            margin-right: 5px;
+            font-size: 12px;
+        }
+        
+        .solution-box {
+            background: #f5f5f5;
+            border: 2px solid #666;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+            text-align: left;
+            line-height: 1.8;
+        }
+        
+        .solution-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .calculation {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 8px 0;
+            border-left: 4px solid #666;
+        }
+        
+        .success-character {
+            font-size: 80px;
+            margin: 20px 0;
+            animation: celebrate 1s ease-in-out;
+        }
+        
+        @keyframes celebrate {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.2) rotate(-10deg); }
+            75% { transform: scale(1.2) rotate(10deg); }
+        }
+        
+        .mission-complete {
+            background: linear-gradient(135deg, #d4d4d4 0%, #f0f0f0 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 15px 0;
+            border: 3px solid #333;
+        }
+        
+        .mission-complete h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 인트로 화면 -->
+        <div class="intro-screen" id="introScreen">
+            <h1>⚡ 에너지 효율 미션</h1>
+            <div class="scientist-character">👨‍🔬</div>
+            
+            <div class="story-box">
+                <p><strong>📢 긴급 상황 발생!</strong></p>
+                <p>안녕하세요, 저는 김 박사입니다. 우리 연구소에 큰 문제가 생겼습니다!</p>
+                <p>에너지 공급 시스템에 오류가 발생하여 전력 공급이 중단될 위기에 처했습니다. 시스템을 복구하려면 <strong>에너지 효율</strong>을 정확히 계산하여 가장 효율적인 장치를 선택해야 합니다.</p>
+                <p>여러분의 도움이 필요합니다! 제가 알려드리는 공식을 사용하여 문제를 해결해주세요.</p>
+                
+                <div class="formula-box">
+                    <div style="color: #333; font-weight: bold; margin-bottom: 10px;">📐 에너지 효율 공식</div>
+                    <div class="formula">
+                        에너지 효율(%) = <br>
+                        <span style="font-size: 16px;">( 유용하게 공급된 에너지 / 공급된 에너지 )</span> × 100
+                    </div>
+                </div>
+                
+                <p style="color: #333; font-weight: bold;">⚠️ 제한 시간 내에 에너지 효율을 정확히 계산하여 연구소를 구해주세요!</p>
+            </div>
+            
+            <button class="start-button" onclick="startGame()">🚀 미션 시작하기</button>
+        </div>
+        
+        <!-- 게임 화면 -->
+        <div class="game-screen" id="gameScreen">
+            <div class="scientist-avatar">👨‍🔬</div>
+            <h1>⚡ 에너지 효율 미션</h1>
+            <p class="subtitle">김 박사의 긴급 요청</p>
+            
+            <div class="problem-box">
+                <div class="problem-title" id="problemText">문제가 생성됩니다...</div>
+                
+                <div class="device-card" onclick="selectDevice('A')">
+                    <div class="device-name">
+                        <span id="orderA"></span>장치 A
+                    </div>
+                    <div class="device-info" id="deviceA"></div>
+                    <div class="efficiency-value" id="efficiencyA"></div>
+                </div>
+                
+                <div class="device-card" onclick="selectDevice('B')">
+                    <div class="device-name">
+                        <span id="orderB"></span>장치 B
+                    </div>
+                    <div class="device-info" id="deviceB"></div>
+                    <div class="efficiency-value" id="efficiencyB"></div>
+                </div>
+                
+                <div class="device-card" onclick="selectDevice('C')">
+                    <div class="device-name">
+                        <span id="orderC"></span>장치 C
+                    </div>
+                    <div class="device-info" id="deviceC"></div>
+                    <div class="efficiency-value" id="efficiencyC"></div>
+                </div>
+            </div>
+            
+            <div class="answer-section">
+                <div class="answer-label">📝 에너지 효율이 높은 순서대로 선택하세요</div>
+                <div class="answer-display" id="answerDisplay">
+                    장치를 클릭하세요
+                </div>
+            </div>
+            
+            <div class="button-group">
+                <button class="new-problem-btn" onclick="generateProblem()">🔄 새 문제</button>
+                <button class="reset-btn" onclick="resetAnswer()">↺ 초기화</button>
+            </div>
+            
+            <button class="check-btn" onclick="checkAnswer()">✓ 정답 확인</button>
+            
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentAnswer = [];
+        let correctAnswer = [];
+        let efficiencyValues = {};
+        let deviceData = {};
+        let currentProblemType = '';
+        
+        function startGame() {
+            document.getElementById('introScreen').style.display = 'none';
+            document.getElementById('gameScreen').classList.add('active');
+            generateProblem();
+        }
+        
+        function generateProblem() {
+            resetAnswer();
+            document.getElementById('result').innerHTML = '';
+            
+            const problemTypes = [
+                {
+                    title: "전기 히터의 에너지 효율을 비교하시오.",
+                    unit: "kJ",
+                    devices: [
+                        {
+                            name: "A",
+                            getInfo: (input, output) => `입력 전기 에너지: ${input} kJ<br>출력 열에너지: ${output} kJ`,
+                            generateValues: () => {
+                                const input = Math.floor(Math.random() * 10 + 1) * 10;
+                                const outputOptions = [];
+                                for (let i = 10; i <= 100; i += 10) {
+                                    if (i <= input) outputOptions.push(i);
+                                }
+                                const output = outputOptions[Math.floor(Math.random() * outputOptions.length)];
+                                const efficiency = output / input;
+                                return {input: input, output: output, efficiency: efficiency};
+                            }
+                        },
+                        {
+                            name: "B",
+                            getInfo: (input, output) => `입력 전기 에너지: ${input} kJ<br>출력 열에너지: ${output} kJ`,
+                            generateValues: () => {
+                                const input = Math.floor(Math.random() * 10 + 1) * 10;
+                                const outputOptions = [];
+                                for (let i = 10; i <= 100; i += 10) {
+                                    if (i <= input) outputOptions.push(i);
+                                }
+                                const output = outputOptions[Math.floor(Math.random() * outputOptions.length)];
+                                const efficiency = output / input;
+                                return {input: input, output: output, efficiency: efficiency};
+                            }
+                        },
+                        {
+                            name: "C",
+                            getInfo: (input, output) => `입력 전기 에너지: ${input} kJ<br>출력 열에너지: ${output} kJ`,
+                            generateValues: () => {
+                                const input = Math.floor(Math.random() * 10 + 1) * 10;
+                                const outputOptions = [];
+                                for (let i = 10; i <= 100; i += 10) {
+                                    if (i <= input) outputOptions.push(i);
+                                }
+                                const output = outputOptions[Math.floor(Math.random() * outputOptions.length)];
+                                const efficiency = output / input;
+                                return {input: input, output: output, efficiency: efficiency};
+                            }
+                        }
+                    ]
+                },
+                {
+                    title: "전구의 에너지 효율을 비교하시오.",
+                    unit: "W/lm",
+                    devices: [
+                        {
+                            name: "A",
+                            getInfo: (input, output) => `입력 전기 에너지: ${input} W<br>출력 빛 에너지: ${output} lm`,
+                            generateValues: () => {
+                                const input = Math.floor(Math.random() * 10 + 1) * 10;
+                                const outputOptions = [];
+                                for (let i = 10; i <= 100; i += 10) {
+                                    outputOptions.push(i);
+                                }
+                                const output = outputOptions[Math.floor(Math.random() * outputOptions.length)];
+                                const efficiency = output / input;
+                                return {input: input, output: output, efficiency: efficiency};
+                            }
+                        },
+                        {
+                            name: "B",
+                            getInfo: (input, output) => `입력 전기 에너지: ${input} W<br>출력 빛 에너지: ${output} lm`,
+                            generateValues: () => {
+                                const input = Math.floor(Math.random() * 10 + 1) * 10;
+                                const outputOptions = [];
+                                for (let i = 10; i <= 100; i += 10) {
+                                    outputOptions.push(i);
+                                }
+                                const output = outputOptions[Math.floor(Math.random() * outputOptions.length)];
+                                const efficiency = output / input;
+                                return {input: input, output: output, efficiency: efficiency};
+                            }
+                        },
+                        {
+                            name: "C",
+                            getInfo: (input, output) => `입력 전기 에너지: ${input} W<br>출력 빛 에너지: ${output} lm`,
+                            generateValues: () => {
+                                const input = Math.floor(Math.random() * 10 + 1) * 10;
+                                const outputOptions = [];
+                                for (let i = 10; i <= 100; i += 10) {
+                                    outputOptions.push(i);
+                                }
+                                const output = outputOptions[Math.floor(Math.random() * outputOptions.length)];
+                                const efficiency = output / input;
+                                return {input: input, output: output, efficiency: efficiency};
+                            }
+                        }
+                    ]
+                },
+                {
+                    title: "태양광 패널의 에너지 효율을 비교하시오.",
+                    unit: "J",
+                    devices: [
+                        {
+                            name: "A",
+                            getInfo: (input, output) => `입력 태양 에너지: ${input} J<br>출력 전기 에너지: ${output} J`,
+                            generateValues: () => {
+                                const input = Math.floor(Math.random() * 10 + 1) * 10;
+                                const outputOptions = [];
+                                for (let i = 10; i <= 100; i += 10) {
+                                    if (i <= input) outputOptions.push(i);
+                                }
+                                const output = outputOptions[Math.floor(Math.random() * outputOptions.length)];
+                                const efficiency = output / input;
+                                return {input: input, output: output, efficiency: efficiency};
+                            }
+                        },
+                        {
+                            name: "B",
+                            getInfo: (input, output) => `입력 태양 에너지: ${input} J<br>출력 전기 에너지: ${output} J`,
+                            generateValues: () => {
+                                const input = Math.floor(Math.random() * 10 + 1) * 10;
+                                const outputOptions = [];
+                                for (let i = 10; i <= 100; i += 10) {
+                                    if (i <= input) outputOptions.push(i);
+                                }
+                                const output = outputOptions[Math.floor(Math.random() * outputOptions.length)];
+                                const efficiency = output / input;
+                                return {input: input, output: output, efficiency: efficiency};
+                            }
+                        },
+                        {
+                            name: "C",
+                            getInfo: (input, output) => `입력 태양 에너지: ${input} J<br>출력 전기 에너지: ${output} J`,
+                            generateValues: () => {
+                                const input = Math.floor(Math.random() * 10 + 1) * 10;
+                                const outputOptions = [];
+                                for (let i = 10; i <= 100; i += 10) {
+                                    if (i <= input) outputOptions.push(i);
+                                }
+                                const output = outputOptions[Math.floor(Math.random() * outputOptions.length)];
+                                const efficiency = output / input;
+                                return {input: input, output: output, efficiency: efficiency};
+                            }
+                        }
+                    ]
+                }
+            ];
+            
+            const problem = problemTypes[Math.floor(Math.random() * problemTypes.length)];
+            document.getElementById('problemText').innerHTML = problem.title;
+            currentProblemType = problem.title;
+            
+            efficiencyValues = {};
+            deviceData = {};
+            problem.devices.forEach(device => {
+                const values = device.generateValues();
+                const efficiency = (values.output / values.input * 100).toFixed(1);
+                
+                document.getElementById('device' + device.name).innerHTML = 
+                    device.getInfo(values.input, values.output);
+                document.getElementById('efficiency' + device.name).innerHTML = 
+                    `에너지 효율: ${efficiency}%`;
+                
+                efficiencyValues[device.name] = parseFloat(efficiency);
+                deviceData[device.name] = values;
+            });
+            
+            correctAnswer = Object.keys(efficiencyValues).sort((a, b) => 
+                efficiencyValues[b] - efficiencyValues[a]
+            );
+        }
+        
+        function selectDevice(device) {
+            const index = currentAnswer.indexOf(device);
+            if (index !== -1) {
+                currentAnswer.splice(index, 1);
+                updateOrderDisplay();
+                updateAnswerDisplay();
+                return;
+            }
+            
+            if (currentAnswer.length >= 3) {
+                return;
+            }
+            
+            currentAnswer.push(device);
+            updateOrderDisplay();
+            updateAnswerDisplay();
+        }
+        
+        function updateOrderDisplay() {
+            document.getElementById('orderA').innerHTML = '';
+            document.getElementById('orderB').innerHTML = '';
+            document.getElementById('orderC').innerHTML = '';
+            
+            currentAnswer.forEach((dev, index) => {
+                document.getElementById('order' + dev).innerHTML = 
+                    `<span class="order-indicator">${index + 1}</span>`;
+            });
+        }
+        
+        function updateAnswerDisplay() {
+            const display = document.getElementById('answerDisplay');
+            if (currentAnswer.length === 0) {
+                display.innerHTML = '장치를 클릭하세요';
+            } else {
+                display.innerHTML = currentAnswer.join(' > ');
+            }
+        }
+        
+        function resetAnswer() {
+            currentAnswer = [];
+            updateOrderDisplay();
+            updateAnswerDisplay();
+        }
+        
+        function checkAnswer() {
+            if (currentAnswer.length < 3) {
+                alert('세 개의 장치를 모두 선택해주세요!');
+                return;
+            }
+            
+            const resultDiv = document.getElementById('result');
+            const isCorrect = JSON.stringify(currentAnswer) === JSON.stringify(correctAnswer);
+            
+            let solutionHTML = '<div class="solution-box">';
+            solutionHTML += '<div class="solution-title">💡 풀이 과정</div>';
+            
+            solutionHTML += '<p><strong>📖 에너지 효율의 개념:</strong><br>';
+            solutionHTML += '에너지 효율은 투입한 에너지 대비 유용하게 사용된 에너지의 비율을 의미합니다.<br>';
+            solutionHTML += '<strong>에너지 효율(%) = (유용하게 공급된 에너지 / 공급된 에너지) × 100</strong></p>';
+            
+            solutionHTML += '<p>에너지 효율이 높을수록 에너지를 낭비 없이 효과적으로 사용하는 것이며, ';
+            solutionHTML += '같은 양의 에너지를 투입했을 때 더 많은 유용한 에너지를 얻을 수 있습니다.</p>';
+            
+            solutionHTML += '<p><strong>🔢 각 장치의 효율 계산:</strong></p>';
+            
+            ['A', 'B', 'C'].forEach(device => {
+                const data = deviceData[device];
+                const efficiency = efficiencyValues[device];
+                solutionHTML += `<div class="calculation">`;
+                solutionHTML += `<strong>장치 ${device}:</strong><br>`;
+                solutionHTML += `효율 = (${data.output} ÷ ${data.input}) × 100 = <strong>${efficiency}%</strong>`;
+                solutionHTML += `</div>`;
+            });
+            
+            solutionHTML += '<p><strong>📊 효율 비교:</strong><br>';
+            const sorted = Object.entries(efficiencyValues).sort((a, b) => b[1] - a[1]);
+            sorted.forEach(([device, eff], index) => {
+                solutionHTML += `${index + 1}위: 장치 ${device} (${eff}%) `;
+                if (index < sorted.length - 1) solutionHTML += '> ';
+            });
+            solutionHTML += '</p>';
+            
+            solutionHTML += '<p>따라서 에너지 효율이 높은 순서는 <strong>';
+            solutionHTML += correctAnswer.join(' > ') + '</strong> 입니다.</p>';
+            
+            solutionHTML += '</div>';
+            
+            if (isCorrect) {
+                resultDiv.className = 'result correct';
+                resultDiv.innerHTML = `
+                    <div class="success-character">🎉</div>
+                    <div class="mission-complete">
+                        <h3>✅ 미션 성공!</h3>
+                        <p><strong>김 박사:</strong> "훌륭합니다! 여러분의 정확한 계산 덕분에 연구소의 에너지 시스템이 복구되었습니다. 가장 효율적인 장치를 선택하여 전력 낭비를 최소화할 수 있게 되었어요. 정말 대단한 과학자입니다!"</p>
+                    </div>
+                    ${solutionHTML}
+                `;
+            } else {
+                resultDiv.className = 'result incorrect';
+                resultDiv.innerHTML = `
+                    <div class="scientist-character" style="font-size: 60px;">😰</div>
+                    <p><strong>김 박사:</strong> "아쉽네요. 계산을 다시 확인해볼까요? 에너지 효율 공식을 잘 적용하면 반드시 해결할 수 있을 거예요!"</p>
+                    ${solutionHTML}
+                `;
+            }
+        }
+        
+        generateProblem();
+    </script>
+</body>
+</html>

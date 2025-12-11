@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>에너지 효율 문제</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            padding: 15px;
+            background-color: #f5f5f5;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+        
+        .cars-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin: 20px 0;
+        }
+        
+        .car-section {
+            background-color: #f9f9f9;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .car-title {
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .car-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            margin: 20px 0;
+            gap: 10px;
+        }
+        
+        .car {
+            width: 100px;
+            height: 60px;
+            background: linear-gradient(to bottom, #4CAF50 0%, #45a049 100%);
+            border-radius: 15px 50px 10px 10px;
+            position: relative;
+            animation: drive 2s ease-in-out infinite;
+            flex-shrink: 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .car-a {
+            background: linear-gradient(to bottom, #2196F3 0%, #1976D2 100%);
+        }
+        
+        .car-b {
+            background: linear-gradient(to bottom, #FF9800 0%, #F57C00 100%);
+        }
+        
+        .car-window {
+            width: 30px;
+            height: 20px;
+            background-color: #87CEEB;
+            position: absolute;
+            top: 8px;
+            right: 15px;
+            border-radius: 5px 5px 0 0;
+            border: 2px solid #333;
+        }
+        
+        .car-front {
+            width: 15px;
+            height: 25px;
+            background-color: rgba(255, 255, 255, 0.3);
+            position: absolute;
+            right: -5px;
+            top: 20px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .car-headlight {
+            width: 8px;
+            height: 8px;
+            background-color: #FFD700;
+            position: absolute;
+            right: -3px;
+            top: 25px;
+            border-radius: 50%;
+            box-shadow: 0 0 5px #FFD700;
+        }
+        
+        .car-wheel {
+            width: 18px;
+            height: 18px;
+            background-color: #222;
+            border: 3px solid #555;
+            border-radius: 50%;
+            position: absolute;
+            bottom: -8px;
+            animation: rotate 1s linear infinite;
+        }
+        
+        .wheel-left {
+            left: 15px;
+        }
+        
+        .wheel-right {
+            right: 15px;
+        }
+        
+        @keyframes drive {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-3px); }
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .energy-arrows {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            flex: 1;
+        }
+        
+        .energy-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .energy-output {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .arrow-box {
+            background-color: white;
+            border: 2px solid #4CAF50;
+            border-radius: 8px;
+            padding: 10px;
+            position: relative;
+            text-align: center;
+            min-width: 120px;
+        }
+        
+        .arrow-box.input {
+            border-color: #f44336;
+        }
+        
+        .arrow-box.output {
+            border-color: #4CAF50;
+        }
+        
+        .arrow-box::after {
+            content: '→';
+            position: absolute;
+            right: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.8em;
+            color: #666;
+        }
+        
+        .arrow-box.output::after {
+            content: '→';
+            position: absolute;
+            left: -25px;
+            right: auto;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.8em;
+            color: #4CAF50;
+        }
+        
+        .arrow-label {
+            font-size: 0.75em;
+            color: #666;
+            margin-bottom: 3px;
+        }
+        
+        .arrow-value {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+        
+        th {
+            background-color: #e8e8e8;
+            font-weight: bold;
+        }
+        
+        .options-box {
+            border: 2px solid #333;
+            padding: 15px;
+            margin: 20px 0;
+            background-color: #fafafa;
+        }
+        
+        .options-box p {
+            margin: 8px 0;
+            font-size: 0.95em;
+        }
+        
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .choice-btn {
+            padding: 15px;
+            font-size: 1em;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .choice-btn:hover {
+            background-color: #45a049;
+        }
+        
+        .choice-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .new-problem-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        
+        .new-problem-btn:hover {
+            background-color: #0b7dda;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-size: 1em;
+            display: none;
+        }
+        
+        .result.correct {
+            background-color: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+        
+        .result.incorrect {
+            background-color: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+        
+        .explanation {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+        
+        .explanation h4 {
+            margin-bottom: 10px;
+            color: #1976D2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>에너지 효율 문제</h2>
+        
+        <div class="cars-container">
+            <div class="car-section">
+                <div class="car-title">자동차 A</div>
+                <div class="car-diagram">
+                    <div class="energy-input">
+                        <div class="arrow-box input">
+                            <div class="arrow-label">공급한 전기 에너지</div>
+                            <div class="arrow-value"><span id="energyA-diagram">600</span> J</div>
+                        </div>
+                    </div>
+                    <div class="car car-a">
+                        <div class="car-window"></div>
+                        <div class="car-front"></div>
+                        <div class="car-headlight"></div>
+                        <div class="car-wheel wheel-left"></div>
+                        <div class="car-wheel wheel-right"></div>
+                    </div>
+                    <div class="energy-output">
+                        <div class="arrow-box output">
+                            <div class="arrow-label">바퀴를 움직이는 데<br>사용한 에너지</div>
+                            <div class="arrow-value"><span id="usedA-diagram">300</span> J</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="car-section">
+                <div class="car-title">자동차 B</div>
+                <div class="car-diagram">
+                    <div class="energy-input">
+                        <div class="arrow-box input">
+                            <div class="arrow-label">공급한 전기 에너지</div>
+                            <div class="arrow-value"><span id="energyB-diagram">500</span> J</div>
+                        </div>
+                    </div>
+                    <div class="car car-b">
+                        <div class="car-window"></div>
+                        <div class="car-front"></div>
+                        <div class="car-headlight"></div>
+                        <div class="car-wheel wheel-left"></div>
+                        <div class="car-wheel wheel-right"></div>
+                    </div>
+                    <div class="energy-output">
+                        <div class="arrow-box output">
+                            <div class="arrow-label">바퀴를 움직이는 데<br>사용한 에너지</div>
+                            <div class="arrow-value"><span id="usedB-diagram">400</span> J</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <table id="dataTable">
+            <tr>
+                <th>자동차</th>
+                <th>A</th>
+                <th>B</th>
+            </tr>
+            <tr>
+                <td>공급한 전기 에너지(J)</td>
+                <td id="energyA">600</td>
+                <td id="energyB">500</td>
+            </tr>
+            <tr>
+                <td>바퀴를 움직이는 데 사용한 에너지(J)</td>
+                <td id="usedA">300</td>
+                <td id="usedB">400</td>
+            </tr>
+        </table>
+        
+        <div class="options-box">
+            <p><strong>&lt; 보기 &gt;</strong></p>
+            <p><strong>ㄱ.</strong> <span id="option1"></span></p>
+            <p><strong>ㄴ.</strong> <span id="option2"></span></p>
+            <p><strong>ㄷ.</strong> <span id="option3"></span></p>
+            <p><strong>ㄹ.</strong> <span id="option4"></span></p>
+        </div>
+        
+        <div class="choices">
+            <button class="choice-btn" onclick="checkAnswer(1)">① ㄱ</button>
+            <button class="choice-btn" onclick="checkAnswer(2)">② ㄴ</button>
+            <button class="choice-btn" onclick="checkAnswer(3)">③ ㄷ</button>
+            <button class="choice-btn" onclick="checkAnswer(4)">④ ㄱ, ㄴ</button>
+            <button class="choice-btn" onclick="checkAnswer(5)">⑤ ㄴ, ㄷ</button>
+        </div>
+        
+        <div id="result" class="result"></div>
+        
+        <button class="new-problem-btn" onclick="generateNewProblem()">새 문제</button>
+    </div>
+
+    <script>
+        let currentAnswer = 0;
+        let problemData = {};
+        let currentOptions = {};
+        
+        // 보기 텍스트 템플릿 모음
+        const optionTemplates = {
+            efficiency: [
+                { text: '에너지 효율은 {higher}가 {lower}보다 크다.', key: 'efficiencyHigher' },
+                { text: '에너지 변환 효율은 {lower}가 {higher}보다 낮다.', key: 'efficiencyHigher' },
+                { text: '{higher}의 에너지 효율이 {lower}보다 높다.', key: 'efficiencyHigher' }
+            ],
+            waste: [
+                { text: '공급한 전기 에너지가 같을 때 버려지는 열에너지는 {more}가 {less}보다 많다.', key: 'wasteMore' },
+                { text: '손실되는 에너지는 {more}가 {less}보다 크다.', key: 'wasteMore' },
+                { text: '{more}에서 열로 전환되는 에너지가 {less}보다 많다.', key: 'wasteMore' }
+            ],
+            sameWork: [
+                { text: '바퀴를 움직이는 에너지가 같을 때 공급한 전기 에너지의 양은 {efficient}가 {inefficient}보다 적다.', key: 'moreEfficient' },
+                { text: '같은 일을 하는 데 필요한 전기 에너지는 {efficient}가 {inefficient}보다 적다.', key: 'moreEfficient' },
+                { text: '동일한 작업을 수행하는 데 {efficient}가 {inefficient}보다 적은 에너지를 사용한다.', key: 'moreEfficient' }
+            ],
+            conservation: [
+                { text: 'A와 B 모두 에너지 보존 법칙이 성립한다.', key: 'always' },
+                { text: '공급된 에너지는 A와 B 모두 다른 형태로 전환된다.', key: 'always' },
+                { text: 'A와 B에서 에너지의 총량은 변하지 않는다.', key: 'always' }
+            ],
+            totalEnergy: [
+                { text: '공급한 전기 에너지의 총량은 {more}가 {less}보다 크다.', key: 'energyMore' },
+                { text: '{more}에 공급된 에너지가 {less}보다 많다.', key: 'energyMore' }
+            ],
+            usedEnergy: [
+                { text: '바퀴를 움직이는 데 사용한 에너지는 {more}가 {less}보다 크다.', key: 'usedMore' },
+                { text: '유용하게 사용된 에너지의 양은 {more}가 {less}보다 많다.', key: 'usedMore' }
+            ]
+        };
+        
+        function generateNewProblem() {
+            // 랜덤 데이터 생성
+            const energyA = (Math.floor(Math.random() * 4) + 4) * 100; // 400-700
+            const energyB = (Math.floor(Math.random() * 4) + 4) * 100; // 400-700
+            const usedA = Math.floor(energyA * (0.4 + Math.random() * 0.3)); // 40-70%
+            const usedB = Math.floor(energyB * (0.4 + Math.random() * 0.3)); // 40-70%
+            
+            problemData = {
+                energyA: energyA,
+                energyB: energyB,
+                usedA: usedA,
+                usedB: usedB,
+                efficiencyA: (usedA / energyA * 100).toFixed(1),
+                efficiencyB: (usedB / energyB * 100).toFixed(1),
+                wasteA: energyA - usedA,
+                wasteB: energyB - usedB
+            };
+            
+            // 표 업데이트
+            document.getElementById('energyA').textContent = energyA;
+            document.getElementById('energyB').textContent = energyB;
+            document.getElementById('usedA').textContent = usedA;
+            document.getElementById('usedB').textContent = usedB;
+            
+            // 다이어그램 업데이트
+            document.getElementById('energyA-diagram').textContent = energyA;
+            document.getElementById('energyB-diagram').textContent = energyB;
+            document.getElementById('usedA-diagram').textContent = usedA;
+            document.getElementById('usedB-diagram').textContent = usedB;
+            
+            // 비교 결과 계산
+            const efficiencyHigher = problemData.efficiencyB > problemData.efficiencyA ? 'B' : 'A';
+            const efficiencyLower = efficiencyHigher === 'B' ? 'A' : 'B';
+            const wasteMore = problemData.wasteA > problemData.wasteB ? 'A' : 'B';
+            const wasteLess = wasteMore === 'A' ? 'B' : 'A';
+            const moreEfficient = efficiencyHigher;
+            const lessEfficient = efficiencyLower;
+            const energyMore = energyA > energyB ? 'A' : 'B';
+            const energyLess = energyMore === 'A' ? 'B' : 'A';
+            const usedMore = usedA > usedB ? 'A' : 'B';
+            const usedLess = usedMore === 'A' ? 'B' : 'A';
+            
+            // 6가지 카테고리에서 랜덤하게 3개 선택 (efficiency는 필수)
+            const categories = ['waste', 'sameWork', 'conservation', 'totalEnergy', 'usedEnergy'];
+            const selectedCategories = ['efficiency']; // 에너지 효율은 필수
+            
+            // 나머지 3개를 랜덤 선택
+            while (selectedCategories.length < 4) {
+                const randomCat = categories[Math.floor(Math.random() * categories.length)];
+                if (!selectedCategories.includes(randomCat)) {
+                    selectedCategories.push(randomCat);
+                }
+            }
+            
+            // 선택된 카테고리 섞기
+            for (let i = selectedCategories.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [selectedCategories[i], selectedCategories[j]] = [selectedCategories[j], selectedCategories[i]];
+            }
+            
+            // 선택된 카테고리에서 보기 생성
+            currentOptions = {};
+            for (let i = 0; i < 4; i++) {
+                const category = selectedCategories[i];
+                const templates = optionTemplates[category];
+                const template = templates[Math.floor(Math.random() * templates.length)];
+                
+                let text = template.text
+                    .replace('{higher}', efficiencyHigher)
+                    .replace('{lower}', efficiencyLower)
+                    .replace('{more}', wasteMore)
+                    .replace('{less}', wasteLess)
+                    .replace('{efficient}', moreEfficient)
+                    .replace('{inefficient}', lessEfficient)
+                    .replace('{more}', energyMore)
+                    .replace('{less}', energyLess)
+                    .replace('{more}', usedMore)
+                    .replace('{less}', usedLess);
+                
+                currentOptions[String.fromCharCode(97 + i)] = {
+                    text: text,
+                    key: template.key,
+                    isTrue: evaluateOption(template.key, efficiencyHigher, wasteMore, moreEfficient, energyMore, usedMore)
+                };
+                
+                document.getElementById(`option${i + 1}`).textContent = text;
+            }
+            
+            // 정답 결정 (참인 보기들의 조합)
+            const trueOptions = [];
+            if (currentOptions.a.isTrue) trueOptions.push('a');
+            if (currentOptions.b.isTrue) trueOptions.push('b');
+            if (currentOptions.c.isTrue) trueOptions.push('c');
+            if (currentOptions.d.isTrue) trueOptions.push('d');
+            
+            // 참인 보기의 개수에 따라 정답 결정
+            if (trueOptions.length === 0) {
+                currentAnswer = 1; // 모두 거짓인 경우는 없어야 하지만 기본값
+            } else if (trueOptions.length === 1) {
+                // 1개만 참인 경우
+                if (trueOptions[0] === 'a') currentAnswer = 1;
+                else if (trueOptions[0] === 'b') currentAnswer = 2;
+                else if (trueOptions[0] === 'c') currentAnswer = 3;
+                else currentAnswer = 1;
+            } else if (trueOptions.length === 2) {
+                // 2개가 참인 경우
+                const combo = trueOptions.sort().join('');
+                if (combo === 'ab') currentAnswer = 4; // ㄱ, ㄴ
+                else if (combo === 'bc') currentAnswer = 5; // ㄴ, ㄷ
+                else if (combo === 'ac') currentAnswer = 4; // ㄱ, ㄷ -> ㄱ, ㄴ으로 매핑
+                else if (combo === 'ad') currentAnswer = 4;
+                else if (combo === 'bd') currentAnswer = 5;
+                else if (combo === 'cd') currentAnswer = 5;
+                else currentAnswer = 4;
+            } else if (trueOptions.length === 3) {
+                // 3개가 참인 경우
+                currentAnswer = 5; // ㄴ, ㄷ
+            } else {
+                // 4개 모두 참인 경우
+                currentAnswer = 5;
+            }
+            
+            // 결과 숨기기
+            document.getElementById('result').style.display = 'none';
+        }
+        
+        function evaluateOption(key, efficiencyHigher, wasteMore, moreEfficient, energyMore, usedMore) {
+            switch(key) {
+                case 'efficiencyHigher':
+                    return problemData.efficiencyB > problemData.efficiencyA;
+                case 'wasteMore':
+                    return problemData.wasteA > problemData.wasteB;
+                case 'moreEfficient':
+                    return problemData.efficiencyA > problemData.efficiencyB ? 
+                        problemData.efficiencyA > problemData.efficiencyB : 
+                        problemData.efficiencyB > problemData.efficiencyA;
+                case 'always':
+                    return true;
+                case 'energyMore':
+                    return problemData.energyA > problemData.energyB;
+                case 'usedMore':
+                    return problemData.usedA > problemData.usedB;
+                default:
+                    return false;
+            }
+        }
+        
+        function checkAnswer(selected) {
+            const resultDiv = document.getElementById('result');
+            const isCorrect = (selected === currentAnswer);
+            
+            // 결과 표시
+            resultDiv.style.display = 'block';
+            resultDiv.className = 'result ' + (isCorrect ? 'correct' : 'incorrect');
+            
+            let resultHTML = isCorrect ? 
+                '<strong>✓ 정답입니다!</strong>' : 
+                '<strong>✗ 틀렸습니다.</strong>';
+            
+            // 풀이 과정
+            resultHTML += '<div class="explanation">';
+            resultHTML += '<h4>【 풀이 과정 】</h4>';
+            resultHTML += '<p><strong>1. 에너지 효율 계산:</strong></p>';
+            resultHTML += `<p>• A의 효율 = (${problemData.usedA} ÷ ${problemData.energyA}) × 100 = ${problemData.efficiencyA}%</p>`;
+            resultHTML += `<p>• B의 효율 = (${problemData.usedB} ÷ ${problemData.energyB}) × 100 = ${problemData.efficiencyB}%</p>`;
+            resultHTML += '<br>';
+            
+            resultHTML += '<p><strong>2. 보기 판단:</strong></p>';
+            resultHTML += `<p><strong>ㄱ.</strong> ${currentOptions.a.text} → ${currentOptions.a.isTrue ? '참' : '거짓'}</p>`;
+            resultHTML += `<p><strong>ㄴ.</strong> ${currentOptions.b.text} → ${currentOptions.b.isTrue ? '참' : '거짓'}</p>`;
+            resultHTML += `<p><strong>ㄷ.</strong> ${currentOptions.c.text} → ${currentOptions.c.isTrue ? '참' : '거짓'}</p>`;
+            resultHTML += `<p><strong>ㄹ.</strong> ${currentOptions.d.text} → ${currentOptions.d.isTrue ? '참' : '거짓'}</p>`;
+            resultHTML += '<br>';
+            
+            resultHTML += '<h4>【 핵심 이론 】</h4>';
+            resultHTML += '<p><strong>• 에너지 효율</strong> = (유용하게 사용된 에너지 ÷ 공급된 에너지) × 100(%)</p>';
+            resultHTML += '<p><strong>• 버려지는 에너지</strong> = 공급된 에너지 - 유용하게 사용된 에너지</p>';
+            resultHTML += '<p><strong>• 에너지 보존 법칙:</strong> 에너지는 생성되거나 소멸되지 않고, 형태만 변환된다.</p>';
+            resultHTML += '<p><strong>• 효율이 높을수록:</strong> 같은 일을 하는 데 필요한 에너지가 적고, 버려지는 에너지도 적다.</p>';
+            resultHTML += '</div>';
+            
+            resultDiv.innerHTML = resultHTML;
+            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        // 초기 문제 생성
+        generateNewProblem();
+    </script>
+</body>
+</html>

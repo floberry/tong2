@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>발전소 에너지 효율 비교</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background: #f5f5f5;
+            padding: 15px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+            border-bottom: 2px solid #666;
+            padding-bottom: 10px;
+        }
+        
+        .problem-box {
+            background: #f9f9f9;
+            border: 2px solid #999;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .problem-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #222;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        
+        th, td {
+            border: 1px solid #999;
+            padding: 10px 8px;
+            text-align: center;
+        }
+        
+        th {
+            background: #ddd;
+            font-weight: bold;
+            color: #222;
+        }
+        
+        td {
+            background: white;
+        }
+        
+        .unit {
+            font-size: 12px;
+            color: #555;
+        }
+        
+        .question {
+            margin-top: 15px;
+            padding: 12px;
+            background: #eee;
+            border-radius: 5px;
+            font-weight: bold;
+            color: #222;
+        }
+        
+        .selection-area {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+        
+        .selection-title {
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .options {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        
+        .option-btn {
+            width: 70px;
+            height: 70px;
+            border: 3px solid #666;
+            border-radius: 10px;
+            background: #87CEEB;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: white;
+        }
+        
+        .option-btn:nth-child(2) {
+            background: #FFD700;
+        }
+        
+        .option-btn:nth-child(3) {
+            background: #FF6B6B;
+        }
+        
+        .option-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .option-btn.selected {
+            border-color: #000;
+            border-width: 4px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+        
+        .selected-order {
+            text-align: center;
+            font-size: 18px;
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border: 2px solid #999;
+            border-radius: 8px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .order-display {
+            font-weight: bold;
+            color: #222;
+        }
+        
+        .order-symbol {
+            margin: 0 8px;
+            color: #666;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-new {
+            background: #888;
+            color: white;
+        }
+        
+        .btn-new:active {
+            background: #666;
+        }
+        
+        .btn-submit {
+            background: #555;
+            color: white;
+        }
+        
+        .btn-submit:active {
+            background: #333;
+        }
+        
+        .btn-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .feedback.show {
+            display: block;
+        }
+        
+        .feedback.correct {
+            background: #e8e8e8;
+            border: 2px solid #666;
+        }
+        
+        .feedback.incorrect {
+            background: #f0f0f0;
+            border: 2px solid #888;
+        }
+        
+        .feedback-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #222;
+        }
+        
+        .feedback-content {
+            font-size: 14px;
+            line-height: 1.8;
+            color: #333;
+        }
+        
+        .feedback-content strong {
+            color: #000;
+        }
+        
+        .theory-section {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        
+        .theory-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #222;
+            font-size: 15px;
+        }
+        
+        .calculation {
+            background: #f9f9f9;
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 3px solid #666;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>발전소 에너지 효율 비교 시뮬레이션</h1>
+        
+        <div class="problem-box">
+            <div class="problem-title">
+                다음 표는 전기 에너지를 생산하는 발전소 A, B, C에 대한 자료이다.
+            </div>
+            
+            <table id="dataTable">
+                <tr>
+                    <th>발전소</th>
+                    <th>발전 방식</th>
+                    <th>특징</th>
+                </tr>
+                <tr>
+                    <td><strong>A</strong></td>
+                    <td>수력 발전</td>
+                    <td id="dataA">-</td>
+                </tr>
+                <tr>
+                    <td><strong>B</strong></td>
+                    <td>태양광 발전</td>
+                    <td id="dataB">-</td>
+                </tr>
+                <tr>
+                    <td><strong>C</strong></td>
+                    <td>화력 발전</td>
+                    <td id="dataC">-</td>
+                </tr>
+            </table>
+            
+            <div class="question">
+                공급된 에너지의 양이 같을 때, A, B, C에서 생산하는 전기 에너지의 양을 옳게 비교한 것은?
+            </div>
+        </div>
+        
+        <div class="selection-area">
+            <div class="selection-title">발전소를 클릭하여 순서를 정하세요 (큰 것부터)</div>
+            <div class="options">
+                <button class="option-btn" onclick="selectOption('A')">A</button>
+                <button class="option-btn" onclick="selectOption('B')">B</button>
+                <button class="option-btn" onclick="selectOption('C')">C</button>
+            </div>
+            <div class="selected-order">
+                <span class="order-display" id="orderDisplay">선택한 순서가 여기에 표시됩니다</span>
+            </div>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn btn-new" onclick="generateNewProblem()">새 문제</button>
+            <button class="btn btn-submit" id="submitBtn" onclick="checkAnswer()" disabled>정답 확인</button>
+        </div>
+        
+        <div class="feedback" id="feedback">
+            <div class="feedback-title" id="feedbackTitle"></div>
+            <div class="feedback-content" id="feedbackContent"></div>
+        </div>
+    </div>
+    
+    <script>
+        let currentData = {};
+        let selectedOrder = [];
+        let correctAnswer = '';
+        
+        function generateNewProblem() {
+            // 10~100 사이 10단위 랜덤 값 생성
+            const values = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+            
+            let efficiencyA, efficiencyB, efficiencyC;
+            let inputA, outputA, inputB_kJ, outputB_J, energyPerG, fuelKg, outputC;
+            
+            // 정답이 매번 달라지도록 효율을 다르게 생성
+            do {
+                // A: 수력 발전 - 효율 범위: 0.1 ~ 1.0
+                inputA = values[Math.floor(Math.random() * values.length)];
+                outputA = values[Math.floor(Math.random() * values.length)];
+                efficiencyA = outputA / inputA;
+                
+                // B: 태양광 발전 - 효율 범위: 0.001 ~ 0.1
+                inputB_kJ = values[Math.floor(Math.random() * values.length)];
+                outputB_J = values[Math.floor(Math.random() * values.length)];
+                efficiencyB = outputB_J / (inputB_kJ * 1000);
+                
+                // C: 화력 발전 - 효율 범위: 0.01 ~ 1.0
+                energyPerG = values[Math.floor(Math.random() * values.length)];
+                fuelKg = values[Math.floor(Math.random() * values.length)];
+                outputC = values[Math.floor(Math.random() * values.length)];
+                efficiencyC = outputC / (energyPerG * fuelKg);
+                
+                // 세 효율이 모두 다른지 확인 (소수점 6자리에서 비교)
+            } while (
+                Math.abs(efficiencyA - efficiencyB) < 0.000001 || 
+                Math.abs(efficiencyB - efficiencyC) < 0.000001 || 
+                Math.abs(efficiencyA - efficiencyC) < 0.000001
+            );
+            
+            currentData = {
+                A: { input: inputA, output: outputA, efficiency: efficiencyA },
+                B: { inputKJ: inputB_kJ, outputJ: outputB_J, efficiency: efficiencyB },
+                C: { energyPerG: energyPerG, fuelKg: fuelKg, output: outputC, efficiency: efficiencyC }
+            };
+            
+            // 표에 데이터 표시
+            document.getElementById('dataA').innerHTML = 
+                `높은 곳에서 떨어지는 물의 역학적 에너지 ${inputA} MJ당<br>${outputA} MJ의 전기 에너지를 생산한다.`;
+            
+            document.getElementById('dataB').innerHTML = 
+                `태양 전지를 비추는 빛의 에너지가 ${inputB_kJ} kJ일 때,<br>${outputB_J} J의 전기 에너지를 생산한다.`;
+            
+            document.getElementById('dataC').innerHTML = 
+                `1 g당 ${energyPerG} kJ의 화학 에너지를 가진 화석 연료<br>${fuelKg} kg을 사용하여 ${outputC} MJ의 전기 에너지를 생산한다.`;
+            
+            // 정답 계산
+            const efficiencies = [
+                { name: 'A', value: efficiencyA },
+                { name: 'B', value: efficiencyB },
+                { name: 'C', value: efficiencyC }
+            ];
+            efficiencies.sort((a, b) => b.value - a.value);
+            correctAnswer = efficiencies.map(e => e.name).join(' > ');
+            
+            // 초기화
+            resetSelection();
+            document.getElementById('feedback').classList.remove('show');
+        }
+        
+        function selectOption(option) {
+            const btn = event.target;
+            
+            // 이미 선택된 경우 선택 취소
+            if (btn.classList.contains('selected')) {
+                btn.classList.remove('selected');
+                const index = selectedOrder.indexOf(option);
+                if (index > -1) {
+                    selectedOrder.splice(index, 1);
+                }
+            } else {
+                // 최대 3개까지만 선택 가능
+                if (selectedOrder.length < 3) {
+                    btn.classList.add('selected');
+                    selectedOrder.push(option);
+                }
+            }
+            
+            updateOrderDisplay();
+        }
+        
+        function updateOrderDisplay() {
+            const display = document.getElementById('orderDisplay');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            if (selectedOrder.length === 0) {
+                display.innerHTML = '선택한 순서가 여기에 표시됩니다';
+                submitBtn.disabled = true;
+            } else if (selectedOrder.length === 3) {
+                display.innerHTML = selectedOrder.map(o => `<span style="font-size: 24px; font-weight: bold;">${o}</span>`).join('<span class="order-symbol"> &gt; </span>');
+                submitBtn.disabled = false;
+            } else {
+                display.innerHTML = selectedOrder.map(o => `<span style="font-size: 24px; font-weight: bold;">${o}</span>`).join('<span class="order-symbol"> &gt; </span>') + '<span style="color: #999;"> (계속 선택하세요)</span>';
+                submitBtn.disabled = true;
+            }
+        }
+        
+        function resetSelection() {
+            selectedOrder = [];
+            document.querySelectorAll('.option-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            updateOrderDisplay();
+        }
+        
+        function checkAnswer() {
+            const userAnswer = selectedOrder.join(' > ');
+            const feedback = document.getElementById('feedback');
+            const feedbackTitle = document.getElementById('feedbackTitle');
+            const feedbackContent = document.getElementById('feedbackContent');
+            
+            const isCorrect = userAnswer === correctAnswer;
+            
+            feedback.className = 'feedback show ' + (isCorrect ? 'correct' : 'incorrect');
+            feedbackTitle.textContent = isCorrect ? '✓ 정답입니다!' : '✗ 오답입니다';
+            
+            // 풀이 생성
+            let solution = '<div class="theory-section">';
+            solution += '<div class="theory-title">【 에너지 효율의 이해 】</div>';
+            solution += '<p>에너지 효율은 공급된 에너지 대비 유용하게 사용된 에너지의 비율입니다.</p>';
+            solution += '<p><strong>효율 = (생산된 전기 에너지 / 공급된 에너지) × 100%</strong></p>';
+            solution += '</div>';
+            
+            solution += '<div class="theory-section">';
+            solution += '<div class="theory-title">【 각 발전소의 효율 계산 】</div>';
+            
+            // A 계산
+            solution += '<div class="calculation">';
+            solution += `<strong>A (수력 발전)</strong><br>`;
+            solution += `공급 에너지: ${currentData.A.input} MJ<br>`;
+            solution += `생산 에너지: ${currentData.A.output} MJ<br>`;
+            solution += `효율 = ${currentData.A.output} ÷ ${currentData.A.input} = ${currentData.A.efficiency.toFixed(4)}<br>`;
+            solution += `효율: ${(currentData.A.efficiency * 100).toFixed(2)}%`;
+            solution += '</div>';
+            
+            // B 계산
+            solution += '<div class="calculation">';
+            solution += `<strong>B (태양광 발전)</strong><br>`;
+            solution += `공급 에너지: ${currentData.B.inputKJ} kJ = ${currentData.B.inputKJ * 1000} J<br>`;
+            solution += `생산 에너지: ${currentData.B.outputJ} J<br>`;
+            solution += `효율 = ${currentData.B.outputJ} ÷ ${currentData.B.inputKJ * 1000} = ${currentData.B.efficiency.toFixed(4)}<br>`;
+            solution += `효율: ${(currentData.B.efficiency * 100).toFixed(2)}%`;
+            solution += '</div>';
+            
+            // C 계산
+            solution += '<div class="calculation">';
+            solution += `<strong>C (화력 발전)</strong><br>`;
+            solution += `연료의 화학 에너지: ${currentData.C.energyPerG} kJ/g × ${currentData.C.fuelKg} kg<br>`;
+            solution += `= ${currentData.C.energyPerG} kJ/g × ${currentData.C.fuelKg * 1000} g<br>`;
+            solution += `= ${currentData.C.energyPerG * currentData.C.fuelKg * 1000} kJ = ${currentData.C.energyPerG * currentData.C.fuelKg} MJ<br>`;
+            solution += `생산 에너지: ${currentData.C.output} MJ<br>`;
+            solution += `효율 = ${currentData.C.output} ÷ ${currentData.C.energyPerG * currentData.C.fuelKg} = ${currentData.C.efficiency.toFixed(4)}<br>`;
+            solution += `효율: ${(currentData.C.efficiency * 100).toFixed(2)}%`;
+            solution += '</div>';
+            solution += '</div>';
+            
+            solution += '<div class="theory-section">';
+            solution += '<div class="theory-title">【 효율 비교 및 결론 】</div>';
+            solution += `<p><strong>A의 효율: ${(currentData.A.efficiency * 100).toFixed(2)}%</strong></p>`;
+            solution += `<p><strong>B의 효율: ${(currentData.B.efficiency * 100).toFixed(2)}%</strong></p>`;
+            solution += `<p><strong>C의 효율: ${(currentData.C.efficiency * 100).toFixed(2)}%</strong></p>`;
+            solution += `<p style="margin-top: 15px; padding: 10px; background: #e8e8e8; border-radius: 5px;">`;
+            solution += `<strong>따라서 정답은: ${correctAnswer}</strong></p>`;
+            solution += '<p style="margin-top: 10px; color: #555;">※ 공급된 에너지의 양이 같을 때, 효율이 높을수록 더 많은 전기 에너지를 생산합니다.</p>';
+            solution += '</div>';
+            
+            if (!isCorrect) {
+                solution = `<p style="color: #d00; font-weight: bold;">입력한 답: ${userAnswer}</p>` + solution;
+            }
+            
+            feedbackContent.innerHTML = solution;
+            
+            // 피드백 위치로 스크롤
+            feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        // 초기 문제 생성
+        generateNewProblem();
+    </script>
+</body>
+</html>

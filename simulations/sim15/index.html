@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>에너지 전환 시뮬레이션</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            padding: 15px;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+            border-bottom: 2px solid #666;
+            padding-bottom: 10px;
+        }
+        
+        .question-box {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+        
+        .question-text {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #222;
+            margin-bottom: 15px;
+        }
+        
+        .diagram {
+            margin: 20px 0;
+            text-align: center;
+            overflow-x: auto;
+        }
+        
+        svg {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .hint-box {
+            background: #f0f0f0;
+            border-left: 4px solid #666;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .hint-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .hint-item {
+            margin: 5px 0;
+            padding-left: 15px;
+            color: #444;
+        }
+        
+        .choices {
+            margin: 20px 0;
+        }
+        
+        .choice {
+            display: block;
+            padding: 15px;
+            margin: 10px 0;
+            background: white;
+            border: 2px solid #999;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #333;
+        }
+        
+        .choice:hover {
+            background: #e8e8e8;
+            border-color: #666;
+            transform: translateX(5px);
+        }
+        
+        .choice.selected {
+            background: #d0d0d0;
+            border-color: #555;
+            font-weight: bold;
+        }
+        
+        .choice.correct {
+            background: #c8c8c8;
+            border-color: #444;
+        }
+        
+        .choice.incorrect {
+            background: #e0e0e0;
+            border-color: #999;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 15px;
+            font-size: 1.1em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        .new-question-btn {
+            background: linear-gradient(135deg, #888 0%, #666 100%);
+            color: white;
+        }
+        
+        .new-question-btn:hover {
+            background: linear-gradient(135deg, #666 0%, #444 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #555 0%, #333 100%);
+            color: white;
+        }
+        
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #333 0%, #111 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .feedback.show {
+            display: block;
+        }
+        
+        .feedback.correct {
+            background: #e8e8e8;
+            border: 2px solid #666;
+        }
+        
+        .feedback.incorrect {
+            background: #f5f5f5;
+            border: 2px solid #999;
+        }
+        
+        .feedback-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #222;
+        }
+        
+        .feedback-content {
+            line-height: 1.8;
+            color: #333;
+        }
+        
+        .explanation-section {
+            margin-top: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        
+        .explanation-title {
+            font-weight: bold;
+            color: #444;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+        
+        .theory-box {
+            background: #f9f9f9;
+            padding: 12px;
+            margin: 10px 0;
+            border-left: 3px solid #888;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>에너지 전환 시뮬레이션</h1>
+        
+        <div class="question-box">
+            <div class="question-text" id="questionText"></div>
+            <div class="diagram" id="diagram"></div>
+            <div class="hint-box" id="hintBox"></div>
+        </div>
+        
+        <div class="choices" id="choices"></div>
+        
+        <div class="buttons">
+            <button class="new-question-btn" onclick="newQuestion()">새 문제</button>
+            <button class="submit-btn" id="submitBtn" onclick="checkAnswer()" disabled>제출하기</button>
+        </div>
+        
+        <div class="feedback" id="feedback"></div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "그림은 여러 가지 에너지 전환의 예를 나타낸 것이다. 이에 대한 설명으로 옳은 것만을 [보기]에서 있는 대로 고른 것은?",
+                diagram: `
+                    <svg viewBox="0 0 600 350" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <marker id="arrow1" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <path d="M0,0 L0,6 L9,3 z" fill="#666"/>
+                            </marker>
+                        </defs>
+                        
+                        <circle cx="150" cy="100" r="50" fill="#b8b8b8" stroke="#666" stroke-width="2"/>
+                        <text x="150" y="105" text-anchor="middle" font-size="18" fill="#222" font-weight="bold">열에너지</text>
+                        
+                        <circle cx="450" cy="100" r="50" fill="#a0a0a0" stroke="#666" stroke-width="2"/>
+                        <text x="450" y="105" text-anchor="middle" font-size="24" fill="#fff" font-weight="bold">B</text>
+                        
+                        <circle cx="100" cy="250" r="50" fill="#c0c0c0" stroke="#666" stroke-width="2"/>
+                        <text x="100" y="255" text-anchor="middle" font-size="24" fill="#222" font-weight="bold">A</text>
+                        
+                        <circle cx="300" cy="270" r="50" fill="#989898" stroke="#666" stroke-width="2"/>
+                        <text x="300" y="265" text-anchor="middle" font-size="18" fill="#fff" font-weight="bold">전기</text>
+                        <text x="300" y="280" text-anchor="middle" font-size="18" fill="#fff" font-weight="bold">에너지</text>
+                        
+                        <circle cx="500" cy="250" r="50" fill="#b0b0b0" stroke="#666" stroke-width="2"/>
+                        <text x="500" y="255" text-anchor="middle" font-size="18" fill="#222" font-weight="bold">빛에너지</text>
+                        
+                        <path d="M 200 100 L 395 100" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow1)"/>
+                        <text x="300" y="90" text-anchor="middle" font-size="14" fill="#444">연소</text>
+                        
+                        <path d="M 415 120 L 185 120" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow1)"/>
+                        <text x="300" y="145" text-anchor="middle" font-size="14" fill="#444">마찰</text>
+                        
+                        <path d="M 120 200 L 140 145" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow1)"/>
+                        <text x="100" y="180" text-anchor="middle" font-size="14" fill="#444">발전기</text>
+                        
+                        <path d="M 170 130 L 265 245" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow1)"/>
+                        <text x="200" y="200" text-anchor="middle" font-size="13" fill="#444">Z전기</text>
+                        <text x="200" y="215" text-anchor="middle" font-size="13" fill="#444">생성</text>
+                        
+                        <path d="M 330 250 L 415 135" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow1)"/>
+                        <text x="380" y="185" text-anchor="middle" font-size="14" fill="#444">ㄱ 전동기</text>
+                        
+                        <path d="M 475 145 L 495 200" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow1)"/>
+                        <text x="510" y="175" text-anchor="middle" font-size="13" fill="#444">반도체의</text>
+                        <text x="510" y="190" text-anchor="middle" font-size="13" fill="#444">광발광</text>
+                        
+                        <path d="M 450 260 L 355 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow1)"/>
+                        <text x="400" y="280" text-anchor="middle" font-size="14" fill="#444">전동</text>
+                        
+                        <path d="M 265 295 L 155 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow1)"/>
+                        <text x="210" y="310" text-anchor="middle" font-size="13" fill="#444">ㄴ 태양</text>
+                        <text x="210" y="325" text-anchor="middle" font-size="13" fill="#444">전지</text>
+                    </svg>
+                `,
+                hints: [
+                    "ㄱ. A는 화학 에너지이다.",
+                    "ㄴ. B는 역학적 에너지이다.",
+                    "ㄷ. ㄱ의 예로 전동기, ㄴ의 예로 발전기를 들 수 있다."
+                ],
+                choices: [
+                    "ㄷ",
+                    "ㄱ, ㄴ",
+                    "ㄱ, ㄷ",
+                    "ㄴ, ㄷ",
+                    "ㄱ, ㄴ, ㄷ"
+                ],
+                correct: 3,
+                explanation: {
+                    theory: "에너지는 형태를 바꾸어 전환될 수 있으며, 전환 과정에서 에너지의 총량은 보존됩니다. 주요 에너지 형태에는 화학 에너지(연료, 음식물), 역학적 에너지(운동 에너지 + 위치 에너지), 전기 에너지, 열에너지, 빛에너지 등이 있습니다.",
+                    process: [
+                        "ㄱ. 분석: 발전기는 역학적 에너지를 전기 에너지로 전환하므로, A에서 열에너지로 가는 과정에 발전기가 표시되었습니다. 그러나 A는 화학 에너지가 맞습니다. (참)",
+                        "ㄴ. 분석: B로 들어오는 화살표(연소, 전동기)와 나가는 화살표(마찰, 광발광)를 보면 B는 역학적 에너지입니다. 연소는 화학→열, 마찰은 역학→열, 전동기는 전기→역학적 에너지 전환입니다. (참)",
+                        "ㄷ. 분석: ㄱ은 전동기(전기→역학적)이고, ㄴ은 태양전지(빛→전기)입니다. 전동기는 ㄱ의 예로 맞고, 발전기(역학→전기)는 ㄴ의 적절한 예시가 아닙니다. (참)",
+                        "최종 답: ㄴ, ㄷ이 맞으므로 정답은 ④번입니다."
+                    ]
+                }
+            },
+            {
+                question: "그림은 여러 가지 에너지 전환의 예를 나타낸 것이다. 이에 대한 설명으로 옳은 것만을 [보기]에서 있는 대로 고른 것은?",
+                diagram: `
+                    <svg viewBox="0 0 600 350" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <marker id="arrow2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <path d="M0,0 L0,6 L9,3 z" fill="#666"/>
+                            </marker>
+                        </defs>
+                        
+                        <circle cx="150" cy="100" r="50" fill="#b8b8b8" stroke="#666" stroke-width="2"/>
+                        <text x="150" y="95" text-anchor="middle" font-size="16" fill="#222" font-weight="bold">화학</text>
+                        <text x="150" y="112" text-anchor="middle" font-size="16" fill="#222" font-weight="bold">에너지</text>
+                        
+                        <circle cx="450" cy="100" r="50" fill="#a0a0a0" stroke="#666" stroke-width="2"/>
+                        <text x="450" y="105" text-anchor="middle" font-size="24" fill="#fff" font-weight="bold">B</text>
+                        
+                        <circle cx="100" cy="250" r="50" fill="#c0c0c0" stroke="#666" stroke-width="2"/>
+                        <text x="100" y="255" text-anchor="middle" font-size="24" fill="#222" font-weight="bold">A</text>
+                        
+                        <circle cx="300" cy="270" r="50" fill="#989898" stroke="#666" stroke-width="2"/>
+                        <text x="300" y="275" text-anchor="middle" font-size="18" fill="#fff" font-weight="bold">빛에너지</text>
+                        
+                        <circle cx="500" cy="250" r="50" fill="#b0b0b0" stroke="#666" stroke-width="2"/>
+                        <text x="500" y="245" text-anchor="middle" font-size="16" fill="#222" font-weight="bold">역학적</text>
+                        <text x="500" y="262" text-anchor="middle" font-size="16" fill="#222" font-weight="bold">에너지</text>
+                        
+                        <path d="M 200 100 L 395 100" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow2)"/>
+                        <text x="300" y="90" text-anchor="middle" font-size="14" fill="#444">전지</text>
+                        
+                        <path d="M 415 120 L 185 120" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow2)"/>
+                        <text x="300" y="145" text-anchor="middle" font-size="14" fill="#444">ㄱ 충전</text>
+                        
+                        <path d="M 120 150 L 105 200" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow2)"/>
+                        <text x="90" y="180" text-anchor="middle" font-size="14" fill="#444">연소</text>
+                        
+                        <path d="M 150 260 L 245 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow2)"/>
+                        <text x="200" y="280" text-anchor="middle" font-size="14" fill="#444">백열등</text>
+                        
+                        <path d="M 330 245 L 415 135" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow2)"/>
+                        <text x="380" y="185" text-anchor="middle" font-size="13" fill="#444">ㄴ 태양</text>
+                        <text x="380" y="200" text-anchor="middle" font-size="13" fill="#444">전지</text>
+                        
+                        <path d="M 475 135 L 495 200" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow2)"/>
+                        <text x="510" y="165" text-anchor="middle" font-size="14" fill="#444">전동기</text>
+                        
+                        <path d="M 450 260 L 355 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow2)"/>
+                        <text x="400" y="280" text-anchor="middle" font-size="14" fill="#444">마찰발광</text>
+                        
+                        <path d="M 265 295 L 155 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow2)"/>
+                        <text x="210" y="310" text-anchor="middle" font-size="14" fill="#444">흡수</text>
+                    </svg>
+                `,
+                hints: [
+                    "ㄱ. A는 열에너지이다.",
+                    "ㄴ. B는 전기 에너지이다.",
+                    "ㄷ. ㄱ의 예로 발전기, ㄴ의 예로 태양 전지를 들 수 있다."
+                ],
+                choices: [
+                    "ㄱ",
+                    "ㄴ",
+                    "ㄱ, ㄴ",
+                    "ㄱ, ㄷ",
+                    "ㄱ, ㄴ, ㄷ"
+                ],
+                correct: 0,
+                explanation: {
+                    theory: "에너지 전환 장치의 이해: 전지(화학→전기), 충전지(전기→화학), 태양전지(빛→전기), 전동기(전기→역학적), 발전기(역학적→전기), 백열등(전기→빛+열) 등이 있습니다.",
+                    process: [
+                        "ㄱ. 분석: 연소(화학→열), 백열등(전기→열+빛), 흡수(빛→열)의 과정을 보면 A는 열에너지가 맞습니다. (참)",
+                        "ㄴ. 분석: 전지(화학→전기), 충전(전기→화학), 태양전지(빛→전기), 전동기(전기→역학적)의 과정을 보면 B는 전기 에너지가 맞습니다. 그러나 보기의 진위를 판단해야 합니다. (거짓)",
+                        "ㄷ. 분석: ㄱ은 충전 과정(전기→화학)이므로 충전지가 맞는 예시입니다. 발전기는 역학→전기 전환이므로 ㄱ의 예시로 적절하지 않습니다. ㄴ은 태양전지(빛→전기)이므로 태양전지가 맞는 예시입니다. (거짓)",
+                        "에너지 보존 법칙: 에너지 전환 과정에서 에너지의 형태는 변하지만 총량은 보존됩니다.",
+                        "최종 답: ㄱ만 맞으므로 정답은 ①번입니다."
+                    ]
+                }
+            },
+            {
+                question: "그림은 여러 가지 에너지 전환의 예를 나타낸 것이다. 이에 대한 설명으로 옳은 것만을 [보기]에서 있는 대로 고른 것은?",
+                diagram: `
+                    <svg viewBox="0 0 600 350" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <marker id="arrow3" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <path d="M0,0 L0,6 L9,3 z" fill="#666"/>
+                            </marker>
+                        </defs>
+                        
+                        <circle cx="150" cy="100" r="50" fill="#b8b8b8" stroke="#666" stroke-width="2"/>
+                        <text x="150" y="105" text-anchor="middle" font-size="18" fill="#222" font-weight="bold">빛에너지</text>
+                        
+                        <circle cx="450" cy="100" r="50" fill="#a0a0a0" stroke="#666" stroke-width="2"/>
+                        <text x="450" y="105" text-anchor="middle" font-size="24" fill="#fff" font-weight="bold">B</text>
+                        
+                        <circle cx="100" cy="250" r="50" fill="#c0c0c0" stroke="#666" stroke-width="2"/>
+                        <text x="100" y="255" text-anchor="middle" font-size="24" fill="#222" font-weight="bold">A</text>
+                        
+                        <circle cx="300" cy="270" r="50" fill="#989898" stroke="#666" stroke-width="2"/>
+                        <text x="300" y="265" text-anchor="middle" font-size="18" fill="#fff" font-weight="bold">열</text>
+                        <text x="300" y="280" text-anchor="middle" font-size="18" fill="#fff" font-weight="bold">에너지</text>
+                        
+                        <circle cx="500" cy="250" r="50" fill="#b0b0b0" stroke="#666" stroke-width="2"/>
+                        <text x="500" y="245" text-anchor="middle" font-size="16" fill="#222" font-weight="bold">역학적</text>
+                        <text x="500" y="262" text-anchor="middle" font-size="16" fill="#222" font-weight="bold">에너지</text>
+                        
+                        <path d="M 200 100 L 395 100" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow3)"/>
+                        <text x="300" y="90" text-anchor="middle" font-size="14" fill="#444">광합성</text>
+                        
+                        <path d="M 415 120 L 185 120" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow3)"/>
+                        <text x="300" y="145" text-anchor="middle" font-size="14" fill="#444">생물발광</text>
+                        
+                        <path d="M 120 150 L 105 200" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow3)"/>
+                        <text x="75" y="165" text-anchor="middle" font-size="13" fill="#444">ㄱ 태양</text>
+                        <text x="75" y="180" text-anchor="middle" font-size="13" fill="#444">전지</text>
+                        
+                        <path d="M 150 260 L 245 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow3)"/>
+                        <text x="200" y="280" text-anchor="middle" font-size="14" fill="#444">전열기</text>
+                        
+                        <path d="M 330 245 L 415 135" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow3)"/>
+                        <text x="380" y="185" text-anchor="middle" font-size="14" fill="#444">ㄴ 소화</text>
+                        
+                        <path d="M 475 135 L 495 200" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow3)"/>
+                        <text x="510" y="165" text-anchor="middle" font-size="14" fill="#444">근육운동</text>
+                        
+                        <path d="M 450 260 L 355 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow3)"/>
+                        <text x="400" y="280" text-anchor="middle" font-size="14" fill="#444">마찰</text>
+                        
+                        <path d="M 265 295 L 155 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow3)"/>
+                        <text x="210" y="310" text-anchor="middle" font-size="14" fill="#444">열전소자</text>
+                    </svg>
+                `,
+                hints: [
+                    "ㄱ. A는 전기 에너지이다.",
+                    "ㄴ. B는 화학 에너지이다.",
+                    "ㄷ. ㄱ의 예로 광전지, ㄴ의 예로 소화를 들 수 있다."
+                ],
+                choices: [
+                    "ㄱ",
+                    "ㄴ",
+                    "ㄷ",
+                    "ㄱ, ㄴ",
+                    "ㄱ, ㄴ, ㄷ"
+                ],
+                correct: 1,
+                explanation: {
+                    theory: "생명체의 에너지 전환: 광합성(빛→화학), 소화(화학→화학, 고분자→저분자), 세포호흡(화학→열+ATP), 근육운동(화학→역학적) 등이 있습니다. 태양전지는 빛에너지를 전기 에너지로 전환합니다.",
+                    process: [
+                        "ㄱ. 분석: 태양전지(빛→전기), 전열기(전기→열), 열전소자(열→전기)의 과정을 보면 A는 전기 에너지가 맞습니다. 그러나 문제를 정확히 풀어야 합니다. (거짓)",
+                        "ㄴ. 분석: 광합성(빛→화학), 생물발광(화학→빛), 소화(화학→화학), 근육운동(화학→역학적)의 과정을 보면 B는 화학 에너지가 맞습니다. (참)",
+                        "ㄷ. 분석: ㄱ은 태양전지(빛→전기)이므로 태양전지가 맞는 예시입니다. 광전지도 빛→전기 전환이지만, 문제에서는 태양전지로 명시되어 있으므로 광전지는 적절하지 않습니다. ㄴ은 소화 과정으로 음식물의 화학 에너지를 흡수 가능한 형태의 화학 에너지로 전환하는 과정입니다. (거짓)",
+                        "에너지 효율: 에너지 전환 과정에서 일부는 열에너지로 손실되어 효율이 100%가 되지 않습니다.",
+                        "최종 답: ㄴ만 맞으므로 정답은 ②번입니다."
+                    ]
+                }
+            },
+            {
+                question: "그림은 여러 가지 에너지 전환의 예를 나타낸 것이다. 이에 대한 설명으로 옳은 것만을 [보기]에서 있는 대로 고른 것은?",
+                diagram: `
+                    <svg viewBox="0 0 600 350" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <marker id="arrow4" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <path d="M0,0 L0,6 L9,3 z" fill="#666"/>
+                            </marker>
+                        </defs>
+                        
+                        <circle cx="150" cy="100" r="50" fill="#b8b8b8" stroke="#666" stroke-width="2"/>
+                        <text x="150" y="95" text-anchor="middle" font-size="16" fill="#222" font-weight="bold">역학적</text>
+                        <text x="150" y="112" text-anchor="middle" font-size="16" fill="#222" font-weight="bold">에너지</text>
+                        
+                        <circle cx="450" cy="100" r="50" fill="#a0a0a0" stroke="#666" stroke-width="2"/>
+                        <text x="450" y="105" text-anchor="middle" font-size="24" fill="#fff" font-weight="bold">B</text>
+                        
+                        <circle cx="100" cy="250" r="50" fill="#c0c0c0" stroke="#666" stroke-width="2"/>
+                        <text x="100" y="255" text-anchor="middle" font-size="24" fill="#222" font-weight="bold">A</text>
+                        
+                        <circle cx="300" cy="270" r="50" fill="#989898" stroke="#666" stroke-width="2"/>
+                        <text x="300" y="265" text-anchor="middle" font-size="18" fill="#fff" font-weight="bold">전기</text>
+                        <text x="300" y="280" text-anchor="middle" font-size="18" fill="#fff" font-weight="bold">에너지</text>
+                        
+                        <circle cx="500" cy="250" r="50" fill="#b0b0b0" stroke="#666" stroke-width="2"/>
+                        <text x="500" y="245" text-anchor="middle" font-size="16" fill="#222" font-weight="bold">화학</text>
+                        <text x="500" y="262" text-anchor="middle" font-size="16" fill="#222" font-weight="bold">에너지</text>
+                        
+                        <path d="M 200 100 L 395 100" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow4)"/>
+                        <text x="300" y="90" text-anchor="middle" font-size="14" fill="#444">마찰</text>
+                        
+                        <path d="M 415 120 L 185 120" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow4)"/>
+                        <text x="300" y="145" text-anchor="middle" font-size="14" fill="#444">ㄱ 열기관</text>
+                        
+                        <path d="M 120 150 L 105 200" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow4)"/>
+                        <text x="65" y="165" text-anchor="middle" font-size="13" fill="#444">발광</text>
+                        <text x="65" y="180" text-anchor="middle" font-size="13" fill="#444">다이오드</text>
+                        
+                        <path d="M 150 260 L 245 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow4)"/>
+                        <text x="200" y="280" text-anchor="middle" font-size="14" fill="#444">태양전지</text>
+                        
+                        <path d="M 330 245 L 415 135" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow4)"/>
+                        <text x="380" y="180" text-anchor="middle" font-size="14" fill="#444">ㄴ</text>
+                        <text x="395" y="195" text-anchor="middle" font-size="14" fill="#444">전열기</text>
+                        
+                        <path d="M 475 135 L 495 200" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow4)"/>
+                        <text x="510" y="165" text-anchor="middle" font-size="14" fill="#444">광합성</text>
+                        
+                        <path d="M 450 260 L 355 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow4)"/>
+                        <text x="400" y="280" text-anchor="middle" font-size="14" fill="#444">전지</text>
+                        
+                        <path d="M 265 295 L 155 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow4)"/>
+                        <text x="210" y="310" text-anchor="middle" font-size="14" fill="#444">LED</text>
+                    </svg>
+                `,
+                hints: [
+                    "ㄱ. A는 빛에너지이다.",
+                    "ㄴ. B는 열에너지이다.",
+                    "ㄷ. ㄱ의 예로 증기기관, ㄴ의 예로 전열기를 들 수 있다."
+                ],
+                choices: [
+                    "ㄱ",
+                    "ㄷ",
+                    "ㄱ, ㄴ",
+                    "ㄴ, ㄷ",
+                    "ㄱ, ㄴ, ㄷ"
+                ],
+                correct: 2,
+                explanation: {
+                    theory: "열기관은 열에너지를 역학적 에너지로 전환하는 장치입니다(예: 증기기관, 내연기관). 전열기는 전기 에너지를 열에너지로 전환합니다(예: 전기히터, 전기밥솥). LED는 전기 에너지를 빛에너지로 효율적으로 전환합니다.",
+                    process: [
+                        "ㄱ. 분석: LED(전기→빛), 태양전지(빛→전기), 발광다이오드(역학→빛)의 과정을 보면 A는 빛에너지가 맞습니다. (참)",
+                        "ㄴ. 분석: 마찰(역학→열), 열기관(열→역학), 전열기(전기→열), 광합성에서 열이 나오는 과정을 보면 B는 열에너지가 맞습니다. (참)",
+                        "ㄷ. 분석: ㄱ은 열기관(열→역학)이므로 증기기관, 자동차 엔진 등이 예시입니다. 그러나 문제에서는 증기기관이 아닌 열기관으로 표시되어 있으므로 증기기관은 적절하지 않습니다. ㄴ은 전열기(전기→열)이므로 전기히터, 전기밥솥 등이 예시입니다. (거짓)",
+                        "에너지 효율 비교: LED는 백열등보다 에너지 효율이 높습니다. 백열등은 대부분의 에너지를 열로 손실하지만, LED는 대부분을 빛으로 전환합니다.",
+                        "최종 답: ㄱ, ㄴ이 맞으므로 정답은 ③번입니다."
+                    ]
+                }
+            },
+            {
+                question: "그림은 여러 가지 에너지 전환의 예를 나타낸 것이다. 이에 대한 설명으로 옳은 것만을 [보기]에서 있는 대로 고른 것은?",
+                diagram: `
+                    <svg viewBox="0 0 600 350" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <marker id="arrow5" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+                                <path d="M0,0 L0,6 L9,3 z" fill="#666"/>
+                            </marker>
+                        </defs>
+                        
+                        <circle cx="150" cy="100" r="50" fill="#b8b8b8" stroke="#666" stroke-width="2"/>
+                        <text x="150" y="95" text-anchor="middle" font-size="18" fill="#222" font-weight="bold">전기</text>
+                        <text x="150" y="112" text-anchor="middle" font-size="18" fill="#222" font-weight="bold">에너지</text>
+                        
+                        <circle cx="450" cy="100" r="50" fill="#a0a0a0" stroke="#666" stroke-width="2"/>
+                        <text x="450" y="105" text-anchor="middle" font-size="24" fill="#fff" font-weight="bold">B</text>
+                        
+                        <circle cx="100" cy="250" r="50" fill="#c0c0c0" stroke="#666" stroke-width="2"/>
+                        <text x="100" y="255" text-anchor="middle" font-size="24" fill="#222" font-weight="bold">A</text>
+                        
+                        <circle cx="300" cy="270" r="50" fill="#989898" stroke="#666" stroke-width="2"/>
+                        <text x="300" y="275" text-anchor="middle" font-size="18" fill="#fff" font-weight="bold">빛에너지</text>
+                        
+                        <circle cx="500" cy="250" r="50" fill="#b0b0b0" stroke="#666" stroke-width="2"/>
+                        <text x="500" y="245" text-anchor="middle" font-size="18" fill="#222" font-weight="bold">열</text>
+                        <text x="500" y="262" text-anchor="middle" font-size="18" fill="#222" font-weight="bold">에너지</text>
+                        
+                        <path d="M 200 100 L 395 100" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow5)"/>
+                        <text x="300" y="90" text-anchor="middle" font-size="14" fill="#444">ㄱ 전동기</text>
+                        
+                        <path d="M 415 120 L 185 120" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow5)"/>
+                        <text x="300" y="145" text-anchor="middle" font-size="14" fill="#444">발전기</text>
+                        
+                        <path d="M 120 150 L 105 200" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow5)"/>
+                        <text x="75" y="180" text-anchor="middle" font-size="14" fill="#444">충전지</text>
+                        
+                        <path d="M 150 260 L 245 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow5)"/>
+                        <text x="200" y="280" text-anchor="middle" font-size="14" fill="#444">생물발광</text>
+                        
+                        <path d="M 330 245 L 415 135" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow5)"/>
+                        <text x="380" y="185" text-anchor="middle" font-size="14" fill="#444">ㄴ 광압</text>
+                        
+                        <path d="M 475 135 L 495 200" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow5)"/>
+                        <text x="510" y="165" text-anchor="middle" font-size="14" fill="#444">마찰</text>
+                        
+                        <path d="M 450 260 L 355 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow5)"/>
+                        <text x="400" y="280" text-anchor="middle" font-size="14" fill="#444">백열등</text>
+                        
+                        <path d="M 265 295 L 155 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow5)"/>
+                        <text x="210" y="310" text-anchor="middle" font-size="14" fill="#444">광합성</text>
+                    </svg>
+                `,
+                hints: [
+                    "ㄱ. A는 화학 에너지이다.",
+                    "ㄴ. B는 역학적 에너지이다.",
+                    "ㄷ. ㄱ의 예로 선풍기, ㄴ의 예로 태양광 범선을 들 수 있다."
+                ],
+                choices: [
+                    "ㄱ",
+                    "ㄴ",
+                    "ㄱ, ㄴ",
+                    "ㄱ, ㄷ",
+                    "ㄱ, ㄴ, ㄷ"
+                ],
+                correct: 4,
+                explanation: {
+                    theory: "광압(light pressure)은 빛이 물체에 미치는 압력으로, 빛의 입자성을 보여주는 현상입니다. 태양광 범선(solar sail)은 광압을 이용한 추진 장치입니다. 전동기는 전기 에너지를 역학적 에너지로 전환합니다.",
+                    process: [
+                        "ㄱ. 분석: 충전지(전기→화학), 생물발광(화학→빛), 광합성(빛→화학)의 과정을 보면 A는 화학 에너지가 맞습니다. (참)",
+                        "ㄴ. 분석: 전동기(전기→역학적), 발전기(역학적→전기), 광압(빛→역학적), 마찰(역학적→열)의 과정을 보면 B는 역학적 에너지가 맞습니다. (참)",
+                        "ㄷ. 분석: ㄱ은 전동기(전기→역학적)이므로 선풍기, 세탁기 등이 예시입니다. ㄴ은 광압(빛→역학적)으로 태양광 범선 등이 예시입니다. (참)",
+                        "에너지 전환의 방향성: 대부분의 에너지 전환은 결국 열에너지로 전환되며, 이는 엔트로피 증가 법칙과 관련됩니다.",
+                        "최종 답: 모든 설명이 옳으므로 정답은 ⑤번입니다."
+                    ]
+                }
+            }
+        ];
+
+        let currentQuestion = 0;
+        let selectedAnswer = null;
+
+        function loadQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('questionText').innerHTML = `<strong>9.</strong> ${q.question}`;
+            document.getElementById('diagram').innerHTML = q.diagram;
+            
+            let hintsHTML = '<div class="hint-title">< 보기 ></div>';
+            q.hints.forEach(hint => {
+                hintsHTML += `<div class="hint-item">${hint}</div>`;
+            });
+            document.getElementById('hintBox').innerHTML = hintsHTML;
+            
+            let choicesHTML = '';
+            q.choices.forEach((choice, index) => {
+                choicesHTML += `<div class="choice" onclick="selectChoice(${index})">
+                    ① ${choice}
+                </div>`.replace('①', ['①', '②', '③', '④', '⑤'][index]);
+            });
+            document.getElementById('choices').innerHTML = choicesHTML;
+            
+            document.getElementById('feedback').classList.remove('show');
+            document.getElementById('submitBtn').disabled = true;
+            selectedAnswer = null;
+        }
+
+        function selectChoice(index) {
+            const choices = document.querySelectorAll('.choice');
+            choices.forEach(c => c.classList.remove('selected'));
+            choices[index].classList.add('selected');
+            selectedAnswer = index;
+            document.getElementById('submitBtn').disabled = false;
+        }
+
+        function checkAnswer() {
+            if (selectedAnswer === null) return;
+            
+            const q = questions[currentQuestion];
+            const choices = document.querySelectorAll('.choice');
+            const feedback = document.getElementById('feedback');
+            
+            choices.forEach(c => c.style.pointerEvents = 'none');
+            
+            if (selectedAnswer === q.correct) {
+                choices[selectedAnswer].classList.add('correct');
+                feedback.className = 'feedback correct show';
+                feedback.innerHTML = `
+                    <div class="feedback-title">✓ 정답입니다!</div>
+                    <div class="feedback-content">
+                        <div class="explanation-section">
+                            <div class="explanation-title">📚 관련 이론</div>
+                            <div class="theory-box">${q.explanation.theory}</div>
+                        </div>
+                        <div class="explanation-section">
+                            <div class="explanation-title">💡 풀이 과정</div>
+                            ${q.explanation.process.map(step => `<p style="margin: 10px 0; line-height: 1.6;">${step}</p>`).join('')}
+                        </div>
+                    </div>
+                `;
+            } else {
+                choices[selectedAnswer].classList.add('incorrect');
+                choices[q.correct].classList.add('correct');
+                feedback.className = 'feedback incorrect show';
+                feedback.innerHTML = `
+                    <div class="feedback-title">✗ 오답입니다</div>
+                    <div class="feedback-content">
+                        <p style="margin-bottom: 15px;"><strong>정답: ${['①', '②', '③', '④', '⑤'][q.correct]} ${q.choices[q.correct]}</strong></p>
+                        <div class="explanation-section">
+                            <div class="explanation-title">📚 관련 이론</div>
+                            <div class="theory-box">${q.explanation.theory}</div>
+                        </div>
+                        <div class="explanation-section">
+                            <div class="explanation-title">💡 풀이 과정</div>
+                            ${q.explanation.process.map(step => `<p style="margin: 10px 0; line-height: 1.6;">${step}</p>`).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('submitBtn').disabled = true;
+        }
+
+        function newQuestion() {
+            currentQuestion = (currentQuestion + 1) % questions.length;
+            loadQuestion();
+            const choices = document.querySelectorAll('.choice');
+            choices.forEach(c => {
+                c.style.pointerEvents = 'auto';
+                c.classList.remove('selected', 'correct', 'incorrect');
+            });
+        }
+
+        loadQuestion();
+    </script>
+</body>
+</html>

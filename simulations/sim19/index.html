@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>에너지 효율 시뮬레이션</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            padding: 30px 25px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #666;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+        
+        .question-box {
+            background: #f8f8f8;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 5px solid #555;
+        }
+        
+        .question-number {
+            font-weight: bold;
+            color: #333;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        
+        .question-text {
+            color: #444;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        .options {
+            margin: 20px 0;
+        }
+        
+        .option {
+            background: white;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .option:hover {
+            border-color: #888;
+            background: #f9f9f9;
+            transform: translateX(5px);
+        }
+        
+        .option.selected {
+            border-color: #333;
+            background: #e8e8e8;
+            font-weight: bold;
+        }
+        
+        .option-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #666;
+            color: white;
+            font-weight: bold;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        .option.selected .option-number {
+            background: #222;
+        }
+        
+        .option-text {
+            color: #333;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .new-problem-btn {
+            background: #555;
+            color: white;
+        }
+        
+        .new-problem-btn:hover {
+            background: #333;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .submit-btn {
+            background: #777;
+            color: white;
+        }
+        
+        .submit-btn:hover {
+            background: #555;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .feedback {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .feedback.correct {
+            background: #e0e0e0;
+            border-left: 5px solid #666;
+            display: block;
+        }
+        
+        .feedback.incorrect {
+            background: #f0f0f0;
+            border-left: 5px solid #999;
+            display: block;
+        }
+        
+        .feedback-title {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .feedback-content {
+            color: #444;
+            line-height: 1.8;
+            font-size: 15px;
+        }
+        
+        .explanation {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #ccc;
+        }
+        
+        .explanation-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>에너지 효율 시뮬레이션</h1>
+        <div class="subtitle">통합과학2 - 에너지 전환 효율</div>
+        
+        <div class="question-box">
+            <div class="question-number" id="questionNumber">7. 일상생활에서 일어나는 에너지 전환을 나타낸 것으로 옳지 않은 것은?</div>
+            <div class="question-text" id="questionText"></div>
+        </div>
+        
+        <div class="options" id="options"></div>
+        
+        <div class="button-group">
+            <button class="new-problem-btn" onclick="generateNewProblem()">새 문제</button>
+            <button class="submit-btn" id="submitBtn" onclick="checkAnswer()" disabled>정답 확인</button>
+        </div>
+        
+        <div class="feedback" id="feedback"></div>
+    </div>
+
+    <script>
+        const problems = [
+            {
+                question: "일상생활에서 일어나는 에너지 전환을 나타낸 것으로 옳지 않은 것은?",
+                options: [
+                    "가스레인지: 화학에너지 → 열에너지",
+                    "TV화면: 전기에너지 → 빛에너지",
+                    "마이크: 소리에너지 → 전기에너지",
+                    "스피커: 전기에너지 → 소리에너지",
+                    "열기관: 역학적에너지 → 열에너지"
+                ],
+                correct: 4,
+                explanation: `<div class="explanation-title">【이론】에너지 전환의 원리</div>
+에너지는 한 형태에서 다른 형태로 전환될 수 있으며, 각 장치는 특정한 에너지 전환을 수행합니다.
+
+<div class="explanation-title">【풀이과정】</div>
+① 가스레인지: 연료의 화학에너지 → 연소 시 열에너지 (O)
+② TV화면: 전기에너지 → 화면을 통한 빛에너지 (O)
+③ 마이크: 소리의 진동(소리에너지) → 전기신호(전기에너지) (O)
+④ 스피커: 전기신호(전기에너지) → 진동을 통한 소리에너지 (O)
+⑤ 열기관: 열에너지 → 역학적에너지 (X)
+
+<div class="explanation-title">【핵심개념】</div>
+열기관(자동차 엔진 등)은 연료의 화학에너지를 열에너지로 변환한 후, 이를 다시 역학적 에너지로 전환하는 장치입니다. 따라서 "역학적에너지 → 열에너지"가 아니라 "열에너지 → 역학적에너지" 전환이 올바른 표현입니다.`
+            },
+            {
+                question: "다음 중 전기에너지를 다른 형태의 에너지로 전환하는 장치가 아닌 것은?",
+                options: [
+                    "선풍기: 전기에너지 → 운동에너지",
+                    "전등: 전기에너지 → 빛에너지",
+                    "태양전지: 전기에너지 → 빛에너지",
+                    "전기난로: 전기에너지 → 열에너지",
+                    "이어폰: 전기에너지 → 소리에너지"
+                ],
+                correct: 2,
+                explanation: `<div class="explanation-title">【이론】에너지 전환 장치의 분류</div>
+에너지 전환 장치는 입력 에너지와 출력 에너지의 형태에 따라 분류됩니다.
+
+<div class="explanation-title">【풀이과정】</div>
+① 선풍기: 전기에너지 → 회전 운동에너지 (O)
+② 전등: 전기에너지 → 빛에너지 (O)
+③ 태양전지: 빛에너지 → 전기에너지 (X)
+④ 전기난로: 전기에너지 → 열에너지 (O)
+⑤ 이어폰: 전기에너지 → 소리에너지 (O)
+
+<div class="explanation-title">【핵심개념】</div>
+태양전지(태양광 패널)는 태양의 빛에너지를 전기에너지로 변환하는 장치입니다. 따라서 전기에너지를 다른 형태로 전환하는 것이 아니라, 빛에너지를 전기에너지로 전환합니다.`
+            },
+            {
+                question: "다음 에너지 전환 중 효율이 가장 낮은 것은?",
+                options: [
+                    "LED 전구: 전기에너지 → 빛에너지",
+                    "발전기: 운동에너지 → 전기에너지",
+                    "백열전구: 전기에너지 → 빛에너지",
+                    "전기모터: 전기에너지 → 운동에너지",
+                    "변압기: 전기에너지 → 전기에너지"
+                ],
+                correct: 2,
+                explanation: `<div class="explanation-title">【이론】에너지 전환 효율</div>
+에너지 효율 = (유용한 에너지 출력 / 총 에너지 입력) × 100%
+전환 과정에서 일부 에너지는 열 등의 형태로 손실됩니다.
+
+<div class="explanation-title">【풀이과정】</div>
+① LED 전구: 효율 약 80-90% (매우 높음)
+② 발전기: 효율 약 95% 이상 (높음)
+③ 백열전구: 효율 약 5% (매우 낮음) - 대부분이 열로 손실
+④ 전기모터: 효율 약 85-95% (높음)
+⑤ 변압기: 효율 약 98% 이상 (매우 높음)
+
+<div class="explanation-title">【핵심개념】</div>
+백열전구는 필라멘트를 가열하여 빛을 내는데, 입력 전기에너지의 약 95%가 열에너지로 손실되고 단 5%만이 빛에너지로 전환됩니다. 이것이 LED로 교체를 권장하는 이유입니다.`
+            },
+            {
+                question: "화석연료 발전소의 에너지 전환 과정을 올바르게 나타낸 것은?",
+                options: [
+                    "화학에너지 → 전기에너지 → 열에너지 → 운동에너지",
+                    "화학에너지 → 열에너지 → 운동에너지 → 전기에너지",
+                    "열에너지 → 화학에너지 → 운동에너지 → 전기에너지",
+                    "운동에너지 → 열에너지 → 화학에너지 → 전기에너지",
+                    "화학에너지 → 운동에너지 → 열에너지 → 전기에너지"
+                ],
+                correct: 1,
+                explanation: `<div class="explanation-title">【이론】화력발전의 에너지 전환</div>
+화력발전소는 여러 단계의 에너지 전환을 거쳐 전기를 생산합니다.
+
+<div class="explanation-title">【풀이과정】</div>
+화력발전소의 에너지 전환 단계:
+1. 화석연료(석탄, 석유, 천연가스) 연소: 화학에너지 → 열에너지
+2. 물을 가열하여 증기 발생: 열에너지 → 운동에너지(증기의 운동)
+3. 증기가 터빈을 회전: 운동에너지 유지
+4. 터빈이 발전기를 구동: 운동에너지 → 전기에너지
+
+<div class="explanation-title">【핵심개념】</div>
+화력발전의 전체 효율은 약 35-40%로, 많은 에너지가 열의 형태로 손실됩니다. 이는 열역학 제2법칙에 따라 열에너지를 일(운동에너지)로 완전히 전환할 수 없기 때문입니다.`
+            },
+            {
+                question: "다음 중 에너지 전환 효율을 높이는 방법으로 적절하지 않은 것은?",
+                options: [
+                    "마찰을 줄이기 위해 윤활유를 사용한다",
+                    "단열재를 사용하여 열 손실을 줄인다",
+                    "전선의 굵기를 가능한 한 가늘게 한다",
+                    "LED 조명을 사용한다",
+                    "폐열을 재활용하는 시스템을 구축한다"
+                ],
+                correct: 2,
+                explanation: `<div class="explanation-title">【이론】에너지 효율 향상 방법</div>
+에너지 효율을 높이려면 에너지 손실을 최소화해야 합니다. 주요 손실 원인은 마찰, 열손실, 전기저항 등입니다.
+
+<div class="explanation-title">【풀이과정】</div>
+① 윤활유 사용: 마찰 감소 → 열손실 감소 (O)
+② 단열재 사용: 열 손실 최소화 (O)
+③ 전선을 가늘게: 전기저항 증가 → 열손실 증가 (X)
+④ LED 조명: 높은 에너지 효율 (약 80-90%) (O)
+⑤ 폐열 재활용: 버려지는 에너지 재사용 (O)
+
+<div class="explanation-title">【핵심개념】</div>
+전선의 저항 R은 길이에 비례하고 단면적에 반비례합니다 (R = ρL/A). 전선을 가늘게 하면 단면적이 감소하여 저항이 증가하고, P = I²R에 따라 열손실이 증가합니다. 따라서 송전선은 굵을수록 효율적입니다.`
+            }
+        ];
+
+        let currentProblem = null;
+        let selectedOption = null;
+
+        function generateNewProblem() {
+            currentProblem = problems[Math.floor(Math.random() * problems.length)];
+            selectedOption = null;
+            
+            document.getElementById('questionNumber').textContent = '7. ' + currentProblem.question;
+            
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
+            
+            currentProblem.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                optionDiv.onclick = () => selectOption(index);
+                
+                optionDiv.innerHTML = `
+                    <div class="option-number">${index + 1}</div>
+                    <div class="option-text">${option}</div>
+                `;
+                
+                optionsDiv.appendChild(optionDiv);
+            });
+            
+            document.getElementById('feedback').style.display = 'none';
+            document.getElementById('submitBtn').disabled = true;
+        }
+
+        function selectOption(index) {
+            const options = document.querySelectorAll('.option');
+            
+            if (selectedOption === index) {
+                options[index].classList.remove('selected');
+                selectedOption = null;
+                document.getElementById('submitBtn').disabled = true;
+            } else {
+                options.forEach(opt => opt.classList.remove('selected'));
+                options[index].classList.add('selected');
+                selectedOption = index;
+                document.getElementById('submitBtn').disabled = false;
+            }
+        }
+
+        function checkAnswer() {
+            if (selectedOption === null) return;
+            
+            const feedbackDiv = document.getElementById('feedback');
+            const isCorrect = selectedOption === currentProblem.correct;
+            
+            feedbackDiv.className = 'feedback ' + (isCorrect ? 'correct' : 'incorrect');
+            
+            let feedbackHTML = `
+                <div class="feedback-title">${isCorrect ? '✓ 정답입니다!' : '✗ 오답입니다.'}</div>
+                <div class="feedback-content">
+                    선택한 답: ${selectedOption + 1}번<br>
+                    정답: ${currentProblem.correct + 1}번
+                </div>
+                <div class="explanation">
+                    ${currentProblem.explanation}
+                </div>
+            `;
+            
+            feedbackDiv.innerHTML = feedbackHTML;
+            feedbackDiv.style.display = 'block';
+            
+            document.getElementById('submitBtn').disabled = true;
+        }
+
+        generateNewProblem();
+    </script>
+</body>
+</html>

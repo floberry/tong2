@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>에너지 효율 연습 문제</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: #f5f5f5;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2d2d2d;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .problem-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .problem-number {
+            color: #4a4a4a;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+        
+        .problem-text {
+            color: #2d2d2d;
+            line-height: 1.8;
+            margin-bottom: 25px;
+            font-size: 18px;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            background: #fafafa;
+            border: 2px solid #d0d0d0;
+            border-radius: 10px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #2d2d2d;
+            font-size: 16px;
+        }
+        
+        .option:hover {
+            background: #e8e8e8;
+            border-color: #999;
+            transform: translateX(5px);
+        }
+        
+        .option.selected {
+            background: #4a4a4a;
+            color: white;
+            border-color: #4a4a4a;
+        }
+        
+        .option.correct {
+            background: #5a5a5a;
+            color: white;
+            border-color: #5a5a5a;
+        }
+        
+        .option.incorrect {
+            background: #3a3a3a;
+            color: white;
+            border-color: #3a3a3a;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .check-btn {
+            background: #4a4a4a;
+            color: white;
+        }
+        
+        .check-btn:hover {
+            background: #5a5a5a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .check-btn:disabled {
+            background: #c0c0c0;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .next-btn {
+            background: #6a6a6a;
+            color: white;
+        }
+        
+        .next-btn:hover {
+            background: #7a7a7a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .feedback {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .feedback.show {
+            display: block;
+        }
+        
+        .feedback.correct {
+            background: #e8e8e8;
+            border: 2px solid #5a5a5a;
+        }
+        
+        .feedback.incorrect {
+            background: #e8e8e8;
+            border: 2px solid #3a3a3a;
+        }
+        
+        .feedback-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #2d2d2d;
+        }
+        
+        .feedback-content {
+            color: #4a4a4a;
+            line-height: 1.6;
+        }
+        
+        .score {
+            text-align: center;
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #d0d0d0;
+        }
+        
+        .score-text {
+            color: #2d2d2d;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>에너지 효율 연습 문제</h1>
+        <div class="subtitle">2022 통합과학 II - 에너지 효율 계산</div>
+        
+        <div class="problem-section">
+            <div class="problem-number" id="problemNumber"></div>
+            <div class="problem-text" id="problemText"></div>
+            <div class="options" id="optionsContainer"></div>
+            
+            <div class="button-group">
+                <button class="check-btn" id="checkBtn" disabled>답 확인하기</button>
+                <button class="next-btn" id="nextBtn">다음 문제</button>
+            </div>
+            
+            <div class="feedback" id="feedback">
+                <div class="feedback-title" id="feedbackTitle"></div>
+                <div class="feedback-content" id="feedbackContent"></div>
+            </div>
+        </div>
+        
+        <div class="score">
+            <div class="score-text">맞힌 문제: <span id="correctCount">0</span> / 총 문제: <span id="totalCount">0</span></div>
+        </div>
+    </div>
+
+    <script>
+        const problems = [
+            {
+                question: "어떤 전구에 100 J의 전기 에너지를 공급했더니 25 J의 빛에너지가 발생하고 나머지는 열에너지로 전환되었다. 이 전구의 에너지 효율은?",
+                options: ["15%", "20%", "25%", "30%", "40%"],
+                correct: 2,
+                explanation: "에너지 효율 = (유용하게 사용된 에너지 / 공급한 에너지) × 100\n= (25 J / 100 J) × 100 = 25%\n\n이 전구는 공급받은 100 J 중 25 J만 빛에너지로 전환되어 유용하게 사용되었고, 나머지 75 J는 열에너지로 버려졌습니다."
+            },
+            {
+                question: "어떤 열기관이 고열원으로부터 800 J의 열에너지를 공급받아 200 J의 일을 하고 나머지는 저열원으로 방출하였다. 이 열기관의 열효율은?",
+                options: ["20%", "25%", "30%", "35%", "40%"],
+                correct: 1,
+                explanation: "열효율 = (한 일 / 공급받은 열에너지) × 100\n= (200 J / 800 J) × 100 = 25%\n\n열기관은 800 J의 에너지를 받아 200 J의 일을 했으므로, 나머지 600 J은 저열원으로 방출됩니다. 에너지는 보존되지만 일부는 항상 사용할 수 없는 형태로 전환됩니다."
+            },
+            {
+                question: "어떤 선풍기에 매초 150 J의 전기 에너지를 공급했더니 120 J의 운동 에너지가 발생하였다. 이 선풍기의 에너지 효율은?",
+                options: ["60%", "70%", "75%", "80%", "85%"],
+                correct: 3,
+                explanation: "에너지 효율 = (유용하게 사용된 에너지 / 공급한 에너지) × 100\n= (120 J / 150 J) × 100 = 80%\n\n이 선풍기는 효율이 80%로 비교적 높은 편입니다. 나머지 30 J(20%)는 열에너지와 소리 에너지 등으로 손실됩니다."
+            },
+            {
+                question: "어떤 전기 히터에 2000 J의 전기 에너지를 공급했더니 1900 J의 열에너지가 발생하였다. 이 전기 히터의 에너지 효율은?",
+                options: ["85%", "90%", "95%", "98%", "100%"],
+                correct: 2,
+                explanation: "에너지 효율 = (유용하게 사용된 에너지 / 공급한 에너지) × 100\n= (1900 J / 2000 J) × 100 = 95%\n\n전기 히터는 열을 발생시키는 것이 목적이므로 열에너지가 유용한 에너지입니다. 나머지 100 J는 빛이나 소리 등으로 손실됩니다. 전기 히터는 목적이 열 생산이기 때문에 효율이 매우 높습니다."
+            },
+            {
+                question: "어떤 전동기에 500 J의 전기 에너지를 공급했더니 350 J의 역학적 에너지가 발생하고 나머지는 열에너지로 전환되었다. 이 전동기의 에너지 효율은?",
+                options: ["60%", "65%", "70%", "75%", "80%"],
+                correct: 2,
+                explanation: "에너지 효율 = (유용하게 사용된 에너지 / 공급한 에너지) × 100\n= (350 J / 500 J) × 100 = 70%\n\n전동기는 전기 에너지를 역학적 에너지(운동 에너지)로 전환하는 장치입니다. 이 전동기는 150 J(30%)를 열에너지로 손실하였습니다."
+            },
+            {
+                question: "어떤 LED 전구에 50 J의 전기 에너지를 공급했더니 20 J의 빛에너지가 발생하였다. 이 LED의 에너지 효율은?",
+                options: ["30%", "35%", "40%", "45%", "50%"],
+                correct: 2,
+                explanation: "에너지 효율 = (유용하게 사용된 에너지 / 공급한 에너지) × 100\n= (20 J / 50 J) × 100 = 40%\n\nLED는 일반 백열전구(약 5%)에 비해 에너지 효율이 훨씬 높습니다. 나머지 30 J는 열에너지로 전환됩니다."
+            },
+            {
+                question: "어떤 자동차 엔진이 1200 J의 화학 에너지를 공급받아 300 J의 운동 에너지를 발생시켰다. 이 자동차 엔진의 에너지 효율은?",
+                options: ["20%", "25%", "30%", "35%", "40%"],
+                correct: 1,
+                explanation: "에너지 효율 = (유용하게 사용된 에너지 / 공급한 에너지) × 100\n= (300 J / 1200 J) × 100 = 25%\n\n일반적인 내연기관 자동차의 효율은 20~30% 정도로 낮습니다. 나머지 900 J(75%)는 주로 열에너지로 손실되며, 이는 엔진이 뜨거워지는 이유입니다."
+            },
+            {
+                question: "어떤 스피커에 매초 80 J의 전기 에너지를 공급했더니 64 J의 소리 에너지가 발생하였다. 이 스피커의 에너지 효율은?",
+                options: ["70%", "75%", "80%", "85%", "90%"],
+                correct: 2,
+                explanation: "에너지 효율 = (유용하게 사용된 에너지 / 공급한 에너지) × 100\n= (64 J / 80 J) × 100 = 80%\n\n이 스피커는 80%의 효율로 전기 에너지를 소리 에너지로 전환합니다. 나머지 16 J(20%)는 열에너지로 손실됩니다."
+            },
+            {
+                question: "어떤 전기 주전자가 3000 J의 전기 에너지를 공급받아 2700 J의 열에너지로 물을 데웠다. 이 전기 주전자의 에너지 효율은?",
+                options: ["85%", "87%", "90%", "92%", "95%"],
+                correct: 2,
+                explanation: "에너지 효율 = (유용하게 사용된 에너지 / 공급한 에너지) × 100\n= (2700 J / 3000 J) × 100 = 90%\n\n전기 주전자는 열을 발생시키는 것이 목적이므로 효율이 높습니다. 나머지 300 J(10%)는 주전자 외부로 열이 빠져나가거나 소리, 빛 등으로 손실됩니다."
+            },
+            {
+                question: "어떤 태양광 패널이 1000 J의 빛에너지를 받아 180 J의 전기 에너지를 생산하였다. 이 태양광 패널의 에너지 효율은?",
+                options: ["15%", "18%", "20%", "22%", "25%"],
+                correct: 1,
+                explanation: "에너지 효율 = (유용하게 사용된 에너지 / 공급한 에너지) × 100\n= (180 J / 1000 J) × 100 = 18%\n\n일반적인 태양광 패널의 효율은 15~20% 정도입니다. 나머지 820 J는 주로 열에너지로 전환되며, 이는 태양광 패널이 햇빛을 받으면 뜨거워지는 이유입니다."
+            }
+        ];
+
+        let currentProblem = null;
+        let selectedOption = null;
+        let correctCount = 0;
+        let totalCount = 0;
+        let isAnswered = false;
+
+        function getRandomProblem() {
+            const randomIndex = Math.floor(Math.random() * problems.length);
+            return problems[randomIndex];
+        }
+
+        function displayProblem() {
+            currentProblem = getRandomProblem();
+            selectedOption = null;
+            isAnswered = false;
+            
+            document.getElementById('problemNumber').textContent = `문제 ${totalCount + 1}`;
+            document.getElementById('problemText').textContent = currentProblem.question;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            currentProblem.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                optionDiv.textContent = `${index + 1}. ${option}`;
+                optionDiv.onclick = () => selectOption(index, optionDiv);
+                optionsContainer.appendChild(optionDiv);
+            });
+            
+            document.getElementById('feedback').classList.remove('show', 'correct', 'incorrect');
+            document.getElementById('checkBtn').disabled = true;
+        }
+
+        function selectOption(index, element) {
+            if (isAnswered) return;
+            
+            document.querySelectorAll('.option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            element.classList.add('selected');
+            selectedOption = index;
+            document.getElementById('checkBtn').disabled = false;
+        }
+
+        function checkAnswer() {
+            if (selectedOption === null || isAnswered) return;
+            
+            isAnswered = true;
+            totalCount++;
+            
+            const options = document.querySelectorAll('.option');
+            const feedback = document.getElementById('feedback');
+            const feedbackTitle = document.getElementById('feedbackTitle');
+            const feedbackContent = document.getElementById('feedbackContent');
+            
+            if (selectedOption === currentProblem.correct) {
+                correctCount++;
+                options[selectedOption].classList.add('correct');
+                feedback.classList.add('show', 'correct');
+                feedbackTitle.textContent = '✓ 정답입니다!';
+                feedbackContent.textContent = currentProblem.explanation;
+            } else {
+                options[selectedOption].classList.add('incorrect');
+                options[currentProblem.correct].classList.add('correct');
+                feedback.classList.add('show', 'incorrect');
+                feedbackTitle.textContent = '✗ 틀렸습니다';
+                feedbackContent.textContent = `정답은 ${currentProblem.options[currentProblem.correct]}입니다.\n\n${currentProblem.explanation}`;
+            }
+            
+            document.getElementById('correctCount').textContent = correctCount;
+            document.getElementById('totalCount').textContent = totalCount;
+            document.getElementById('checkBtn').disabled = true;
+        }
+
+        document.getElementById('checkBtn').onclick = checkAnswer;
+        document.getElementById('nextBtn').onclick = displayProblem;
+
+        displayProblem();
+    </script>
+</body>
+</html>

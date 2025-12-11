@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>에너지 효율 시뮬레이션</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #1976D2;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+        
+        .problem-box {
+            background: #F5F5F5;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            line-height: 1.8;
+            font-size: 15px;
+        }
+        
+        .problem-header {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #E0E0E0;
+        }
+        
+        .context-box {
+            background: #FFF9C4;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #FBC02D;
+            font-size: 14px;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: white;
+            border: 1px solid #BDBDBD;
+        }
+        
+        .data-table th {
+            background: #42A5F5;
+            color: white;
+            padding: 10px 6px;
+            font-size: 13px;
+            text-align: center;
+            border: 1px solid #1976D2;
+        }
+        
+        .data-table td {
+            padding: 10px 6px;
+            border: 1px solid #BDBDBD;
+            text-align: center;
+            font-size: 13px;
+        }
+        
+        .device-name-col {
+            font-weight: bold;
+            color: #1565C0;
+        }
+        
+        .question-box {
+            background: #E3F2FD;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: bold;
+            color: #1565C0;
+            font-size: 15px;
+            border: 2px solid #90CAF9;
+        }
+        
+        .choice-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 25px 0;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .choice-btn {
+            flex: 1;
+            min-width: 60px;
+            padding: 18px 10px;
+            font-size: 20px;
+            font-weight: bold;
+            background: #BBDEFB;
+            border: 3px solid #90CAF9;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #1565C0;
+        }
+        
+        .choice-btn:hover {
+            background: #90CAF9;
+            transform: scale(1.05);
+        }
+        
+        .choice-btn.selected {
+            background: #42A5F5;
+            color: white;
+            border-color: #1976D2;
+        }
+        
+        .order-display {
+            text-align: center;
+            font-size: 18px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #E3F2FD;
+            border-radius: 8px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .order-text {
+            color: #1565C0;
+            font-weight: bold;
+        }
+        
+        .btn-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-new {
+            background: #42A5F5;
+            color: white;
+        }
+        
+        .btn-new:hover {
+            background: #1E88E5;
+        }
+        
+        .btn-submit {
+            background: #66BB6A;
+            color: white;
+        }
+        
+        .btn-submit:hover {
+            background: #43A047;
+        }
+        
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+            line-height: 1.8;
+            font-size: 14px;
+        }
+        
+        .result-box.show {
+            display: block;
+        }
+        
+        .result-box.correct {
+            background: #C8E6C9;
+            border: 2px solid #66BB6A;
+        }
+        
+        .result-box.incorrect {
+            background: #FFCDD2;
+            border: 2px solid #EF5350;
+        }
+        
+        .result-title {
+            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .explanation {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid rgba(0,0,0,0.1);
+        }
+        
+        .formula {
+            background: white;
+            padding: 12px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: 'Courier New', monospace;
+            border-left: 3px solid #1976D2;
+        }
+        
+        .calculation-step {
+            margin: 12px 0;
+            padding: 10px;
+            background: #F5F5F5;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ 에너지 효율 평가 문제</h1>
+        
+        <div class="problem-box" id="problemText">
+            <div class="problem-header">문제를 불러오는 중...</div>
+        </div>
+        
+        <div class="choice-container">
+            <button class="choice-btn" id="btnA" onclick="selectChoice('A')">A</button>
+            <button class="choice-btn" id="btnB" onclick="selectChoice('B')">B</button>
+            <button class="choice-btn" id="btnC" onclick="selectChoice('C')">C</button>
+            <button class="choice-btn" id="btnD" onclick="selectChoice('D')">D</button>
+            <button class="choice-btn" id="btnE" onclick="selectChoice('E')">E</button>
+        </div>
+        
+        <div class="order-display">
+            <span class="order-text" id="orderDisplay">위의 A, B, C, D, E를 클릭하여 순서를 정하세요</span>
+        </div>
+        
+        <div class="btn-container">
+            <button class="btn btn-new" onclick="generateNewProblem()">🔄 새 문제</button>
+            <button class="btn btn-submit" onclick="checkAnswer()">✓ 정답 확인</button>
+        </div>
+        
+        <div class="result-box" id="resultBox"></div>
+    </div>
+
+    <script>
+        const deviceTemplates = [
+            { name: '냉장고', baseEff: 1, usage: '24시간 연속' },
+            { name: 'LED TV', baseEff: 2, usage: '하루 4시간' },
+            { name: '에어컨', baseEff: 1, usage: '하루 8시간' },
+            { name: '전기밥솥', baseEff: 3, usage: '하루 2시간' },
+            { name: '세탁기', baseEff: 2, usage: '주 3회' },
+            { name: '전자레인지', baseEff: 3, usage: '하루 30분' },
+            { name: '식기세척기', baseEff: 2, usage: '하루 1회' },
+            { name: '공기청정기', baseEff: 2, usage: '24시간 연속' },
+            { name: '제습기', baseEff: 2, usage: '하루 12시간' },
+            { name: '선풍기', baseEff: 4, usage: '하루 6시간' },
+            { name: '전기히터', baseEff: 1, usage: '하루 5시간' },
+            { name: '온수매트', baseEff: 2, usage: '하루 8시간' },
+            { name: '데스크톱', baseEff: 2, usage: '하루 6시간' },
+            { name: '노트북', baseEff: 3, usage: '하루 8시간' },
+            { name: '진공청소기', baseEff: 2, usage: '주 2회' }
+        ];
+        
+        const contexts = [
+            { 
+                intro: '민수네 가족은 여름철 전기 요금이 급증하자 가전제품의 에너지 소비 현황을 파악하기로 하였다.',
+                question: '한 달(30일) 동안 소비하는 전력량이 적은 것부터 큰 순서대로 나열하시오.',
+                extra: '(단, 전력량은 소비전력(W) × 사용시간(h)으로 계산하며, 1kWh = 1,000Wh이다.)'
+            },
+            {
+                intro: '지영이는 환경 동아리 활동으로 학교 과학실의 전기기기 에너지 효율을 조사하였다.',
+                question: '월간 전력 소비량이 작은 순서대로 기기를 나열하시오.',
+                extra: '(단, 한 달은 30일로 계산하며, 대기전력은 무시한다.)'
+            },
+            {
+                intro: '수진이는 자취방의 전기 요금을 절약하기 위해 보유한 가전제품의 소비 전력을 측정하였다.',
+                question: '월간 전기 에너지 사용량을 비교하여 적은 것부터 큰 순서대로 나열하시오.',
+                extra: '(단, 1kWh당 전기 요금은 100원이며, 한 달은 30일이다.)'
+            },
+            {
+                intro: '환경과학 시간에 학생들이 가정에서 사용하는 전기기기의 에너지 소비 패턴을 조사하였다.',
+                question: '다음 기기들의 월간 소비 전력량을 계산하여 작은 순서대로 배열하시오.',
+                extra: '(단, 전력량(Wh) = 전력(W) × 시간(h)이며, 효율 등급은 참고용이다.)'
+            },
+            {
+                intro: '태준이네 집에서는 탄소중립 실천을 위해 가전제품의 전력 사용량을 모니터링하기로 하였다.',
+                question: '30일 기준 총 소비 전력량이 적은 기기부터 많은 기기 순으로 나열하시오.',
+                extra: '(단, 소비 전력량 = 정격소비전력 × 일일사용시간 × 30일로 계산한다.)'
+            }
+        ];
+        
+        let currentProblem = null;
+        let selectedOrder = [];
+        
+        function getRandomValue() {
+            return (Math.floor(Math.random() * 30) + 1) * 10;
+        }
+        
+        function getRandomItems(arr, count) {
+            const shuffled = [...arr].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+        
+        function generateNewProblem() {
+            const selectedDevices = getRandomItems(deviceTemplates, 5);
+            const context = contexts[Math.floor(Math.random() * contexts.length)];
+            const labels = ['A', 'B', 'C', 'D', 'E'];
+            
+            currentProblem = {
+                context: context,
+                devices: {}
+            };
+            
+            labels.forEach((label, index) => {
+                const template = selectedDevices[index];
+                const power = getRandomValue();
+                const dailyHours = getRandomValue() / 10; // 0.1~3.0시간 범위
+                const efficiency = Math.floor(Math.random() * 5) + 1;
+                
+                // 월간 소비전력량 계산 (30일 기준)
+                const monthlyEnergy = power * dailyHours * 30;
+                
+                currentProblem.devices[label] = {
+                    name: template.name,
+                    power: power,
+                    dailyHours: dailyHours,
+                    monthlyEnergy: Math.round(monthlyEnergy),
+                    efficiency: efficiency,
+                    usage: template.usage
+                };
+            });
+            
+            const sortedDevices = labels.sort((a, b) => 
+                currentProblem.devices[a].monthlyEnergy - currentProblem.devices[b].monthlyEnergy
+            );
+            currentProblem.correctOrder = sortedDevices;
+            
+            displayProblem();
+            resetSelection();
+            hideResult();
+        }
+        
+        function displayProblem() {
+            if (!currentProblem) return;
+            
+            const labels = ['A', 'B', 'C', 'D', 'E'];
+            let tableRows = '';
+            
+            labels.forEach(label => {
+                const device = currentProblem.devices[label];
+                tableRows += `
+                    <tr>
+                        <td class="device-name-col">${label}</td>
+                        <td>${device.name}</td>
+                        <td>${device.power}W</td>
+                        <td>${device.dailyHours}시간</td>
+                        <td>${device.efficiency}등급</td>
+                    </tr>
+                `;
+            });
+            
+            const html = `
+                <div class="problem-header">
+                    [2022 개정 교육과정 - 통합과학2 / Ⅱ-2. 에너지 효율과 신재생 에너지]
+                </div>
+                
+                <div class="context-box">
+                    ${currentProblem.context.intro} 다음은 조사한 가전제품의 정보이다.
+                </div>
+                
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>기호</th>
+                            <th>기기명</th>
+                            <th>정격소비전력</th>
+                            <th>일일사용시간</th>
+                            <th>효율등급</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tableRows}
+                    </tbody>
+                </table>
+                
+                <div class="question-box">
+                    ${currentProblem.context.question}
+                </div>
+                
+                <div style="font-size: 13px; color: #666; margin-top: 10px;">
+                    ${currentProblem.context.extra}
+                </div>
+            `;
+            
+            document.getElementById('problemText').innerHTML = html;
+        }
+        
+        function selectChoice(choice) {
+            const index = selectedOrder.indexOf(choice);
+            
+            if (index > -1) {
+                selectedOrder.splice(index, 1);
+            } else {
+                if (selectedOrder.length < 5) {
+                    selectedOrder.push(choice);
+                }
+            }
+            
+            updateDisplay();
+        }
+        
+        function updateDisplay() {
+            ['A', 'B', 'C', 'D', 'E'].forEach(choice => {
+                const btn = document.getElementById('btn' + choice);
+                const index = selectedOrder.indexOf(choice);
+                
+                if (index > -1) {
+                    btn.classList.add('selected');
+                    btn.textContent = `${choice} (${index + 1})`;
+                } else {
+                    btn.classList.remove('selected');
+                    btn.textContent = choice;
+                }
+            });
+            
+            const orderDisplay = document.getElementById('orderDisplay');
+            if (selectedOrder.length === 0) {
+                orderDisplay.textContent = '위의 A, B, C, D, E를 클릭하여 순서를 정하세요';
+            } else {
+                orderDisplay.textContent = `선택한 순서: ${selectedOrder.join(' < ')}`;
+            }
+        }
+        
+        function resetSelection() {
+            selectedOrder = [];
+            updateDisplay();
+        }
+        
+        function hideResult() {
+            const resultBox = document.getElementById('resultBox');
+            resultBox.classList.remove('show', 'correct', 'incorrect');
+        }
+        
+        function checkAnswer() {
+            if (!currentProblem) {
+                alert('먼저 문제를 생성해주세요!');
+                return;
+            }
+            
+            if (selectedOrder.length !== 5) {
+                alert('A, B, C, D, E를 모두 선택해주세요!');
+                return;
+            }
+            
+            const isCorrect = JSON.stringify(selectedOrder) === JSON.stringify(currentProblem.correctOrder);
+            const resultBox = document.getElementById('resultBox');
+            
+            resultBox.className = 'result-box show ' + (isCorrect ? 'correct' : 'incorrect');
+            
+            let deviceCalcs = '';
+            ['A', 'B', 'C', 'D', 'E'].forEach(label => {
+                const device = currentProblem.devices[label];
+                deviceCalcs += `
+                    <div class="calculation-step">
+                        <strong>${label}. ${device.name}</strong><br>
+                        월간 전력량 = ${device.power}W × ${device.dailyHours}h/일 × 30일<br>
+                        = <strong style="color: #D32F2F;">${device.monthlyEnergy.toLocaleString()}Wh</strong>
+                        = <strong>${(device.monthlyEnergy/1000).toFixed(2)}kWh</strong>
+                        (효율 ${device.efficiency}등급)
+                    </div>
+                `;
+            });
+            
+            const correctOrderWithNames = currentProblem.correctOrder.map(label => 
+                `${label}(${currentProblem.devices[label].name})`
+            ).join(' < ');
+            
+            const selectedOrderWithNames = selectedOrder.map(label => 
+                `${label}(${currentProblem.devices[label].name})`
+            ).join(' < ');
+            
+            const minDevice = currentProblem.devices[currentProblem.correctOrder[0]];
+            const maxDevice = currentProblem.devices[currentProblem.correctOrder[4]];
+            const energyDiff = maxDevice.monthlyEnergy - minDevice.monthlyEnergy;
+            const costDiff = Math.round(energyDiff / 10);
+            
+            const html = `
+                <div class="result-title">${isCorrect ? '✓ 정답입니다!' : '✗ 오답입니다.'}</div>
+                <div style="font-size: 16px; margin: 10px 0;">
+                    <strong>정답:</strong> ${correctOrderWithNames}<br>
+                    <strong>선택:</strong> ${selectedOrderWithNames}
+                </div>
+                
+                <div class="explanation">
+                    <strong style="font-size: 17px; color: #1976D2;">📚 상세 풀이</strong><br><br>
+                    
+                    <strong style="color: #1565C0;">【 이론적 배경 】</strong><br>
+                    전기 에너지 소비량은 전력과 시간의 곱으로 계산됩니다.<br>
+                    <div class="formula">
+                        <strong>전력량(E) = 전력(P) × 시간(t)</strong><br>
+                        • 전력(P): 단위시간당 소비하는 에너지 [W = J/s]<br>
+                        • 시간(t): 기기를 사용한 총 시간 [h]<br>
+                        • 전력량(E): 총 소비한 전기 에너지 [Wh 또는 kWh]<br>
+                        • 변환: 1kWh = 1,000Wh
+                    </div>
+                    <strong>에너지 효율</strong>: 투입 에너지 대비 유용한 에너지의 비율<br>
+                    - 효율 등급이 높을수록(1등급에 가까울수록) 같은 성능에서 전력 소비가 적음<br>
+                    - 에너지 절약 → 전기 요금 절감 + 온실가스 배출 감소<br><br>
+                    
+                    <strong style="color: #1565C0;">【 월간 전력량 계산 】</strong><br>
+                    ${deviceCalcs}
+                    <br>
+                    
+                    <strong style="color: #1565C0;">【 크기 비교 및 정렬 】</strong><br>
+                    <div class="formula">
+                        ${['A', 'B', 'C', 'D', 'E'].map(label => {
+                            const device = currentProblem.devices[label];
+                            return `${label}(${device.name}): ${device.monthlyEnergy.toLocaleString()}Wh = ${(device.monthlyEnergy/1000).toFixed(2)}kWh`;
+                        }).join('<br>')}
+                    </div>
+                    월간 소비 전력량이 작은 순서:<br>
+                    <strong style="font-size: 17px; color: #1976D2;">${correctOrderWithNames}</strong><br><br>
+                    
+                    <strong style="color: #1565C0;">【 결과 분석 】</strong><br>
+                    • 최소 소비: <strong>${currentProblem.correctOrder[0]}(${minDevice.name})</strong><br>
+                      → ${minDevice.monthlyEnergy.toLocaleString()}Wh = ${(minDevice.monthlyEnergy/1000).toFixed(2)}kWh<br>
+                    • 최대 소비: <strong>${currentProblem.correctOrder[4]}(${maxDevice.name})</strong><br>
+                      → ${maxDevice.monthlyEnergy.toLocaleString()}Wh = ${(maxDevice.monthlyEnergy/1000).toFixed(2)}kWh<br>
+                    • 에너지 소비 차이: ${energyDiff.toLocaleString()}Wh = ${(energyDiff/1000).toFixed(2)}kWh<br>
+                    • 월 전기 요금 차이(1kWh=100원 기준): 약 <strong>${costDiff.toLocaleString()}원</strong><br>
+                    • 연간 전기 요금 차이: 약 <strong>${(costDiff * 12).toLocaleString()}원</strong><br><br>
+                    
+                    <strong style="color: #1565C0;">【 에너지 절약 방안 】</strong><br>
+                    ① 고효율(1~2등급) 가전제품 사용<br>
+                    ② 대기전력 차단 (플러그 뽑기, 멀티탭 활용)<br>
+                    ③ 적정 온도 유지 (냉난방 기기)<br>
+                    ④ 불필요한 전원 OFF<br>
+                    ⑤ LED 조명 사용으로 조명 에너지 절감
+                </div>
+            `;
+            
+            resultBox.innerHTML = html;
+            resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
+        window.onload = function() {
+            generateNewProblem();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>에너지 효율 계산 시뮬레이션</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Malgun Gothic', sans-serif;
+            background: linear-gradient(135deg, #e8f4f8 0%, #f0e8f8 100%);
+            min-height: 100vh;
+            padding: 15px;
+        }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .problem-box {
+            background: #fff9f0;
+            border: 2px solid #ffd6a5;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .problem-text {
+            font-size: 15px;
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .device-info {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border: 1px solid #ffd6a5;
+        }
+        
+        .info-line {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        .instruction {
+            background: #f0f8ff;
+            border-left: 4px solid #6eb5ff;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #444;
+            border-radius: 5px;
+        }
+        
+        .choice-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .choice-card {
+            background: white;
+            border: 3px solid #c8b6ff;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .choice-card:active {
+            transform: scale(0.98);
+        }
+        
+        .choice-card.selected {
+            border-color: #6eb5ff;
+            background: linear-gradient(135deg, #e0f0ff 0%, #f0f8ff 100%);
+            box-shadow: 0 4px 12px rgba(110, 181, 255, 0.3);
+        }
+        
+        .choice-label {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #a78bfa 0%, #c4b5fd 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .choice-card.selected .choice-label {
+            background: linear-gradient(135deg, #6eb5ff 0%, #94caff 100%);
+        }
+        
+        .choice-text {
+            font-size: 16px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            flex: 1;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .new-problem-btn {
+            background: linear-gradient(135deg, #a78bfa 0%, #c4b5fd 100%);
+            color: white;
+            box-shadow: 0 4px 10px rgba(167, 139, 250, 0.3);
+        }
+        
+        .new-problem-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 5px rgba(167, 139, 250, 0.3);
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #6eb5ff 0%, #94caff 100%);
+            color: white;
+            box-shadow: 0 4px 10px rgba(110, 181, 255, 0.3);
+        }
+        
+        .submit-btn:disabled {
+            background: #e0e0e0;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .submit-btn:active:not(:disabled) {
+            transform: translateY(2px);
+            box-shadow: 0 2px 5px rgba(110, 181, 255, 0.3);
+        }
+        
+        .feedback {
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 14px;
+            line-height: 1.6;
+            display: none;
+        }
+        
+        .feedback.show {
+            display: block;
+        }
+        
+        .feedback.correct {
+            background: linear-gradient(135deg, #d4f4dd 0%, #e8f9ec 100%);
+            border: 2px solid #86d293;
+            color: #2d5f3d;
+        }
+        
+        .feedback.incorrect {
+            background: linear-gradient(135deg, #ffd6d6 0%, #ffe8e8 100%);
+            border: 2px solid #ff9999;
+            color: #8b3a3a;
+        }
+        
+        .feedback-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .explanation {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+        }
+        
+        .explanation-section {
+            margin-bottom: 10px;
+        }
+        
+        .explanation-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .formula {
+            background: #f8f0ff;
+            padding: 8px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            margin: 5px 0;
+            text-align: center;
+            border: 1px solid #dac5ff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>⚡ 에너지 효율 계산</h1>
+        <div class="subtitle">2022개정 통합과학2</div>
+        
+        <div class="problem-box">
+            <div class="problem-text" id="problemText"></div>
+            <div class="device-info" id="deviceInfo"></div>
+        </div>
+        
+        <div class="instruction">
+            📌 기기의 에너지 효율을 계산하여 정답을 선택하세요<br>
+            (다시 클릭하면 선택 취소됩니다)
+        </div>
+        
+        <div class="choice-grid" id="choiceGrid"></div>
+        
+        <div class="button-group">
+            <button class="new-problem-btn" onclick="generateNewProblem()">🔄 새문제</button>
+            <button class="submit-btn" id="submitBtn" onclick="checkAnswer()" disabled>✓ 정답확인</button>
+        </div>
+        
+        <div class="feedback" id="feedback"></div>
+    </div>
+
+    <script>
+        let currentProblem = {};
+        let selectedChoice = null;
+        
+        function generateRandomValue() {
+            const multipliers = [5, 10];
+            const multiplier = multipliers[Math.floor(Math.random() * multipliers.length)];
+            const maxMultiples = Math.floor(100 / multiplier);
+            const minMultiples = Math.floor(10 / multiplier);
+            return (Math.floor(Math.random() * (maxMultiples - minMultiples + 1)) + minMultiples) * multiplier;
+        }
+        
+        function generateNewProblem() {
+            selectedChoice = null;
+            document.getElementById('feedback').classList.remove('show');
+            
+            const input = generateRandomValue();
+            const output = generateRandomValue();
+            const correctEfficiency = (output / input) * 100;
+            
+            // 오답 생성 (정답과 충분히 다른 값들)
+            let choices = [correctEfficiency];
+            
+            while (choices.length < 3) {
+                const variation = (Math.random() * 40 + 10) * (Math.random() < 0.5 ? 1 : -1);
+                const wrongAnswer = correctEfficiency + variation;
+                
+                if (wrongAnswer > 5 && wrongAnswer < 200) {
+                    const rounded = Math.round(wrongAnswer * 10) / 10;
+                    if (!choices.some(c => Math.abs(c - rounded) < 5)) {
+                        choices.push(rounded);
+                    }
+                }
+            }
+            
+            // 선택지 섞기
+            choices.sort(() => Math.random() - 0.5);
+            
+            const correctIndex = choices.indexOf(correctEfficiency);
+            const correctLabel = ['A', 'B', 'C'][correctIndex];
+            
+            currentProblem = {
+                input: input,
+                output: output,
+                correctEfficiency: correctEfficiency,
+                choices: choices,
+                correctAnswer: correctLabel
+            };
+            
+            document.getElementById('problemText').innerHTML = `
+                다음 전기기기의 에너지 효율을 계산하세요.
+            `;
+            
+            document.getElementById('deviceInfo').innerHTML = `
+                <div class="info-line"><strong>⚡ 입력 에너지:</strong> ${input} J</div>
+                <div class="info-line"><strong>💡 출력 에너지:</strong> ${output} J</div>
+            `;
+            
+            updateChoiceDisplay();
+            updateSubmitButton();
+        }
+        
+        function updateChoiceDisplay() {
+            const grid = document.getElementById('choiceGrid');
+            grid.innerHTML = '';
+            
+            ['A', 'B', 'C'].forEach((label, index) => {
+                const card = document.createElement('div');
+                card.className = 'choice-card';
+                if (selectedChoice === label) {
+                    card.classList.add('selected');
+                }
+                
+                card.innerHTML = `
+                    <div class="choice-label">${label}</div>
+                    <div class="choice-text">${currentProblem.choices[index].toFixed(1)}%</div>
+                `;
+                
+                card.onclick = () => selectChoice(label);
+                grid.appendChild(card);
+            });
+        }
+        
+        function selectChoice(choice) {
+            if (selectedChoice === choice) {
+                selectedChoice = null;
+            } else {
+                selectedChoice = choice;
+            }
+            
+            updateChoiceDisplay();
+            updateSubmitButton();
+        }
+        
+        function updateSubmitButton() {
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = selectedChoice === null;
+        }
+        
+        function checkAnswer() {
+            const isCorrect = selectedChoice === currentProblem.correctAnswer;
+            const feedback = document.getElementById('feedback');
+            
+            let explanation = '<div class="explanation">';
+            
+            explanation += '<div class="explanation-section">';
+            explanation += '<div class="explanation-title">📚 이론: 에너지 효율</div>';
+            explanation += '에너지 효율은 투입한 에너지 대비 유용하게 사용된 에너지의 비율을 나타냅니다. 효율이 높을수록 에너지 손실이 적고 경제적입니다.';
+            explanation += '<div class="formula">에너지 효율 = (출력 에너지 / 입력 에너지) × 100%</div>';
+            explanation += '</div>';
+            
+            explanation += '<div class="explanation-section">';
+            explanation += '<div class="explanation-title">🔢 계산 과정</div>';
+            explanation += `<strong>주어진 정보:</strong><br>`;
+            explanation += `• 입력 에너지 = ${currentProblem.input} J<br>`;
+            explanation += `• 출력 에너지 = ${currentProblem.output} J<br><br>`;
+            explanation += `<strong>계산:</strong><br>`;
+            explanation += `에너지 효율 = (${currentProblem.output} ÷ ${currentProblem.input}) × 100%<br>`;
+            explanation += `= ${(currentProblem.output / currentProblem.input).toFixed(4)} × 100%<br>`;
+            explanation += `= ${currentProblem.correctEfficiency.toFixed(1)}%`;
+            explanation += '</div>';
+            
+            explanation += '<div class="explanation-section">';
+            explanation += '<div class="explanation-title">✅ 정답</div>';
+            explanation += `<strong>${currentProblem.correctAnswer}. ${currentProblem.correctEfficiency.toFixed(1)}%</strong><br><br>`;
+            
+            if (currentProblem.correctEfficiency > 90) {
+                explanation += '💡 효율이 90%를 넘어 매우 우수한 기기입니다.';
+            } else if (currentProblem.correctEfficiency > 70) {
+                explanation += '💡 효율이 70% 이상으로 효율적인 기기입니다.';
+            } else if (currentProblem.correctEfficiency > 50) {
+                explanation += '💡 효율이 50% 이상으로 보통 수준의 기기입니다.';
+            } else {
+                explanation += '💡 효율이 50% 미만으로 에너지 손실이 많은 기기입니다.';
+            }
+            
+            explanation += '</div>';
+            explanation += '</div>';
+            
+            if (isCorrect) {
+                feedback.className = 'feedback correct show';
+                feedback.innerHTML = `
+                    <div class="feedback-title">🎉 정답입니다!</div>
+                    <div>선택한 답: ${selectedChoice}. ${currentProblem.choices[['A', 'B', 'C'].indexOf(selectedChoice)].toFixed(1)}%</div>
+                    ${explanation}
+                `;
+            } else {
+                feedback.className = 'feedback incorrect show';
+                feedback.innerHTML = `
+                    <div class="feedback-title">❌ 틀렸습니다</div>
+                    <div>선택한 답: ${selectedChoice}. ${currentProblem.choices[['A', 'B', 'C'].indexOf(selectedChoice)].toFixed(1)}%</div>
+                    ${explanation}
+                `;
+            }
+        }
+        
+        generateNewProblem();
+    </script>
+</body>
+</html>

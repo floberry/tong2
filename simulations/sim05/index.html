@@ -1,321 +1,920 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>에너지 효율 시뮬레이션</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Malgun Gothic', sans-serif;
-            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
-            padding: 20px;
-            min-height: 100vh;
-        }
-        
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: #ffffff;
-            border-radius: 15px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-            padding: 30px 25px;
-        }
-        
-        h1 {
-            text-align: center;
-            color: #2c2c2c;
-            font-size: 24px;
-            margin-bottom: 10px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid #666;
-        }
-        
-        .subtitle {
-            text-align: center;
-            color: #555;
-            font-size: 14px;
-            margin-bottom: 25px;
-        }
-        
-        .problem-section {
-            background: #f8f8f8;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 2px solid #ccc;
-        }
-        
-        .problem-number {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 15px;
-        }
-        
-        .problem-text {
-            font-size: 16px;
-            line-height: 1.8;
-            color: #444;
-            margin-bottom: 20px;
-        }
-        
-        .input-section {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .answer-box {
-            width: 120px;
-            height: 50px;
-            font-size: 24px;
-            text-align: center;
-            border: 3px solid #888;
-            border-radius: 8px;
-            background: #fff;
-            padding: 5px;
-        }
-        
-        .answer-box:focus {
-            outline: none;
-            border-color: #555;
-            box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-        }
-        
-        .percent-sign {
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 25px;
-        }
-        
-        button {
-            flex: 1;
-            padding: 15px;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .check-btn {
-            background: #666;
-            color: white;
-        }
-        
-        .check-btn:hover {
-            background: #555;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-        
-        .new-problem-btn {
-            background: #888;
-            color: white;
-        }
-        
-        .new-problem-btn:hover {
-            background: #777;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-        
-        .result-section {
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 10px;
-            display: none;
-        }
-        
-        .result-section.show {
-            display: block;
-        }
-        
-        .result-correct {
-            background: #e8e8e8;
-            border: 2px solid #666;
-        }
-        
-        .result-incorrect {
-            background: #f0f0f0;
-            border: 2px solid #999;
-        }
-        
-        .result-title {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-        
-        .result-title.correct {
-            color: #333;
-        }
-        
-        .result-title.incorrect {
-            color: #555;
-        }
-        
-        .feedback {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-        }
-        
-        .feedback-title {
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 16px;
-        }
-        
-        .feedback-content {
-            color: #444;
-            line-height: 1.8;
-            font-size: 15px;
-        }
-        
-        .formula {
-            background: #f5f5f5;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            font-family: 'Courier New', monospace;
-            text-align: center;
-            border: 1px solid #ddd;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>자동차 레이스! - 물리 시뮬레이션</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #050d1a;
+  font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+  min-height: 100vh;
+  padding: 16px;
+  color: #e0f4ff;
+}
+
+/* ── TITLE ── */
+.title-section {
+  text-align: center;
+  padding: 20px 0 10px;
+}
+.main-title {
+  font-size: 42px;
+  font-weight: 900;
+  color: #00c8ff;
+  text-shadow: 0 0 30px #00c8ffaa, 0 0 60px #00c8ff44;
+  letter-spacing: 4px;
+  animation: titlePulse 3s ease-in-out infinite;
+}
+@keyframes titlePulse {
+  0%,100% { text-shadow: 0 0 30px #00c8ffaa, 0 0 60px #00c8ff44; }
+  50% { text-shadow: 0 0 50px #00c8ffdd, 0 0 100px #00c8ff66; }
+}
+.sub-title {
+  font-size: 15px;
+  color: #7dd3f0;
+  margin-top: 6px;
+  letter-spacing: 1px;
+}
+
+/* ── RACE TRACK ── */
+.race-track {
+  background: linear-gradient(180deg, #0a1525 0%, #0d1e36 100%);
+  border: 2px solid #00c8ff55;
+  border-radius: 16px;
+  padding: 10px 0 0;
+  margin: 14px 0;
+  position: relative;
+  height: 160px;
+  overflow: hidden;
+  box-shadow: 0 0 30px #00c8ff11 inset, 0 4px 20px #00000088;
+}
+
+/* sky & stars */
+.stars {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 80px;
+  background: #050d1a;
+  overflow: hidden;
+}
+.star {
+  position: absolute;
+  background: #fff;
+  border-radius: 50%;
+  animation: twinkle var(--d,2s) ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%,100% { opacity: 0.2; } 50% { opacity: 1; }
+}
+
+/* road */
+.road {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 72px;
+  background: linear-gradient(180deg, #1a2a44 0%, #0f1e36 100%);
+  border-top: 3px solid #00c8ff44;
+}
+.road-stripe {
+  position: absolute;
+  top: 33px; left: 0; right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(90deg,
+    #00c8ff66 0, #00c8ff66 40px,
+    transparent 40px, transparent 80px);
+  animation: roadMove 0.6s linear infinite;
+}
+@keyframes roadMove {
+  from { background-position: 0 0; }
+  to { background-position: -80px 0; }
+}
+.road-edge {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 6px;
+  background: repeating-linear-gradient(90deg,
+    #00c8ff44 0, #00c8ff44 20px,
+    transparent 20px, transparent 40px);
+}
+
+/* cars */
+.car-container {
+  position: absolute;
+  bottom: 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: left 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.car-label {
+  font-size: 10px;
+  color: #00c8ff;
+  margin-bottom: 3px;
+  font-weight: 900;
+  text-shadow: 0 0 8px #00c8ff;
+  white-space: nowrap;
+}
+
+/* wheel spin */
+.wheel-spin { animation: wheelSpin 0.3s linear infinite; transform-origin: center; }
+@keyframes wheelSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* exhaust */
+.exhaust {
+  position: absolute;
+  bottom: 28px;
+  width: 30px;
+  height: 14px;
+  pointer-events: none;
+}
+.exhaust-puff {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(150,200,255,0.3);
+  animation: puff 0.8s ease-out infinite;
+}
+.exhaust-puff:nth-child(1) { width:8px; height:8px; top:3px; left:0; animation-delay:0s; }
+.exhaust-puff:nth-child(2) { width:12px; height:12px; top:1px; left:-6px; animation-delay:0.25s; }
+.exhaust-puff:nth-child(3) { width:6px; height:6px; top:4px; left:4px; animation-delay:0.5s; }
+@keyframes puff {
+  0% { opacity: 0.6; transform: scale(0.5) translateX(0); }
+  100% { opacity: 0; transform: scale(1.8) translateX(-18px); }
+}
+
+#car-a { left: 52%; }
+#car-b { left: 8%; }
+
+/* explosion */
+.explosion-wrap {
+  position: absolute;
+  bottom: 22px;
+  left: 40%;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  z-index: 20;
+}
+.explosion-emoji {
+  font-size: 60px;
+  animation: explodePop 0.6s ease-out forwards;
+}
+@keyframes explodePop {
+  0% { transform: scale(0.3); opacity: 1; }
+  60% { transform: scale(1.4); opacity: 1; }
+  100% { transform: scale(2); opacity: 0; }
+}
+.explosion-smoke {
+  display: flex; gap: 6px; margin-top: -10px;
+}
+.smoke-ball {
+  border-radius: 50%;
+  background: rgba(80,80,80,0.6);
+  animation: smokeRise 1.5s ease-out forwards;
+}
+.smoke-ball:nth-child(1) { width:14px; height:14px; animation-delay:0.3s; }
+.smoke-ball:nth-child(2) { width:20px; height:20px; animation-delay:0.5s; }
+.smoke-ball:nth-child(3) { width:14px; height:14px; animation-delay:0.7s; }
+@keyframes smokeRise {
+  0% { opacity: 0.8; transform: translateY(0) scale(0.8); }
+  100% { opacity: 0; transform: translateY(-40px) scale(2); }
+}
+
+/* win banner */
+.win-banner {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(135deg, #00c8ff, #0088cc);
+  color: #000;
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-weight: 900;
+  font-size: 14px;
+  display: none;
+  white-space: nowrap;
+  z-index: 30;
+  box-shadow: 0 0 30px #00c8ffaa;
+  animation: winPop 0.5s cubic-bezier(0.175,0.885,0.32,1.275);
+}
+@keyframes winPop {
+  0% { transform: translate(-50%,-50%) scale(0); }
+  100% { transform: translate(-50%,-50%) scale(1); }
+}
+
+/* scoreboard */
+.scoreboard {
+  position: absolute;
+  top: 8px; right: 12px;
+  background: #00000066;
+  border: 1px solid #00c8ff44;
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: #7dd3f0;
+  text-align: center;
+}
+.score-val { font-size: 16px; font-weight: 900; color: #00c8ff; }
+
+/* ── PROBLEM BOX ── */
+.problem-box {
+  background: #0d1b2e;
+  border: 1.5px solid #00c8ff55;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 10px 0;
+  font-size: 14px;
+  line-height: 1.9;
+}
+.problem-text { color: #cce8ff; margin-bottom: 14px; }
+
+/* charge display with floating cars */
+.charge-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 50px;
+  padding: 16px 0 8px;
+  position: relative;
+  min-height: 100px;
+}
+.charge-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: floatUpDown 2.5s ease-in-out infinite;
+}
+.charge-wrapper.delay { animation-delay: 0.9s; }
+@keyframes floatUpDown {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-22px); }
+}
+.charge-label {
+  font-size: 12px;
+  color: #7dd3f0;
+  margin-bottom: 5px;
+  font-weight: 900;
+}
+.charge-val {
+  font-size: 13px;
+  color: #00c8ff;
+  font-weight: 900;
+  margin-top: 4px;
+  text-shadow: 0 0 8px #00c8ff77;
+}
+
+/* distance arrow */
+.dist-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.dist-arrow {
+  color: #00c8ff;
+  font-size: 20px;
+  letter-spacing: -5px;
+}
+.dist-label {
+  font-size: 13px;
+  color: #7dd3f0;
+  font-weight: 900;
+  margin-top: 2px;
+}
+
+/* ── BOGI BOX ── */
+.bogibox {
+  background: #0a1525;
+  border: 1.5px solid #00c8ffaa;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin: 10px 0;
+}
+.bogi-title {
+  display: inline-block;
+  background: #00c8ff;
+  color: #000;
+  font-weight: 900;
+  font-size: 12px;
+  padding: 2px 12px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+.bogi-item {
+  padding: 8px 0;
+  font-size: 14px;
+  color: #cce8ff;
+  border-bottom: 1px solid #00c8ff22;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.8;
+}
+.bogi-item:last-child { border-bottom: none; }
+.bogi-key { color: #00c8ff; font-weight: 900; min-width: 18px; }
+
+/* ── CHOICES ── */
+.choice-question {
+  font-size: 13px;
+  color: #7dd3f0;
+  margin: 8px 0 6px;
+}
+.choice-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 7px;
+  margin: 8px 0;
+}
+.choice-btn {
+  background: #0d1b2e;
+  border: 2px solid #00c8ff33;
+  color: #7aaccc;
+  padding: 11px 4px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  transition: all 0.18s;
+  position: relative;
+}
+.choice-btn:hover:not(:disabled) {
+  background: #00c8ff18;
+  border-color: #00c8ff88;
+  color: #cce8ff;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px #00c8ff22;
+}
+.choice-btn.selected {
+  background: #003d5c;
+  border-color: #00c8ff;
+  color: #fff;
+  box-shadow: 0 0 16px #00c8ff55, inset 0 0 8px #00c8ff22;
+  transform: translateY(-2px);
+}
+.choice-btn.selected::after {
+  content: '✓';
+  position: absolute;
+  top: -8px; right: -8px;
+  width: 20px; height: 20px;
+  background: #00c8ff;
+  color: #000;
+  border-radius: 50%;
+  font-size: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900;
+  line-height: 20px;
+}
+.choice-btn.correct {
+  background: #003d20;
+  border-color: #00ff88;
+  color: #00ff88;
+  box-shadow: 0 0 14px #00ff8844;
+}
+.choice-btn.correct::after {
+  content: '✓';
+  position: absolute;
+  top: -8px; right: -8px;
+  width: 20px; height: 20px;
+  background: #00ff88;
+  color: #000;
+  border-radius: 50%;
+  font-size: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900;
+  line-height: 20px;
+}
+.choice-btn.wrong {
+  background: #3d0000;
+  border-color: #ff4444;
+  color: #ff6666;
+  box-shadow: 0 0 14px #ff444433;
+  animation: shake 0.4s ease;
+}
+.choice-btn.wrong::after {
+  content: '✗';
+  position: absolute;
+  top: -8px; right: -8px;
+  width: 20px; height: 20px;
+  background: #ff4444;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900;
+  line-height: 20px;
+}
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+.choice-btn:disabled { cursor: default; transform: none !important; }
+
+/* ── BUTTONS ── */
+.btn-row { display: flex; gap: 10px; margin: 12px 0; }
+.btn-primary {
+  flex: 1; padding: 13px;
+  border: none; border-radius: 10px;
+  font-size: 15px; font-weight: 900;
+  cursor: pointer; transition: all 0.2s;
+}
+.btn-check { background: linear-gradient(135deg, #00c8ff, #0099cc); color: #000; }
+.btn-check:hover { transform: translateY(-2px); box-shadow: 0 6px 20px #00c8ff44; }
+.btn-new { background: #0d1b2e; color: #00c8ff; border: 2px solid #00c8ff; }
+.btn-new:hover { background: #00c8ff18; transform: translateY(-2px); box-shadow: 0 6px 20px #00c8ff22; }
+
+/* ── FEEDBACK ── */
+.feedback-box {
+  background: #0a1525;
+  border: 1.5px solid #00c8ff44;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 10px 0;
+  display: none;
+  font-size: 13px;
+  line-height: 1.9;
+  color: #cce8ff;
+}
+.feedback-box.show { display: block; }
+.feedback-result {
+  font-size: 17px; font-weight: 900;
+  margin-bottom: 10px; padding: 7px 16px;
+  border-radius: 8px; display: inline-block;
+}
+.result-correct { background: #00ff8822; color: #00ff88; border: 1.5px solid #00ff88; }
+.result-wrong   { background: #ff444422; color: #ff6666; border: 1.5px solid #ff4444; }
+.fb-head { color: #00c8ff; font-weight: 900; margin: 10px 0 6px; font-size: 14px; }
+.fb-item {
+  color: #aaccdd; padding: 7px 0 7px 14px;
+  border-left: 3px solid #00c8ff44;
+  margin: 6px 0; line-height: 1.9;
+  border-radius: 0 6px 6px 0;
+  background: #00c8ff06;
+}
+.highlight { color: #00c8ff; font-weight: 700; }
+
+/* scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #050d1a; }
+::-webkit-scrollbar-thumb { background: #00c8ff44; border-radius: 3px; }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>에너지 효율 시뮬레이션</h1>
-        <div class="subtitle">2022 개정 교육과정 - 통합과학2</div>
-        
-        <div class="problem-section">
-            <div class="problem-number">3.</div>
-            <div class="problem-text" id="problemText"></div>
-            <div class="input-section">
-                <input type="number" class="answer-box" id="answerInput" placeholder="답 입력">
-                <span class="percent-sign">%</span>
-            </div>
-        </div>
-        
-        <div class="button-group">
-            <button class="check-btn" onclick="checkAnswer()">확인</button>
-            <button class="new-problem-btn" onclick="generateNewProblem()">새 문제</button>
-        </div>
-        
-        <div class="result-section" id="resultSection">
-            <div class="result-title" id="resultTitle"></div>
-            <div class="feedback">
-                <div class="feedback-title">📝 풀이 과정</div>
-                <div class="feedback-content" id="feedbackContent"></div>
-            </div>
-        </div>
+
+<!-- ══ TITLE ══ -->
+<div class="title-section">
+  <div class="main-title">🏎️ 자동차 레이스!</div>
+  <div class="sub-title">물리 문제를 풀어 앞 자동차를 따라잡아보세요</div>
+</div>
+
+<!-- ══ RACE TRACK ══ -->
+<div class="race-track" id="raceTrack">
+
+  <!-- stars -->
+  <div class="stars" id="starsLayer"></div>
+
+  <!-- road -->
+  <div class="road">
+    <div class="road-stripe"></div>
+    <div class="road-edge"></div>
+  </div>
+
+  <!-- scoreboard -->
+  <div class="scoreboard">
+    🏆 점수<br><span class="score-val" id="scoreVal">0</span>
+  </div>
+
+  <!-- Car A (leader) -->
+  <div class="car-container" id="car-a">
+    <div class="car-label">🔴 A차 (선두)</div>
+    <!-- exhaust (left side) -->
+    <div class="exhaust" style="position:relative; left:-68px; bottom:-18px; z-index:5;">
+      <div class="exhaust-puff"></div>
+      <div class="exhaust-puff"></div>
+      <div class="exhaust-puff"></div>
+    </div>
+    <!-- Red sports car SVG -->
+    <svg width="80" height="40" viewBox="0 0 80 40" style="margin-top:-14px;">
+      <!-- body -->
+      <rect x="5" y="20" width="70" height="14" rx="4" fill="#cc2222"/>
+      <!-- cabin -->
+      <path d="M18 20 Q20 8 28 8 L52 8 Q60 8 62 20 Z" fill="#e04444"/>
+      <!-- windows -->
+      <rect x="22" y="9" width="14" height="9" rx="2" fill="#88ddff" opacity="0.85"/>
+      <rect x="40" y="9" width="14" height="9" rx="2" fill="#88ddff" opacity="0.85"/>
+      <!-- headlights -->
+      <rect x="1" y="22" width="8" height="5" rx="2" fill="#ffee44"/>
+      <rect x="71" y="22" width="8" height="5" rx="2" fill="#ff4444" opacity="0.9"/>
+      <!-- wheels -->
+      <circle cx="18" cy="34" r="6" fill="#111"/>
+      <circle cx="18" cy="34" r="4" fill="#333"/>
+      <circle cx="18" cy="34" r="2" fill="#555" class="wheel-spin"/>
+      <circle cx="62" cy="34" r="6" fill="#111"/>
+      <circle cx="62" cy="34" r="4" fill="#333"/>
+      <circle cx="62" cy="34" r="2" fill="#555" class="wheel-spin"/>
+      <!-- spoiler -->
+      <rect x="68" y="16" width="8" height="2" rx="1" fill="#cc0000"/>
+      <rect x="72" y="14" width="2" height="6" rx="1" fill="#aa0000"/>
+      <!-- racing stripe -->
+      <rect x="5" y="24" width="70" height="3" rx="1" fill="#ff6666" opacity="0.5"/>
+      <!-- number -->
+      <text x="38" y="31" text-anchor="middle" font-size="7" fill="#ffeeee" font-weight="900">01</text>
+    </svg>
+  </div>
+
+  <!-- Car B (player) -->
+  <div class="car-container" id="car-b">
+    <div class="car-label">🔵 B차 (내 차)</div>
+    <div class="exhaust" style="position:relative; left:-68px; bottom:-18px; z-index:5;">
+      <div class="exhaust-puff"></div>
+      <div class="exhaust-puff"></div>
+      <div class="exhaust-puff"></div>
+    </div>
+    <!-- Blue sports car SVG -->
+    <svg width="80" height="40" viewBox="0 0 80 40" style="margin-top:-14px;">
+      <rect x="5" y="20" width="70" height="14" rx="4" fill="#0066aa"/>
+      <path d="M18 20 Q20 8 28 8 L52 8 Q60 8 62 20 Z" fill="#0088cc"/>
+      <rect x="22" y="9" width="14" height="9" rx="2" fill="#88ddff" opacity="0.85"/>
+      <rect x="40" y="9" width="14" height="9" rx="2" fill="#88ddff" opacity="0.85"/>
+      <rect x="1" y="22" width="8" height="5" rx="2" fill="#ffee44"/>
+      <rect x="71" y="22" width="8" height="5" rx="2" fill="#ff4444" opacity="0.9"/>
+      <circle cx="18" cy="34" r="6" fill="#111"/>
+      <circle cx="18" cy="34" r="4" fill="#333"/>
+      <circle cx="18" cy="34" r="2" fill="#555" class="wheel-spin"/>
+      <circle cx="62" cy="34" r="6" fill="#111"/>
+      <circle cx="62" cy="34" r="4" fill="#333"/>
+      <circle cx="62" cy="34" r="2" fill="#555" class="wheel-spin"/>
+      <rect x="68" y="16" width="8" height="2" rx="1" fill="#0055aa"/>
+      <rect x="72" y="14" width="2" height="6" rx="1" fill="#004499"/>
+      <rect x="5" y="24" width="70" height="3" rx="1" fill="#00aaff" opacity="0.5"/>
+      <text x="38" y="31" text-anchor="middle" font-size="7" fill="#ddf4ff" font-weight="900">02</text>
+    </svg>
+  </div>
+
+  <!-- Explosion -->
+  <div class="explosion-wrap" id="explosionWrap">
+    <div class="explosion-emoji">💥</div>
+    <div class="explosion-smoke">
+      <div class="smoke-ball"></div>
+      <div class="smoke-ball"></div>
+      <div class="smoke-ball"></div>
+    </div>
+  </div>
+
+  <!-- Win banner -->
+  <div class="win-banner" id="winBanner">🏆 축하합니다! 당신은 레이스에서 승리하였습니다!</div>
+</div>
+
+<!-- ══ PROBLEM ══ -->
+<div class="problem-box">
+  <div class="problem-text" id="problemText"></div>
+
+  <!-- floating cars (charges) -->
+  <div class="charge-display">
+    <div class="charge-wrapper">
+      <div class="charge-label">A (점전하)</div>
+      <!-- mini blue car -->
+      <svg width="80" height="42" viewBox="0 0 80 42">
+        <rect x="5" y="21" width="70" height="14" rx="4" fill="#0066aa"/>
+        <path d="M18 21 Q20 9 28 9 L52 9 Q60 9 62 21 Z" fill="#0088cc"/>
+        <rect x="22" y="10" width="14" height="9" rx="2" fill="#88ddff" opacity="0.85"/>
+        <rect x="40" y="10" width="14" height="9" rx="2" fill="#88ddff" opacity="0.85"/>
+        <rect x="1" y="23" width="8" height="5" rx="2" fill="#ffee44"/>
+        <circle cx="18" cy="35" r="6" fill="#111"/>
+        <circle cx="18" cy="35" r="3.5" fill="#333"/>
+        <circle cx="62" cy="35" r="6" fill="#111"/>
+        <circle cx="62" cy="35" r="3.5" fill="#333"/>
+        <rect x="5" y="25" width="70" height="2" rx="1" fill="#00aaff" opacity="0.5"/>
+        <text x="38" y="32" text-anchor="middle" font-size="7" fill="#ddf4ff" font-weight="900">A</text>
+      </svg>
+      <div class="charge-val" id="chargeA"></div>
     </div>
 
-    <script>
-        let currentProblem = {};
-        
-        function generateNewProblem() {
-            const totalEnergy = Math.floor(Math.random() * 10 + 1) * 10;
-            const usefulWork = Math.floor(Math.random() * (totalEnergy / 10)) * 10;
-            
-            if (usefulWork === 0 || usefulWork === totalEnergy) {
-                return generateNewProblem();
-            }
-            
-            const efficiency = (usefulWork / totalEnergy) * 100;
-            
-            currentProblem = {
-                totalEnergy: totalEnergy,
-                usefulWork: usefulWork,
-                efficiency: efficiency
-            };
-            
-            document.getElementById('problemText').innerHTML = 
-                `어떤 열기관이 <strong>${totalEnergy} J</strong>의 에너지를 공급받아서 <strong>${usefulWork} J</strong>의 일을 하였다. 이 열기관의 열효율은 몇 %인지 쓰시오.`;
-            
-            document.getElementById('answerInput').value = '';
-            document.getElementById('resultSection').classList.remove('show');
-            document.getElementById('resultSection').className = 'result-section';
-            document.getElementById('answerInput').focus();
-        }
-        
-        function checkAnswer() {
-            const userAnswer = parseFloat(document.getElementById('answerInput').value);
-            
-            if (isNaN(userAnswer) || userAnswer === '') {
-                alert('답을 입력해주세요!');
-                return;
-            }
-            
-            const correctAnswer = currentProblem.efficiency;
-            const isCorrect = Math.abs(userAnswer - correctAnswer) < 0.1;
-            
-            const resultSection = document.getElementById('resultSection');
-            const resultTitle = document.getElementById('resultTitle');
-            const feedbackContent = document.getElementById('feedbackContent');
-            
-            if (isCorrect) {
-                resultSection.className = 'result-section result-correct show';
-                resultTitle.className = 'result-title correct';
-                resultTitle.textContent = '✓ 정답입니다!';
-            } else {
-                resultSection.className = 'result-section result-incorrect show';
-                resultTitle.className = 'result-title incorrect';
-                resultTitle.textContent = '✗ 오답입니다';
-            }
-            
-            feedbackContent.innerHTML = `
-                <strong>【 열효율 이론 】</strong><br>
-                열효율(η)은 열기관이 공급받은 에너지 중에서 실제로 유용한 일로 전환된 비율을 나타냅니다.
-                
-                <div class="formula">
-                    열효율(η) = (한 일 / 공급받은 에너지) × 100%
-                </div>
-                
-                <strong>【 문제 풀이 】</strong><br>
-                • 공급받은 에너지: ${currentProblem.totalEnergy} J<br>
-                • 한 일(유용한 일): ${currentProblem.usefulWork} J<br><br>
-                
-                <div class="formula">
-                    η = (${currentProblem.usefulWork} J ÷ ${currentProblem.totalEnergy} J) × 100%<br>
-                    η = ${(currentProblem.usefulWork / currentProblem.totalEnergy).toFixed(2)} × 100%<br>
-                    η = ${correctAnswer.toFixed(0)}%
-                </div>
-                
-                <strong>【 핵심 개념 】</strong><br>
-                열효율은 에너지 전환 과정에서 얼마나 효율적으로 에너지가 사용되었는지를 나타내는 지표입니다. 열기관에서는 공급된 에너지의 일부만 유용한 일로 전환되고, 나머지는 열 등의 형태로 손실됩니다. 따라서 열효율은 항상 100%보다 작으며, 열효율이 높을수록 에너지를 효율적으로 사용하는 것입니다.
-                ${!isCorrect ? `<br><br><strong>정답: ${correctAnswer.toFixed(0)}%</strong><br>입력하신 답: ${userAnswer}%` : ''}
-            `;
-            
-            resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-        
-        document.getElementById('answerInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                checkAnswer();
-            }
-        });
-        
-        generateNewProblem();
-    </script>
+    <div class="dist-line">
+      <div class="dist-arrow">←———→</div>
+      <div class="dist-label" id="distR"></div>
+    </div>
+
+    <div class="charge-wrapper delay">
+      <div class="charge-label">B (점전하)</div>
+      <!-- mini red car -->
+      <svg width="80" height="42" viewBox="0 0 80 42">
+        <rect x="5" y="21" width="70" height="14" rx="4" fill="#cc2222"/>
+        <path d="M18 21 Q20 9 28 9 L52 9 Q60 9 62 21 Z" fill="#e04444"/>
+        <rect x="22" y="10" width="14" height="9" rx="2" fill="#88ddff" opacity="0.85"/>
+        <rect x="40" y="10" width="14" height="9" rx="2" fill="#88ddff" opacity="0.85"/>
+        <rect x="1" y="23" width="8" height="5" rx="2" fill="#ffee44"/>
+        <circle cx="18" cy="35" r="6" fill="#111"/>
+        <circle cx="18" cy="35" r="3.5" fill="#333"/>
+        <circle cx="62" cy="35" r="6" fill="#111"/>
+        <circle cx="62" cy="35" r="3.5" fill="#333"/>
+        <rect x="5" y="25" width="70" height="2" rx="1" fill="#ff6666" opacity="0.5"/>
+        <text x="38" y="32" text-anchor="middle" font-size="7" fill="#ffeeee" font-weight="900">B</text>
+      </svg>
+      <div class="charge-val" id="chargeB"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ BOGI ══ -->
+<div class="bogibox">
+  <div class="bogi-title">보기</div>
+  <div class="bogi-item"><span class="bogi-key">ㄱ.</span><span id="bogi1"></span></div>
+  <div class="bogi-item"><span class="bogi-key">ㄴ.</span><span id="bogi2"></span></div>
+  <div class="bogi-item"><span class="bogi-key">ㄷ.</span><span id="bogi3"></span></div>
+</div>
+
+<div class="choice-question">
+  이에 대한 설명으로 옳은 것만을
+  <span style="background:#00c8ff;color:#000;padding:1px 9px;border-radius:10px;font-weight:900;font-size:12px;">보기</span>
+  에서 있는 대로 고른 것은?
+</div>
+
+<div class="choice-grid" id="choiceGrid"></div>
+
+<div class="btn-row">
+  <button class="btn-primary btn-check" onclick="checkAnswer()">✅ 확인</button>
+  <button class="btn-primary btn-new" onclick="newProblem()">🔀 새 문제</button>
+</div>
+
+<div class="feedback-box" id="feedbackBox"></div>
+
+<script>
+/* ── state ── */
+let qData    = {};
+let selected = null;
+let answered = false;
+let score    = 0;
+
+/* ── generate stars ── */
+(function(){
+  const layer = document.getElementById('starsLayer');
+  for(let i = 0; i < 40; i++){
+    const s = document.createElement('div');
+    s.className = 'star';
+    const sz = Math.random()*2 + 1;
+    s.style.cssText = `
+      width:${sz}px; height:${sz}px;
+      top:${Math.random()*100}%;
+      left:${Math.random()*100}%;
+      --d:${(Math.random()*2+1).toFixed(1)}s;
+      animation-delay:${(Math.random()*2).toFixed(1)}s;
+    `;
+    layer.appendChild(s);
+  }
+})();
+
+/* ── constants ── */
+// 선지 5가지 (수능형 고정 구성)
+const CHOICE_SETS = [
+  { label: '① ㄱ',        items: ['ㄱ'] },
+  { label: '② ㄴ',        items: ['ㄴ'] },
+  { label: '③ ㄱ, ㄴ',    items: ['ㄱ','ㄴ'] },
+  { label: '④ ㄴ, ㄷ',    items: ['ㄴ','ㄷ'] },
+  { label: '⑤ ㄱ, ㄴ, ㄷ',items: ['ㄱ','ㄴ','ㄷ'] },
+];
+
+// 선지에 존재하는 정답 조합만 (ㄷ단독·ㄱㄷ·ㄱㄴㄷ 제외 → 위 5가지와 정확히 대응)
+// 정답 없는 경우를 막기 위해 역방향으로 설계:
+// 먼저 정답 선지를 무작위 선택한 뒤, 그에 맞춰 보기 참/거짓을 결정
+
+function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+/* ── generate problem ── */
+function generateProblem(){
+  const qAval    = rand([-3,-2,-1,1,2,3]);
+  const qBval    = rand([-3,-2,-1,1,2,3]);
+  const r        = rand(['r','2r','3r']);
+  const sameSign = (qAval > 0) === (qBval > 0);
+
+  // ① 먼저 정답 선지를 랜덤 선택 (5가지 중 하나)
+  const targetChoice = rand(CHOICE_SETS);
+  const shouldG = targetChoice.items.includes('ㄱ');
+  const shouldN = targetChoice.items.includes('ㄴ');
+  const shouldD = targetChoice.items.includes('ㄷ');
+
+  // ② ㄱ: "B가 A에 작용하는 전기력의 크기는 A가 B에 작용하는 전기력의 크기보다 [크다/작다/같다]"
+  //    실제 정답은 항상 '같다'(뉴턴3법칙). shouldG=true면 '같다'로 서술, false면 틀린 서술
+  let g_stated_text, g_correct;
+  if(shouldG){
+    // 옳은 보기: '같다' 서술
+    g_stated_text = '같다';
+    g_correct = true;
+  } else {
+    // 틀린 보기: '크다' 또는 '작다' 중 랜덤
+    g_stated_text = rand(['크다','작다']);
+    g_correct = false;
+  }
+
+  // ③ ㄴ: B에 작용하는 전기력 방향
+  const n_actual = sameSign ? '오른쪽' : '왼쪽';
+  let n_stated, n_correct;
+  if(shouldN){
+    n_stated  = n_actual;   // 옳은 방향 서술
+    n_correct = true;
+  } else {
+    n_stated  = (n_actual === '오른쪽') ? '왼쪽' : '오른쪽'; // 틀린 방향
+    n_correct = false;
+  }
+
+  // ④ ㄷ: A 위치에서 B에 의한 전기장 방향
+  // B+이면 A위치(B의 왼쪽)에서 전기장은 왼쪽, B-이면 오른쪽
+  const d_actual = qBval > 0 ? '왼쪽' : '오른쪽';
+  let d_stated, d_correct;
+  if(shouldD){
+    d_stated  = d_actual;
+    d_correct = true;
+  } else {
+    d_stated  = (d_actual === '왼쪽') ? '오른쪽' : '왼쪽';
+    d_correct = false;
+  }
+
+  // ⑤ 피드백 생성
+  const tag = ok =>
+    ok ? `<span style="color:#00ff88;font-weight:700;">✓ 옳은 설명</span>`
+       : `<span style="color:#ff6666;font-weight:700;">✗ 틀린 설명</span>`;
+
+  const b1_fb = g_correct
+    ? `뉴턴 제3법칙(작용·반작용)에 따라, 두 전하 사이에 작용하는 전기력의 크기는 전하량·부호에 관계없이 <b>항상 서로 같습니다</b>. 보기의 "같다"는 ${tag(true)}`
+    : `뉴턴 제3법칙(작용·반작용)에 따라, 두 전하 사이의 전기력 크기는 <b>항상 같습니다</b>. 보기의 "${g_stated_text}"는 ${tag(false)} — 실제로는 <b>같다</b>입니다.`;
+
+  const b2_fb = sameSign
+    ? `A(${qAval > 0 ? '+'+qAval : qAval}C)와 B(${qBval > 0 ? '+'+qBval : qBval}C)는 <b>같은 부호</b> → <b>척력</b>(밀어내는 힘). B는 A로부터 멀어지는 방향인 <b>오른쪽</b>으로 힘을 받습니다. 보기의 "${n_stated}"은 ${tag(n_correct)}`
+    : `A(${qAval > 0 ? '+'+qAval : qAval}C)와 B(${qBval > 0 ? '+'+qBval : qBval}C)는 <b>다른 부호</b> → <b>인력</b>(당기는 힘). B는 A 쪽인 <b>왼쪽</b>으로 힘을 받습니다. 보기의 "${n_stated}"은 ${tag(n_correct)}`;
+
+  const b3_fb = qBval > 0
+    ? `B는 <b>양(+)전하</b>(+${qBval}C)입니다. 양전하 주위 전기장은 전하에서 <b>사방으로 뻗어나가는</b> 방향입니다. A는 B의 왼쪽에 있으므로 A 위치의 전기장은 <b>왼쪽</b> 방향입니다. 보기의 "${d_stated}"은 ${tag(d_correct)}`
+    : `B는 <b>음(-)전하</b>(${qBval}C)입니다. 음전하 주위 전기장은 전하 <b>안쪽으로 모여드는</b> 방향입니다. A는 B의 왼쪽에 있으므로 A 위치의 전기장은 <b>오른쪽</b> 방향입니다. 보기의 "${d_stated}"은 ${tag(d_correct)}`;
+
+  // 정답 배열 (targetChoice.items와 동일해야 함)
+  const correct = [...targetChoice.items];
+
+  const bogi1_html = g_correct
+    ? `B가 A에 작용하는 전기력의 크기는 A가 B에 작용하는 전기력의 크기와 <b style="color:#00c8ff">같다</b>.`
+    : `B가 A에 작용하는 전기력의 크기는 A가 B에 작용하는 전기력의 크기보다 <b style="color:#00c8ff">${g_stated_text}</b>.`;
+  const bogi2_html = `B에 작용하는 전기력의 방향은 <b style="color:#00c8ff">${n_stated}</b>이다.`;
+  const bogi3_html = `A의 위치에서 B에 의한 전기장의 방향은 <b style="color:#00c8ff">${d_stated}</b>이다.`;
+
+  return { qAval, qBval, r, bogi1_html, bogi2_html, bogi3_html,
+           g_correct, n_correct, d_correct, b1_fb, b2_fb, b3_fb, correct };
+}
+
+function findChoiceIndex(correct){
+  const key = JSON.stringify([...correct].sort());
+  for(let i = 0; i < CHOICE_SETS.length; i++)
+    if(JSON.stringify([...CHOICE_SETS[i].items].sort()) === key) return i;
+  return -1;
+}
+
+/* ── render ── */
+function renderProblem(q){
+  document.getElementById('problemText').innerHTML =
+    `그림은 전하량이 <b style="color:#00c8ff">${q.qAval < 0 ? q.qAval : '+'+q.qAval}C</b>인 점전하 A로부터 오른쪽으로 거리 <b style="color:#00c8ff">${q.r}</b>만큼 떨어진 지점에 전하량이 <b style="color:#00c8ff">${q.qBval < 0 ? q.qBval : '+'+q.qBval}C</b>인 점전하 B를 놓은 것이다. 다음 보기에 대한 설명 중 옳은 것만을 고르시오.`;
+  document.getElementById('chargeA').textContent = `${q.qAval < 0 ? q.qAval : '+'+q.qAval} C`;
+  document.getElementById('chargeB').textContent = `${q.qBval < 0 ? q.qBval : '+'+q.qBval} C`;
+  document.getElementById('distR').textContent   = q.r;
+  document.getElementById('bogi1').innerHTML     = q.bogi1_html;
+  document.getElementById('bogi2').innerHTML     = q.bogi2_html;
+  document.getElementById('bogi3').innerHTML     = q.bogi3_html;
+
+  const grid = document.getElementById('choiceGrid');
+  grid.innerHTML = '';
+  CHOICE_SETS.forEach((c,i)=>{
+    const btn = document.createElement('button');
+    btn.className   = 'choice-btn';
+    btn.textContent = c.label;
+    btn.id          = 'choice-' + i;
+    btn.onclick     = ()=> selectChoice(i);
+    grid.appendChild(btn);
+  });
+
+  document.getElementById('feedbackBox').className = 'feedback-box';
+  selected = null;
+  answered = false;
+  resetRace();
+}
+
+function selectChoice(i){
+  if(answered) return;
+  selected = i;
+  document.querySelectorAll('.choice-btn').forEach((b,idx)=>{
+    b.classList.toggle('selected', idx===i);
+  });
+}
+
+/* ── race ── */
+function resetRace(){
+  const carA = document.getElementById('car-a');
+  const carB = document.getElementById('car-b');
+  carA.style.transition = 'none';
+  carB.style.transition = 'none';
+  carA.style.left = '52%';
+  carB.style.left = '8%';
+  // re-enable transition after brief delay
+  setTimeout(()=>{
+    carA.style.transition = 'left 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+    carB.style.transition = 'left 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+  }, 50);
+  document.getElementById('explosionWrap').style.display = 'none';
+  document.getElementById('winBanner').style.display     = 'none';
+}
+
+function animateRace(isCorrect){
+  const carB = document.getElementById('car-b');
+  if(isCorrect){
+    // B overtakes A
+    carB.style.left = '78%';
+    setTimeout(()=>{
+      const banner = document.getElementById('winBanner');
+      banner.style.display = 'block';
+      banner.style.animation = 'none';
+      void banner.offsetWidth;
+      banner.style.animation = 'winPop 0.5s cubic-bezier(0.175,0.885,0.32,1.275)';
+    }, 1900);
+  } else {
+    // B moves forward then stops and explodes
+    carB.style.left = '38%';
+    setTimeout(()=>{
+      const wrap = document.getElementById('explosionWrap');
+      wrap.style.left = '36%';
+      wrap.style.display = 'flex';
+      // re-trigger animation
+      const emoji = wrap.querySelector('.explosion-emoji');
+      emoji.style.animation = 'none';
+      void emoji.offsetWidth;
+      emoji.style.animation = 'explodePop 0.6s ease-out forwards';
+      const balls = wrap.querySelectorAll('.smoke-ball');
+      balls.forEach(b=>{
+        b.style.animation = 'none';
+        void b.offsetWidth;
+        b.style.animation = '';
+      });
+    }, 1900);
+  }
+}
+
+/* ── check ── */
+function checkAnswer(){
+  if(selected === null){ alert('답을 선택해주세요!'); return; }
+  if(answered) return;
+  answered = true;
+
+  const correctIdx = findChoiceIndex(qData.correct);
+  const isCorrect  = selected === correctIdx;
+
+  document.querySelectorAll('.choice-btn').forEach((b,i)=>{
+    b.disabled = true;
+    b.classList.remove('selected');
+    if(i === correctIdx) b.classList.add('correct');
+    if(i === selected && !isCorrect) b.classList.add('wrong');
+  });
+
+  if(isCorrect){ score++; document.getElementById('scoreVal').textContent = score; }
+
+  showFeedback(isCorrect, correctIdx);
+  animateRace(isCorrect);
+}
+
+/* ── feedback ── */
+function showFeedback(isCorrect, correctIdx){
+  const q  = qData;
+  const fb = document.getElementById('feedbackBox');
+  const correctLabel = CHOICE_SETS[correctIdx]?.label ?? '없음';
+
+  let html = `<div class="feedback-result ${isCorrect ? 'result-correct':'result-wrong'}">${isCorrect ? '🎉 정답입니다!' : '❌ 틀렸습니다'}</div>`;
+  if(!isCorrect) html += `<div style="color:#ffaa44;margin-bottom:10px;">정답: <b>${correctLabel}</b></div>`;
+
+  html += `
+    <div class="fb-head">📘 풀이 해설</div>
+    <div class="fb-item"><b style="color:#00c8ff">ㄱ.</b> ${q.b1_fb}</div>
+    <div class="fb-item"><b style="color:#00c8ff">ㄴ.</b> ${q.b2_fb}</div>
+    <div class="fb-item"><b style="color:#00c8ff">ㄷ.</b> ${q.b3_fb}</div>
+    <div class="fb-item" style="margin-top:8px; border-left-color:#00c8ff88;">
+      <b>💡 핵심 개념 정리</b><br>
+      · <span class="highlight">쿨롱 법칙</span>: F = k|q₁||q₂| / r² — 두 전하 사이 힘의 크기는 항상 동일 (뉴턴 제3법칙)<br>
+      · <span class="highlight">힘의 방향</span>: 같은 부호 → 척력(서로 밀어냄) / 다른 부호 → 인력(서로 당김)<br>
+      · <span class="highlight">전기장 방향</span>: (+)전하 주위에서는 전하로부터 <b>사방으로 뻗어나가는</b> 방향,<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(-)전하 주위에서는 전하 <b>안쪽으로 모여드는</b> 방향
+    </div>`;
+
+  fb.innerHTML = html;
+  fb.className = 'feedback-box show';
+  fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+/* ── new problem ── */
+function newProblem(){
+  qData = generateProblem();
+  renderProblem(qData);
+}
+
+/* ── init ── */
+newProblem();
+</script>
 </body>
 </html>

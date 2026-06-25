@@ -1,575 +1,840 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>에너지 효율 시뮬레이션</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Malgun Gothic', sans-serif;
-            background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
-            padding: 20px;
-            min-height: 100vh;
-        }
-        
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        
-        h1 {
-            color: #1976D2;
-            text-align: center;
-            margin-bottom: 20px;
-            font-size: 22px;
-        }
-        
-        .problem-box {
-            background: #F5F5F5;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            line-height: 1.8;
-            font-size: 15px;
-        }
-        
-        .problem-header {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #E0E0E0;
-        }
-        
-        .context-box {
-            background: #FFF9C4;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            border-left: 4px solid #FBC02D;
-            font-size: 14px;
-        }
-        
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-            background: white;
-            border: 1px solid #BDBDBD;
-        }
-        
-        .data-table th {
-            background: #42A5F5;
-            color: white;
-            padding: 10px 6px;
-            font-size: 13px;
-            text-align: center;
-            border: 1px solid #1976D2;
-        }
-        
-        .data-table td {
-            padding: 10px 6px;
-            border: 1px solid #BDBDBD;
-            text-align: center;
-            font-size: 13px;
-        }
-        
-        .device-name-col {
-            font-weight: bold;
-            color: #1565C0;
-        }
-        
-        .question-box {
-            background: #E3F2FD;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            font-weight: bold;
-            color: #1565C0;
-            font-size: 15px;
-            border: 2px solid #90CAF9;
-        }
-        
-        .choice-container {
-            display: flex;
-            justify-content: space-around;
-            margin: 25px 0;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        
-        .choice-btn {
-            flex: 1;
-            min-width: 60px;
-            padding: 18px 10px;
-            font-size: 20px;
-            font-weight: bold;
-            background: #BBDEFB;
-            border: 3px solid #90CAF9;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: #1565C0;
-        }
-        
-        .choice-btn:hover {
-            background: #90CAF9;
-            transform: scale(1.05);
-        }
-        
-        .choice-btn.selected {
-            background: #42A5F5;
-            color: white;
-            border-color: #1976D2;
-        }
-        
-        .order-display {
-            text-align: center;
-            font-size: 18px;
-            margin: 20px 0;
-            padding: 15px;
-            background: #E3F2FD;
-            border-radius: 8px;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .order-text {
-            color: #1565C0;
-            font-weight: bold;
-        }
-        
-        .btn-container {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        .btn {
-            flex: 1;
-            padding: 15px;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .btn-new {
-            background: #42A5F5;
-            color: white;
-        }
-        
-        .btn-new:hover {
-            background: #1E88E5;
-        }
-        
-        .btn-submit {
-            background: #66BB6A;
-            color: white;
-        }
-        
-        .btn-submit:hover {
-            background: #43A047;
-        }
-        
-        .result-box {
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 10px;
-            display: none;
-            line-height: 1.8;
-            font-size: 14px;
-        }
-        
-        .result-box.show {
-            display: block;
-        }
-        
-        .result-box.correct {
-            background: #C8E6C9;
-            border: 2px solid #66BB6A;
-        }
-        
-        .result-box.incorrect {
-            background: #FFCDD2;
-            border: 2px solid #EF5350;
-        }
-        
-        .result-title {
-            font-weight: bold;
-            font-size: 20px;
-            margin-bottom: 15px;
-        }
-        
-        .explanation {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 2px solid rgba(0,0,0,0.1);
-        }
-        
-        .formula {
-            background: white;
-            padding: 12px;
-            border-radius: 5px;
-            margin: 10px 0;
-            font-family: 'Courier New', monospace;
-            border-left: 3px solid #1976D2;
-        }
-        
-        .calculation-step {
-            margin: 12px 0;
-            padding: 10px;
-            background: #F5F5F5;
-            border-radius: 5px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>전자기 유도 및 무선 충전 — 문제 510</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #f5f5f3;
+    --surface:  #ffffff;
+    --border:   #d8d8d4;
+    --border2:  #b8b8b0;
+    --text:     #1a1a18;
+    --text2:    #4a4a46;
+    --text3:    #8a8a84;
+    --accent:   #1a1a18;
+    --correct:  #2a6e2a;
+    --wrong:    #8a1a1a;
+    --mono:     'JetBrains Mono', monospace;
+    --sans:     'Noto Sans KR', sans-serif;
+  }
+
+  html, body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* ── Layout ── */
+  .page-wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 32px 20px 60px;
+  }
+
+  /* ── Header ── */
+  .header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 28px;
+    border-bottom: 2px solid var(--text);
+    padding-bottom: 14px;
+  }
+  .header-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--text3);
+    text-transform: uppercase;
+  }
+  .header-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .header-sub {
+    font-size: 12px;
+    color: var(--text3);
+    margin-left: auto;
+  }
+
+  /* ── Section card ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 24px 28px;
+    margin-bottom: 16px;
+  }
+  .card-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text3);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  /* ── Simulation canvas area ── */
+  .sim-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .sim-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .sim-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text3);
+    text-transform: uppercase;
+  }
+  .sim-status {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+    padding: 3px 10px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    background: var(--bg);
+  }
+  .sim-status.running {
+    color: var(--correct);
+    border-color: var(--correct);
+    background: #f0fff0;
+  }
+  canvas {
+    display: block;
+    width: 100%;
+    background: #fafafa;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+  }
+
+  /* ── Battery ── */
+  .battery-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 14px;
+  }
+  .battery-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text2);
+    white-space: nowrap;
+  }
+  .battery-track {
+    flex: 1;
+    height: 16px;
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+  }
+  .battery-fill {
+    height: 100%;
+    width: 10%;
+    background: #3a3a38;
+    border-radius: 1px;
+    transition: width 0.3s ease;
+  }
+  .battery-pct {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text2);
+    min-width: 40px;
+    text-align: right;
+  }
+  .lightning {
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .lightning.active { opacity: 1; }
+
+  /* ── Problem text ── */
+  .problem-stem {
+    font-size: 14.5px;
+    line-height: 1.85;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+  .problem-box {
+    border: 1px solid var(--border2);
+    border-radius: 3px;
+    padding: 14px 18px;
+    background: var(--bg);
+    margin-bottom: 18px;
+  }
+  .bogiLabel {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text2);
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+  }
+  .stmt {
+    font-size: 14px;
+    line-height: 1.85;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+  .stmt .key {
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  /* ── Question line ── */
+  .question-line {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 18px;
+    line-height: 1.7;
+  }
+  .question-line em {
+    font-style: normal;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* ── Answer buttons ── */
+  .choices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .choice-btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 10px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border2);
+    border-radius: 3px;
+    font-family: var(--sans);
+    font-size: 13.5px;
+    color: var(--text);
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    line-height: 1.5;
+  }
+  .choice-btn:hover { background: #f0f0ee; border-color: #888; }
+  .choice-btn.correct { background: #e8f4e8; border-color: var(--correct); color: var(--correct); font-weight: 700; }
+  .choice-btn.wrong   { background: #f4e8e8; border-color: var(--wrong);   color: var(--wrong);   font-weight: 700; }
+  .choice-btn:disabled { cursor: default; }
+
+  /* ── Explanation ── */
+  .explanation {
+    display: none;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--text);
+    border-radius: 3px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+  }
+  .explanation.show { display: block; }
+  .exp-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text3);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .exp-body {
+    font-size: 13.5px;
+    line-height: 1.9;
+    color: var(--text2);
+  }
+  .exp-body strong { color: var(--text); font-weight: 700; }
+  .exp-row { margin-bottom: 6px; }
+  .tag-true  { display: inline-block; background: #2a6e2a; color: #fff; font-size: 11px; font-family: var(--mono); padding: 1px 6px; border-radius: 2px; margin-right: 4px; }
+  .tag-false { display: inline-block; background: #8a1a1a; color: #fff; font-size: 11px; font-family: var(--mono); padding: 1px 6px; border-radius: 2px; margin-right: 4px; }
+
+  /* ── New problem button ── */
+  .new-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: var(--text);
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .new-btn:hover { background: #3a3a38; }
+
+  /* ── Divider ── */
+  hr.thin { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+  /* ── Responsive ── */
+  @media (max-width: 560px) {
+    .choice-btn { min-width: calc(50% - 4px); }
+    .card { padding: 18px 16px; }
+  }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>⚡ 에너지 효율 평가 문제</h1>
-        
-        <div class="problem-box" id="problemText">
-            <div class="problem-header">문제를 불러오는 중...</div>
-        </div>
-        
-        <div class="choice-container">
-            <button class="choice-btn" id="btnA" onclick="selectChoice('A')">A</button>
-            <button class="choice-btn" id="btnB" onclick="selectChoice('B')">B</button>
-            <button class="choice-btn" id="btnC" onclick="selectChoice('C')">C</button>
-            <button class="choice-btn" id="btnD" onclick="selectChoice('D')">D</button>
-            <button class="choice-btn" id="btnE" onclick="selectChoice('E')">E</button>
-        </div>
-        
-        <div class="order-display">
-            <span class="order-text" id="orderDisplay">위의 A, B, C, D, E를 클릭하여 순서를 정하세요</span>
-        </div>
-        
-        <div class="btn-container">
-            <button class="btn btn-new" onclick="generateNewProblem()">🔄 새 문제</button>
-            <button class="btn btn-submit" onclick="checkAnswer()">✓ 정답 확인</button>
-        </div>
-        
-        <div class="result-box" id="resultBox"></div>
+<div class="page-wrap">
+
+  <!-- Header -->
+  <div class="header">
+    <span class="header-num">고등학교 물리학 · 수행평가</span>
+    <span class="header-title">전자기 유도 및 무선 충전</span>
+    <span class="header-sub">문제 번호 510</span>
+  </div>
+
+  <!-- Simulation -->
+  <div class="sim-card">
+    <div class="sim-header">
+      <span class="sim-label">시뮬레이션 — 무선 충전 원리</span>
+      <span class="sim-status" id="simStatus">⏸ 대기 중</span>
+    </div>
+    <canvas id="simCanvas" height="220"></canvas>
+    <div class="battery-row">
+      <span class="battery-label">버스 배터리</span>
+      <div class="battery-track">
+        <div class="battery-fill" id="batteryFill"></div>
+      </div>
+      <span class="battery-pct" id="batteryPct">10%</span>
+      <span class="lightning" id="lightning">⚡</span>
+    </div>
+  </div>
+
+  <!-- Problem card -->
+  <div class="card" id="problemCard">
+    <div class="card-label">문제 지문</div>
+    <p class="problem-stem" id="problemStem">로딩 중…</p>
+
+    <div class="problem-box">
+      <div class="bogiLabel">보 기</div>
+      <div class="stmt" id="stmtG"></div>
+      <div class="stmt" id="stmtN"></div>
+      <div class="stmt" id="stmtD"></div>
     </div>
 
-    <script>
-        const deviceTemplates = [
-            { name: '냉장고', baseEff: 1, usage: '24시간 연속' },
-            { name: 'LED TV', baseEff: 2, usage: '하루 4시간' },
-            { name: '에어컨', baseEff: 1, usage: '하루 8시간' },
-            { name: '전기밥솥', baseEff: 3, usage: '하루 2시간' },
-            { name: '세탁기', baseEff: 2, usage: '주 3회' },
-            { name: '전자레인지', baseEff: 3, usage: '하루 30분' },
-            { name: '식기세척기', baseEff: 2, usage: '하루 1회' },
-            { name: '공기청정기', baseEff: 2, usage: '24시간 연속' },
-            { name: '제습기', baseEff: 2, usage: '하루 12시간' },
-            { name: '선풍기', baseEff: 4, usage: '하루 6시간' },
-            { name: '전기히터', baseEff: 1, usage: '하루 5시간' },
-            { name: '온수매트', baseEff: 2, usage: '하루 8시간' },
-            { name: '데스크톱', baseEff: 2, usage: '하루 6시간' },
-            { name: '노트북', baseEff: 3, usage: '하루 8시간' },
-            { name: '진공청소기', baseEff: 2, usage: '주 2회' }
-        ];
-        
-        const contexts = [
-            { 
-                intro: '민수네 가족은 여름철 전기 요금이 급증하자 가전제품의 에너지 소비 현황을 파악하기로 하였다.',
-                question: '한 달(30일) 동안 소비하는 전력량이 적은 것부터 큰 순서대로 나열하시오.',
-                extra: '(단, 전력량은 소비전력(W) × 사용시간(h)으로 계산하며, 1kWh = 1,000Wh이다.)'
-            },
-            {
-                intro: '지영이는 환경 동아리 활동으로 학교 과학실의 전기기기 에너지 효율을 조사하였다.',
-                question: '월간 전력 소비량이 작은 순서대로 기기를 나열하시오.',
-                extra: '(단, 한 달은 30일로 계산하며, 대기전력은 무시한다.)'
-            },
-            {
-                intro: '수진이는 자취방의 전기 요금을 절약하기 위해 보유한 가전제품의 소비 전력을 측정하였다.',
-                question: '월간 전기 에너지 사용량을 비교하여 적은 것부터 큰 순서대로 나열하시오.',
-                extra: '(단, 1kWh당 전기 요금은 100원이며, 한 달은 30일이다.)'
-            },
-            {
-                intro: '환경과학 시간에 학생들이 가정에서 사용하는 전기기기의 에너지 소비 패턴을 조사하였다.',
-                question: '다음 기기들의 월간 소비 전력량을 계산하여 작은 순서대로 배열하시오.',
-                extra: '(단, 전력량(Wh) = 전력(W) × 시간(h)이며, 효율 등급은 참고용이다.)'
-            },
-            {
-                intro: '태준이네 집에서는 탄소중립 실천을 위해 가전제품의 전력 사용량을 모니터링하기로 하였다.',
-                question: '30일 기준 총 소비 전력량이 적은 기기부터 많은 기기 순으로 나열하시오.',
-                extra: '(단, 소비 전력량 = 정격소비전력 × 일일사용시간 × 30일로 계산한다.)'
-            }
-        ];
-        
-        let currentProblem = null;
-        let selectedOrder = [];
-        
-        function getRandomValue() {
-            return (Math.floor(Math.random() * 30) + 1) * 10;
-        }
-        
-        function getRandomItems(arr, count) {
-            const shuffled = [...arr].sort(() => 0.5 - Math.random());
-            return shuffled.slice(0, count);
-        }
-        
-        function generateNewProblem() {
-            const selectedDevices = getRandomItems(deviceTemplates, 5);
-            const context = contexts[Math.floor(Math.random() * contexts.length)];
-            const labels = ['A', 'B', 'C', 'D', 'E'];
-            
-            currentProblem = {
-                context: context,
-                devices: {}
-            };
-            
-            labels.forEach((label, index) => {
-                const template = selectedDevices[index];
-                const power = getRandomValue();
-                const dailyHours = getRandomValue() / 10; // 0.1~3.0시간 범위
-                const efficiency = Math.floor(Math.random() * 5) + 1;
-                
-                // 월간 소비전력량 계산 (30일 기준)
-                const monthlyEnergy = power * dailyHours * 30;
-                
-                currentProblem.devices[label] = {
-                    name: template.name,
-                    power: power,
-                    dailyHours: dailyHours,
-                    monthlyEnergy: Math.round(monthlyEnergy),
-                    efficiency: efficiency,
-                    usage: template.usage
-                };
-            });
-            
-            const sortedDevices = labels.sort((a, b) => 
-                currentProblem.devices[a].monthlyEnergy - currentProblem.devices[b].monthlyEnergy
-            );
-            currentProblem.correctOrder = sortedDevices;
-            
-            displayProblem();
-            resetSelection();
-            hideResult();
-        }
-        
-        function displayProblem() {
-            if (!currentProblem) return;
-            
-            const labels = ['A', 'B', 'C', 'D', 'E'];
-            let tableRows = '';
-            
-            labels.forEach(label => {
-                const device = currentProblem.devices[label];
-                tableRows += `
-                    <tr>
-                        <td class="device-name-col">${label}</td>
-                        <td>${device.name}</td>
-                        <td>${device.power}W</td>
-                        <td>${device.dailyHours}시간</td>
-                        <td>${device.efficiency}등급</td>
-                    </tr>
-                `;
-            });
-            
-            const html = `
-                <div class="problem-header">
-                    [2022 개정 교육과정 - 통합과학2 / Ⅱ-2. 에너지 효율과 신재생 에너지]
-                </div>
-                
-                <div class="context-box">
-                    ${currentProblem.context.intro} 다음은 조사한 가전제품의 정보이다.
-                </div>
-                
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>기호</th>
-                            <th>기기명</th>
-                            <th>정격소비전력</th>
-                            <th>일일사용시간</th>
-                            <th>효율등급</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${tableRows}
-                    </tbody>
-                </table>
-                
-                <div class="question-box">
-                    ${currentProblem.context.question}
-                </div>
-                
-                <div style="font-size: 13px; color: #666; margin-top: 10px;">
-                    ${currentProblem.context.extra}
-                </div>
-            `;
-            
-            document.getElementById('problemText').innerHTML = html;
-        }
-        
-        function selectChoice(choice) {
-            const index = selectedOrder.indexOf(choice);
-            
-            if (index > -1) {
-                selectedOrder.splice(index, 1);
-            } else {
-                if (selectedOrder.length < 5) {
-                    selectedOrder.push(choice);
-                }
-            }
-            
-            updateDisplay();
-        }
-        
-        function updateDisplay() {
-            ['A', 'B', 'C', 'D', 'E'].forEach(choice => {
-                const btn = document.getElementById('btn' + choice);
-                const index = selectedOrder.indexOf(choice);
-                
-                if (index > -1) {
-                    btn.classList.add('selected');
-                    btn.textContent = `${choice} (${index + 1})`;
-                } else {
-                    btn.classList.remove('selected');
-                    btn.textContent = choice;
-                }
-            });
-            
-            const orderDisplay = document.getElementById('orderDisplay');
-            if (selectedOrder.length === 0) {
-                orderDisplay.textContent = '위의 A, B, C, D, E를 클릭하여 순서를 정하세요';
-            } else {
-                orderDisplay.textContent = `선택한 순서: ${selectedOrder.join(' < ')}`;
-            }
-        }
-        
-        function resetSelection() {
-            selectedOrder = [];
-            updateDisplay();
-        }
-        
-        function hideResult() {
-            const resultBox = document.getElementById('resultBox');
-            resultBox.classList.remove('show', 'correct', 'incorrect');
-        }
-        
-        function checkAnswer() {
-            if (!currentProblem) {
-                alert('먼저 문제를 생성해주세요!');
-                return;
-            }
-            
-            if (selectedOrder.length !== 5) {
-                alert('A, B, C, D, E를 모두 선택해주세요!');
-                return;
-            }
-            
-            const isCorrect = JSON.stringify(selectedOrder) === JSON.stringify(currentProblem.correctOrder);
-            const resultBox = document.getElementById('resultBox');
-            
-            resultBox.className = 'result-box show ' + (isCorrect ? 'correct' : 'incorrect');
-            
-            let deviceCalcs = '';
-            ['A', 'B', 'C', 'D', 'E'].forEach(label => {
-                const device = currentProblem.devices[label];
-                deviceCalcs += `
-                    <div class="calculation-step">
-                        <strong>${label}. ${device.name}</strong><br>
-                        월간 전력량 = ${device.power}W × ${device.dailyHours}h/일 × 30일<br>
-                        = <strong style="color: #D32F2F;">${device.monthlyEnergy.toLocaleString()}Wh</strong>
-                        = <strong>${(device.monthlyEnergy/1000).toFixed(2)}kWh</strong>
-                        (효율 ${device.efficiency}등급)
-                    </div>
-                `;
-            });
-            
-            const correctOrderWithNames = currentProblem.correctOrder.map(label => 
-                `${label}(${currentProblem.devices[label].name})`
-            ).join(' < ');
-            
-            const selectedOrderWithNames = selectedOrder.map(label => 
-                `${label}(${currentProblem.devices[label].name})`
-            ).join(' < ');
-            
-            const minDevice = currentProblem.devices[currentProblem.correctOrder[0]];
-            const maxDevice = currentProblem.devices[currentProblem.correctOrder[4]];
-            const energyDiff = maxDevice.monthlyEnergy - minDevice.monthlyEnergy;
-            const costDiff = Math.round(energyDiff / 10);
-            
-            const html = `
-                <div class="result-title">${isCorrect ? '✓ 정답입니다!' : '✗ 오답입니다.'}</div>
-                <div style="font-size: 16px; margin: 10px 0;">
-                    <strong>정답:</strong> ${correctOrderWithNames}<br>
-                    <strong>선택:</strong> ${selectedOrderWithNames}
-                </div>
-                
-                <div class="explanation">
-                    <strong style="font-size: 17px; color: #1976D2;">📚 상세 풀이</strong><br><br>
-                    
-                    <strong style="color: #1565C0;">【 이론적 배경 】</strong><br>
-                    전기 에너지 소비량은 전력과 시간의 곱으로 계산됩니다.<br>
-                    <div class="formula">
-                        <strong>전력량(E) = 전력(P) × 시간(t)</strong><br>
-                        • 전력(P): 단위시간당 소비하는 에너지 [W = J/s]<br>
-                        • 시간(t): 기기를 사용한 총 시간 [h]<br>
-                        • 전력량(E): 총 소비한 전기 에너지 [Wh 또는 kWh]<br>
-                        • 변환: 1kWh = 1,000Wh
-                    </div>
-                    <strong>에너지 효율</strong>: 투입 에너지 대비 유용한 에너지의 비율<br>
-                    - 효율 등급이 높을수록(1등급에 가까울수록) 같은 성능에서 전력 소비가 적음<br>
-                    - 에너지 절약 → 전기 요금 절감 + 온실가스 배출 감소<br><br>
-                    
-                    <strong style="color: #1565C0;">【 월간 전력량 계산 】</strong><br>
-                    ${deviceCalcs}
-                    <br>
-                    
-                    <strong style="color: #1565C0;">【 크기 비교 및 정렬 】</strong><br>
-                    <div class="formula">
-                        ${['A', 'B', 'C', 'D', 'E'].map(label => {
-                            const device = currentProblem.devices[label];
-                            return `${label}(${device.name}): ${device.monthlyEnergy.toLocaleString()}Wh = ${(device.monthlyEnergy/1000).toFixed(2)}kWh`;
-                        }).join('<br>')}
-                    </div>
-                    월간 소비 전력량이 작은 순서:<br>
-                    <strong style="font-size: 17px; color: #1976D2;">${correctOrderWithNames}</strong><br><br>
-                    
-                    <strong style="color: #1565C0;">【 결과 분석 】</strong><br>
-                    • 최소 소비: <strong>${currentProblem.correctOrder[0]}(${minDevice.name})</strong><br>
-                      → ${minDevice.monthlyEnergy.toLocaleString()}Wh = ${(minDevice.monthlyEnergy/1000).toFixed(2)}kWh<br>
-                    • 최대 소비: <strong>${currentProblem.correctOrder[4]}(${maxDevice.name})</strong><br>
-                      → ${maxDevice.monthlyEnergy.toLocaleString()}Wh = ${(maxDevice.monthlyEnergy/1000).toFixed(2)}kWh<br>
-                    • 에너지 소비 차이: ${energyDiff.toLocaleString()}Wh = ${(energyDiff/1000).toFixed(2)}kWh<br>
-                    • 월 전기 요금 차이(1kWh=100원 기준): 약 <strong>${costDiff.toLocaleString()}원</strong><br>
-                    • 연간 전기 요금 차이: 약 <strong>${(costDiff * 12).toLocaleString()}원</strong><br><br>
-                    
-                    <strong style="color: #1565C0;">【 에너지 절약 방안 】</strong><br>
-                    ① 고효율(1~2등급) 가전제품 사용<br>
-                    ② 대기전력 차단 (플러그 뽑기, 멀티탭 활용)<br>
-                    ③ 적정 온도 유지 (냉난방 기기)<br>
-                    ④ 불필요한 전원 OFF<br>
-                    ⑤ LED 조명 사용으로 조명 에너지 절감
-                </div>
-            `;
-            
-            resultBox.innerHTML = html;
-            resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-        
-        window.onload = function() {
-            generateNewProblem();
-        };
-    </script>
+    <p class="question-line">이에 대한 설명으로 <em>옳은 것만을 보기에서 있는 대로 고른 것</em>은?</p>
+
+    <div class="choices" id="choicesBox"></div>
+    <div class="explanation" id="expBox">
+      <div class="exp-title">해 설</div>
+      <div class="exp-body" id="expBody"></div>
+    </div>
+  </div>
+
+  <button class="new-btn" id="newBtn" onclick="generateProblem()">새 문제 생성 ↺</button>
+
+</div>
+
+<script>
+/* ===================================================================
+   전자기 유도 무선 충전 — 문제 510  (완전 구현)
+   =================================================================== */
+
+// ── 전역 상태 ─────────────────────────────────────────────────────
+let animRunning   = false;
+let animId        = null;
+let batteryPct    = 10;
+let batteryTimer  = null;
+let t             = 0;           // 애니메이션 시간(초)
+let answered      = false;
+
+// 현재 문제 데이터
+let currentV      = {};
+let currentTruths = {};          // { G: bool, N: bool, D: bool }
+let currentTexts  = {};          // { G: string, N: string, D: string }
+let currentAnswer = '';          // 정답 선지 문자열 e.g. 'ㄱ, ㄴ'
+let currentChoices= [];          // [{label:'①ㄱ', correct:true}, ...]
+
+// ── 캔버스 ────────────────────────────────────────────────────────
+const canvas = document.getElementById('simCanvas');
+const ctx    = canvas.getContext('2d');
+let W = 0, H = 0;
+
+// 양전하 입자 상태
+let charges = [];
+
+function resizeCanvas() {
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const dpr  = window.devicePixelRatio || 1;
+  W = Math.max(320, rect.width - 32);
+  H = 220;
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
+  canvas.width  = W * dpr;
+  canvas.height = H * dpr;
+  ctx.scale(dpr, dpr);
+}
+
+function initCharges() {
+  charges = [];
+  // 수전 코일 영역(오른쪽 코일 내부) 에 6개 양전하 입자 생성
+  const rx = Math.round(W * 0.62);
+  const ry = Math.round(H * 0.42);
+  const rw = Math.round(W * 0.28);
+  const rh = Math.round(H * 0.32);
+  for (let i = 0; i < 6; i++) {
+    charges.push({
+      x:  rx + 16 + (i % 3) * ((rw - 32) / 2),
+      y:  ry + 18 + Math.floor(i / 3) * (rh - 36) / 1,
+      vx: 0,
+      baseX: rx + 16 + (i % 3) * ((rw - 32) / 2),
+    });
+  }
+}
+
+// ── 그리기 ────────────────────────────────────────────────────────
+function drawSim(time) {
+  ctx.clearRect(0, 0, W, H);
+
+  const lx = Math.round(W * 0.08);   // 송전 코일 x
+  const ly = Math.round(H * 0.28);   // 코일 top y
+  const lw = Math.round(W * 0.28);   // 코일 너비
+  const lh = Math.round(H * 0.44);   // 코일 높이
+
+  const rx = Math.round(W * 0.62);   // 수전 코일 x
+  const ry = Math.round(H * 0.28);
+  const rw = Math.round(W * 0.28);
+  const rh = Math.round(H * 0.44);
+
+  const midX = Math.round(W * 0.5);  // 가운데 영역
+
+  // ── 배경 레이블 (도로 / 버스) ──
+  ctx.font = '11px "Noto Sans KR",sans-serif';
+  ctx.fillStyle = '#aaa';
+  ctx.textAlign = 'center';
+  ctx.fillText('도로 (송전 코일)', lx + lw / 2, ly - 8);
+  ctx.fillText('버스 (수전 코일)', rx + rw / 2, ry - 8);
+
+  // ── 송전 코일 박스 ──
+  ctx.strokeStyle = '#555';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(lx, ly, lw, lh);
+  ctx.fillStyle = '#f8f8f8';
+  ctx.fillRect(lx + 1, ly + 1, lw - 2, lh - 2);
+
+  // 코일 권선 표시(가로선 4개)
+  ctx.strokeStyle = '#888';
+  ctx.lineWidth = 1.2;
+  for (let i = 1; i <= 4; i++) {
+    const y = ly + (lh / 5) * i;
+    ctx.beginPath(); ctx.moveTo(lx + 6, y); ctx.lineTo(lx + lw - 6, y); ctx.stroke();
+  }
+
+  // ── 수전 코일 박스 ──
+  ctx.strokeStyle = '#555';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(rx, ry, rw, rh);
+  ctx.fillStyle = '#f8f8f8';
+  ctx.fillRect(rx + 1, ry + 1, rw - 2, rh - 2);
+
+  ctx.strokeStyle = '#888';
+  ctx.lineWidth = 1.2;
+  for (let i = 1; i <= 4; i++) {
+    const y = ry + (rh / 5) * i;
+    ctx.beginPath(); ctx.moveTo(rx + 6, y); ctx.lineTo(rx + rw - 6, y); ctx.stroke();
+  }
+
+  // ── 교류 전류 진폭 계산 ──
+  const freq = (currentV.f || 60);
+  const omega = 2 * Math.PI * freq;
+  const cosVal  = Math.cos(omega * time);    // 자기장(Φ) ∝ cos
+  const sinVal  = Math.sin(omega * time);    // dΦ/dt ∝ sin → 유도 기전력 방향
+
+  // ── 자기장 화살표 (송전 코일 → 수전 코일 방향, AC라 크기/방향 변함) ──
+  const arrowScale = Math.abs(cosVal);
+  const arrowDir   = cosVal >= 0 ? 1 : -1;   // 1: 오른쪽, -1: 왼쪽
+  const arrowLen   = Math.max(10, Math.round((midX - lx - lw) * 0.7 * arrowScale));
+
+  if (animRunning) {
+    const ax = lx + lw + 6;
+    const ay = Math.round(H * 0.5);
+    drawArrow(ctx, ax, ay, ax + arrowLen * arrowDir, ay, arrowDir > 0 ? '#444' : '#666', 2, `B (cos ${cosVal >= 0 ? '+' : '−'})`);
+  }
+
+  // ── 유도 전기장 화살표 (수전 코일 내부, dΦ/dt 부호에 연동) ──
+  const eDir = sinVal >= 0 ? -1 : 1;   // 렌츠 법칙: dΦ/dt 양수 → 유도 기전력 반대
+  if (animRunning) {
+    const ex  = rx + rw / 2;
+    const ey  = ry + rh / 2;
+    const elen = Math.max(10, Math.round((rw - 24) * Math.abs(sinVal)));
+    drawArrow(ctx, ex - elen * eDir * 0.5, ey, ex + elen * eDir * 0.5, ey, '#222', 2.5, `E →`);
+    // 방향 표기
+    ctx.font = '10px "JetBrains Mono",monospace';
+    ctx.fillStyle = '#333';
+    ctx.textAlign = 'center';
+    ctx.fillText(eDir > 0 ? '→' : '←', ex, ey - 12);
+  }
+
+  // ── 양전하 입자 갱신 & 그리기 ──
+  if (animRunning) {
+    const accel = eDir * Math.abs(sinVal) * 0.8;   // 가속도(픽셀/프레임²)
+    for (const c of charges) {
+      c.vx += accel;
+      c.vx *= 0.92;   // 약간의 감속(공기저항 모사)
+      c.x  += c.vx;
+      // 코일 박스 경계 반사
+      if (c.x < rx + 10)  { c.x = rx + 10;  c.vx = Math.abs(c.vx) * 0.5; }
+      if (c.x > rx + rw - 10) { c.x = rx + rw - 10; c.vx = -Math.abs(c.vx) * 0.5; }
+    }
+  }
+  for (const c of charges) {
+    ctx.beginPath();
+    ctx.arc(c.x, c.y, 7, 0, Math.PI * 2);
+    ctx.fillStyle = animRunning ? '#333' : '#bbb';
+    ctx.fill();
+    ctx.strokeStyle = animRunning ? '#111' : '#aaa';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+    ctx.font = 'bold 10px Arial';
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('+', c.x, c.y);
+    ctx.textBaseline = 'alphabetic';
+  }
+
+  // ── 철심 표시 ──
+  const ironX = midX - 12;
+  const ironY = Math.round(H * 0.35);
+  const ironH = Math.round(H * 0.30);
+  ctx.fillStyle = '#ccc';
+  ctx.fillRect(ironX, ironY, 24, ironH);
+  ctx.strokeStyle = '#999';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(ironX, ironY, 24, ironH);
+  ctx.save();
+  ctx.translate(ironX + 12, ironY + ironH / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.font = '10px "Noto Sans KR",sans-serif';
+  ctx.fillStyle = '#888';
+  ctx.textAlign = 'center';
+  ctx.fillText('철심', 0, 4);
+  ctx.restore();
+
+  // ── 라벨 ──
+  ctx.font = '11px "Noto Sans KR",sans-serif';
+  ctx.fillStyle = '#555';
+  ctx.textAlign = 'center';
+  ctx.fillText(`AC ${currentV.f || 60} Hz`, lx + lw / 2, ly + lh + 16);
+  ctx.fillText(`N = ${currentV.N || 200}회`, rx + rw / 2, ry + rh + 16);
+}
+
+function drawArrow(ctx, x1, y1, x2, y2, color, lw, label) {
+  if (Math.abs(x2 - x1) < 4 && Math.abs(y2 - y1) < 4) return;
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.fillStyle   = color;
+  ctx.lineWidth   = lw;
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+  // 화살촉
+  const ang = Math.atan2(y2 - y1, x2 - x1);
+  ctx.beginPath();
+  ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - 8 * Math.cos(ang - 0.4), y2 - 8 * Math.sin(ang - 0.4));
+  ctx.lineTo(x2 - 8 * Math.cos(ang + 0.4), y2 - 8 * Math.sin(ang + 0.4));
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+// ── 애니메이션 루프 ───────────────────────────────────────────────
+let lastTimestamp = null;
+function animate(ts) {
+  if (!animRunning) return;
+  if (lastTimestamp === null) lastTimestamp = ts;
+  const dt = Math.min((ts - lastTimestamp) / 1000, 0.05);
+  lastTimestamp = ts;
+  t += dt;
+  drawSim(t);
+  animId = requestAnimationFrame(animate);
+}
+
+function startAnimation() {
+  if (animRunning) return;
+  animRunning   = true;
+  lastTimestamp = null;
+  document.getElementById('simStatus').textContent = '▶ 작동 중';
+  document.getElementById('simStatus').classList.add('running');
+  document.getElementById('lightning').classList.add('active');
+  animId = requestAnimationFrame(animate);
+  startBattery();
+}
+
+function stopAnimation() {
+  animRunning = false;
+  if (animId) { cancelAnimationFrame(animId); animId = null; }
+  lastTimestamp = null;
+  document.getElementById('simStatus').textContent = '⏸ 대기 중';
+  document.getElementById('simStatus').classList.remove('running');
+  document.getElementById('lightning').classList.remove('active');
+  if (batteryTimer) { clearInterval(batteryTimer); batteryTimer = null; }
+}
+
+// ── 배터리 ────────────────────────────────────────────────────────
+function resetBattery() {
+  batteryPct = 10;
+  document.getElementById('batteryFill').style.width = '10%';
+  document.getElementById('batteryPct').textContent  = '10%';
+}
+
+function startBattery() {
+  if (batteryTimer) return;
+  batteryTimer = setInterval(() => {
+    if (batteryPct < 100) {
+      batteryPct = Math.min(100, batteryPct + 0.5);
+      document.getElementById('batteryFill').style.width = batteryPct + '%';
+      document.getElementById('batteryPct').textContent  = Math.round(batteryPct) + '%';
+    } else {
+      clearInterval(batteryTimer);
+      batteryTimer = null;
+    }
+  }, 120);
+}
+
+// ── 문제 데이터 풀 ────────────────────────────────────────────────
+// 가능한 수치 범위
+const F_LIST = [50, 60, 80, 100, 120];
+const N_LIST = [100, 150, 200, 250, 300];
+const D_LIST = [10, 15, 20, 25, 30];   // 코일 간격 cm
+const I_LIST = [5, 10, 15, 20, 25];    // 전류 A
+
+// ── ㄱ 문장 풀 ──
+// G_TRUE: 물리적으로 참인 문장 템플릿
+const G_POOL = {
+  true: [
+    v => `ㄱ. 송전 코일에 흐르는 전류(${v?.f || 60} Hz 교류)에 의한 자기장이 수전 코일 쪽으로 발생한다.`,
+    v => `ㄱ. 송전 코일에 ${v?.f || 60} Hz의 교류 전류가 흐르면, 시간에 따라 세기와 방향이 변하는 자기장이 형성된다.`,
+    v => `ㄱ. 송전 코일의 전류 방향이 주기적으로 바뀌므로, 수전 코일을 관통하는 자기 선속도 계속 변한다.`,
+  ],
+  false: [
+    v => `ㄱ. 송전 코일에 흐르는 직류(DC) 전류에 의한 일정한 자기장이 수전 코일에 유도 기전력을 만든다.`,
+    v => `ㄱ. 송전 코일의 자기장은 방향이 고정되어 있으며 세기만 ${v?.f || 60} Hz로 진동한다.`,
+    v => `ㄱ. 송전 코일과 수전 코일 사이의 거리(${v?.d || 20} cm)와 무관하게 유도 기전력의 크기는 일정하다.`,
+  ],
+};
+
+// ── ㄴ 문장 풀 ──
+const N_POOL = {
+  true: [
+    v => `ㄴ. 수전 코일에 유도 기전력이 발생하여 배터리를 충전시킨다.`,
+    v => `ㄴ. 자기 선속의 변화에 의해 수전 코일(${v?.N || 200}회)에 유도 전류가 흘러 배터리를 충전한다.`,
+    v => `ㄴ. 패러데이 전자기 유도 법칙에 따라 수전 코일에 기전력(ε = −N dΦ/dt)이 유도되어 배터리가 충전된다.`,
+  ],
+  false: [
+    v => `ㄴ. 수전 코일에는 기전력이 유도되지 않으며, 배터리는 별도의 유선 연결을 통해서만 충전된다.`,
+    v => `ㄴ. 수전 코일의 권수(${v?.N || 200}회)가 많을수록 유도 기전력이 작아져 충전 효율이 낮아진다.`,
+    v => `ㄴ. 수전 코일에 유도된 전류는 항상 직류(DC)이므로 별도의 정류 장치가 필요하지 않다.`,
+  ],
+};
+
+// ── ㄷ 문장 풀 ──
+const D_POOL = {
+  true: [
+    v => `ㄷ. 일반적으로 이 버스에 탑재한 배터리의 크기는 무선 충전을 할 수 없는 일반 전기 버스에 탑재한 배터리의 크기보다 크다는 단점이 있다.`,
+    v => `ㄷ. 주행 중 무선 충전이 가능하므로 버스는 도로 위 구간에서 배터리를 보충할 수 있어, 한 번에 가야 할 주행 거리 부담이 줄어든다.`,
+    v => `ㄷ. 송전 코일과 수전 코일 사이의 결합 계수는 두 코일 간 거리(${v?.d || 20} cm)가 증가할수록 감소한다.`,
+  ],
+  false: [
+    v => `ㄷ. 무선 충전 방식은 유선 충전 방식보다 에너지 전송 효율이 항상 높다.`,
+    v => `ㄷ. 이 무선 충전 시스템에서 두 코일 사이의 거리(${v?.d || 20} cm)가 증가할수록 유도 기전력의 크기는 커진다.`,
+    v => `ㄷ. 송전 코일의 주파수(${v?.f || 60} Hz)를 높이면 자기 선속의 변화율이 줄어 유도 기전력이 감소한다.`,
+  ],
+};
+
+// 정답 조합 → 5개 선지 구성
+function buildChoices(answerKeys) {
+  // answerKeys: 참인 ㄱㄴㄷ 집합 e.g. ['ㄱ','ㄷ']
+  const ans = answerKeys.slice().sort().join(', ');
+
+  // 가능한 선지 후보 (수능형 표준 선지)
+  const candidates = ['ㄱ', 'ㄴ', 'ㄷ', 'ㄱ, ㄴ', 'ㄱ, ㄷ', 'ㄴ, ㄷ', 'ㄱ, ㄴ, ㄷ'];
+  // 정답 포함 + 나머지 4개 적절히 선택
+  let pool = candidates.filter(c => c !== ans);
+  // shuffle pool
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  const distractors = pool.slice(0, 4);
+  let five = [ans, ...distractors];
+  // shuffle five
+  for (let i = 4; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [five[i], five[j]] = [five[j], five[i]];
+  }
+  const numerals = ['①', '②', '③', '④', '⑤'];
+  return five.map((label, i) => ({ label: `${numerals[i]} ${label}`, correct: label === ans }));
+}
+
+// ── 문제 생성 ─────────────────────────────────────────────────────
+function generateProblem() {
+  // 1. 수치 객체 v 완전 확정
+  const v = {
+    f: F_LIST[Math.floor(Math.random() * F_LIST.length)],
+    N: N_LIST[Math.floor(Math.random() * N_LIST.length)],
+    d: D_LIST[Math.floor(Math.random() * D_LIST.length)],
+    I: I_LIST[Math.floor(Math.random() * I_LIST.length)],
+  };
+  currentV = v;
+
+  // 2. 각 지문 참/거짓 결정 (최소 1개 참 보장)
+  let truthG = Math.random() < 0.5;
+  let truthN = Math.random() < 0.5;
+  let truthD = Math.random() < 0.5;
+  if (!truthG && !truthN && !truthD) {
+    // 최소 1개 참 강제
+    const idx = Math.floor(Math.random() * 3);
+    if (idx === 0) truthG = true;
+    else if (idx === 1) truthN = true;
+    else truthD = true;
+  }
+  currentTruths = { G: truthG, N: truthN, D: truthD };
+
+  // 3. 텍스트 선택 (v 완전 확정 후 호출)
+  const gPool = truthG ? G_POOL.true : G_POOL.false;
+  const nPool = truthN ? N_POOL.true : N_POOL.false;
+  const dPool = truthD ? D_POOL.true : D_POOL.false;
+
+  const gText = gPool[Math.floor(Math.random() * gPool.length)](v);
+  const nText = nPool[Math.floor(Math.random() * nPool.length)](v);
+  const dText = dPool[Math.floor(Math.random() * dPool.length)](v);
+
+  currentTexts = { G: gText, N: nText, D: dText };
+
+  // 4. 정답 키 모음
+  const answerKeys = [];
+  if (truthG) answerKeys.push('ㄱ');
+  if (truthN) answerKeys.push('ㄴ');
+  if (truthD) answerKeys.push('ㄷ');
+  currentAnswer = answerKeys.sort().join(', ');
+
+  // 5. 선지 구성
+  currentChoices = buildChoices(answerKeys);
+
+  // 6. DOM 업데이트
+  document.getElementById('problemStem').innerHTML =
+    `그림은 주행 중 배터리를 충전할 수 있는 전기 버스의 모습을 나타낸 것이다. 도로와 전기 버스의 내부에는 각각 송전 코일과 수전 코일이 들어 있고, 송전 코일에는 시간에 따라 세기와 방향이 변하는 <strong>${v.f} Hz 교류 전류</strong>가 흐른다. 수전 코일의 권수는 <strong>${v.N}회</strong>이며, 두 코일의 간격은 <strong>${v.d} cm</strong>이다.`;
+
+  document.getElementById('stmtG').innerHTML = `<span class="key">${gText}</span>`;
+  document.getElementById('stmtN').innerHTML = `<span class="key">${nText}</span>`;
+  document.getElementById('stmtD').innerHTML = `<span class="key">${dText}</span>`;
+
+  // 7. 선지 버튼 렌더링
+  const box = document.getElementById('choicesBox');
+  box.innerHTML = '';
+  for (const ch of currentChoices) {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = ch.label;
+    btn.addEventListener('click', () => handleAnswer(ch.correct, btn));
+    box.appendChild(btn);
+  }
+
+  // 8. 해설 숨기기
+  document.getElementById('expBox').classList.remove('show');
+  document.getElementById('expBody').innerHTML = '';
+
+  // 9. 애니메이션 및 배터리 초기화
+  stopAnimation();
+  resetBattery();
+  t = 0;
+  initCharges();
+  answered = false;
+
+  // 10. 정지 상태 첫 프레임 그리기
+  drawSim(0);
+}
+
+// ── 정답 처리 ─────────────────────────────────────────────────────
+function handleAnswer(correct, clickedBtn) {
+  if (answered) return;
+  answered = true;
+
+  // 버튼 상태 표시
+  const btns = document.querySelectorAll('.choice-btn');
+  btns.forEach(b => {
+    b.disabled = true;
+    const label = b.textContent.replace(/[①②③④⑤]\s*/, '').trim();
+    const isCorrectBtn = currentChoices.find(c => c.label.replace(/[①②③④⑤]\s*/, '').trim() === label && c.correct);
+    if (isCorrectBtn) b.classList.add('correct');
+  });
+  if (!correct) clickedBtn.classList.add('wrong');
+
+  // 해설 생성
+  buildExplanation();
+
+  // 애니메이션 + 배터리 시작
+  startAnimation();
+}
+
+// ── 해설 생성 ─────────────────────────────────────────────────────
+function buildExplanation() {
+  const { G, N, D } = currentTruths;
+  const v = currentV;
+
+  const expG = G
+    ? `<span class="tag-true">참</span> 송전 코일에 <strong>${v?.f || 60} Hz 교류 전류</strong>가 흐르면 자기장의 세기와 방향이 주기적으로 변합니다. 이 변화하는 자기장이 수전 코일 방향으로 발생하여 자기 선속 변화를 일으킵니다.`
+    : `<span class="tag-false">거짓</span> ㄱ의 설명은 물리적으로 옳지 않습니다. 직류(DC)의 일정한 자기장은 수전 코일의 자기 선속을 변화시키지 못해 유도 기전력이 발생하지 않습니다. 실제로는 <strong>교류(AC)</strong>에 의한 시변(時變) 자기장이 필요합니다.`;
+
+  const expN = N
+    ? `<span class="tag-true">참</span> 패러데이 법칙(ε = −N dΦ/dt)에 의해 수전 코일(<strong>${v?.N || 200}회</strong>)에 유도 기전력이 발생하고, 이 기전력이 배터리를 충전시킵니다.`
+    : `<span class="tag-false">거짓</span> ㄴ의 설명은 옳지 않습니다. 실제로는 패러데이 유도 법칙에 따라 수전 코일에 유도 기전력이 발생하여 배터리 충전이 이루어집니다.`;
+
+  const expD = D
+    ? `<span class="tag-true">참</span> 주행 중 무선 충전이 가능한 버스는 완충 후 주행해야 하는 일반 전기 버스보다 한 번에 더 큰 에너지를 저장해야 할 필요성이 낮지만, 무선 충전 장치(코일, 전력 변환 회로)를 탑재해야 하므로 실제로 배터리 팩의 물리적 크기가 더 클 수 있다는 단점이 지적됩니다.`
+    : `<span class="tag-false">거짓</span> ㄷ의 설명은 옳지 않습니다. 일반적으로 무선 충전 버스는 주행 중 충전이 가능하여 더 작은 배터리로도 운행이 가능한 경우가 있으나, 문장의 내용이 사실에 부합하지 않습니다.`;
+
+  document.getElementById('expBody').innerHTML =
+    `<div class="exp-row">${expG}</div>
+     <div class="exp-row">${expN}</div>
+     <div class="exp-row">${expD}</div>
+     <hr class="thin" style="margin:12px 0;">
+     <div class="exp-row">∴ 정답: <strong>${currentAnswer}</strong></div>`;
+
+  document.getElementById('expBox').classList.add('show');
+}
+
+// ── 초기화 ────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  resizeCanvas();
+  generateProblem();
+});
+
+window.addEventListener('resize', () => {
+  resizeCanvas();
+  initCharges();
+  if (!animRunning) drawSim(t);
+});
+</script>
 </body>
 </html>

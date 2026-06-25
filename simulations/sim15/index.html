@@ -1,731 +1,724 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>에너지 전환 시뮬레이션</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Malgun Gothic', sans-serif;
-            padding: 15px;
-            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
-            min-height: 100vh;
-        }
-        
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 20px;
-            font-size: 1.5em;
-            border-bottom: 2px solid #666;
-            padding-bottom: 10px;
-        }
-        
-        .question-box {
-            margin-bottom: 25px;
-            padding: 15px;
-            background: #f9f9f9;
-            border-radius: 10px;
-            border: 1px solid #ddd;
-        }
-        
-        .question-text {
-            font-size: 1.1em;
-            line-height: 1.6;
-            color: #222;
-            margin-bottom: 15px;
-        }
-        
-        .diagram {
-            margin: 20px 0;
-            text-align: center;
-            overflow-x: auto;
-        }
-        
-        svg {
-            max-width: 100%;
-            height: auto;
-        }
-        
-        .hint-box {
-            background: #f0f0f0;
-            border-left: 4px solid #666;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 5px;
-        }
-        
-        .hint-title {
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 8px;
-        }
-        
-        .hint-item {
-            margin: 5px 0;
-            padding-left: 15px;
-            color: #444;
-        }
-        
-        .choices {
-            margin: 20px 0;
-        }
-        
-        .choice {
-            display: block;
-            padding: 15px;
-            margin: 10px 0;
-            background: white;
-            border: 2px solid #999;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: #333;
-        }
-        
-        .choice:hover {
-            background: #e8e8e8;
-            border-color: #666;
-            transform: translateX(5px);
-        }
-        
-        .choice.selected {
-            background: #d0d0d0;
-            border-color: #555;
-            font-weight: bold;
-        }
-        
-        .choice.correct {
-            background: #c8c8c8;
-            border-color: #444;
-        }
-        
-        .choice.incorrect {
-            background: #e0e0e0;
-            border-color: #999;
-        }
-        
-        .buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        button {
-            flex: 1;
-            padding: 15px;
-            font-size: 1.1em;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
-        }
-        
-        .new-question-btn {
-            background: linear-gradient(135deg, #888 0%, #666 100%);
-            color: white;
-        }
-        
-        .new-question-btn:hover {
-            background: linear-gradient(135deg, #666 0%, #444 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-        
-        .submit-btn {
-            background: linear-gradient(135deg, #555 0%, #333 100%);
-            color: white;
-        }
-        
-        .submit-btn:hover {
-            background: linear-gradient(135deg, #333 0%, #111 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-        
-        .submit-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .feedback {
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 10px;
-            display: none;
-        }
-        
-        .feedback.show {
-            display: block;
-        }
-        
-        .feedback.correct {
-            background: #e8e8e8;
-            border: 2px solid #666;
-        }
-        
-        .feedback.incorrect {
-            background: #f5f5f5;
-            border: 2px solid #999;
-        }
-        
-        .feedback-title {
-            font-size: 1.3em;
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #222;
-        }
-        
-        .feedback-content {
-            line-height: 1.8;
-            color: #333;
-        }
-        
-        .explanation-section {
-            margin-top: 15px;
-            padding: 15px;
-            background: white;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-        }
-        
-        .explanation-title {
-            font-weight: bold;
-            color: #444;
-            margin-bottom: 10px;
-            font-size: 1.1em;
-        }
-        
-        .theory-box {
-            background: #f9f9f9;
-            padding: 12px;
-            margin: 10px 0;
-            border-left: 3px solid #888;
-            border-radius: 4px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>물리학 전기 회로 문제 시뮬레이터</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f1117; --surface: #1a1d27; --surface2: #22263a; --border: #2e3350;
+    --accent: #4f8ef7; --accent2: #7c5cfc; --success: #2dd4bf;
+    --error: #f87171; --warn: #fbbf24; --text: #e8eaf6; --text2: #8892b0; --text3: #4a5568;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; min-height: 100vh; padding: 24px 16px; }
+  .container { max-width: 780px; margin: 0 auto; }
+  .header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+  .header-icon { width: 44px; height: 44px; background: linear-gradient(135deg,var(--accent),var(--accent2)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+  .header-text h1 { font-size: 18px; font-weight: 900; letter-spacing: -0.3px; }
+  .header-text p { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .badge { margin-left: auto; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; background: rgba(79,142,247,0.12); color: var(--accent); border: 1px solid rgba(79,142,247,0.25); white-space: nowrap; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px; margin-bottom: 16px; }
+  .problem-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .problem-num { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; color: var(--accent); background: rgba(79,142,247,0.1); border: 1px solid rgba(79,142,247,0.2); padding: 3px 8px; border-radius: 5px; }
+  .problem-title { font-size: 15px; font-weight: 700; }
+  .problem-body { font-size: 14.5px; line-height: 1.85; color: #cdd3f0; margin-bottom: 18px; }
+  .problem-body strong { color: var(--warn); font-weight: 700; }
+  .diagram-wrap { display: flex; gap: 20px; align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; }
+  canvas#scene { border-radius: 12px; display: block; background: #141720; border: 1px solid #2e3350; }
+  .power-table { flex: 1; min-width: 170px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; font-size: 13px; }
+  .power-table table { width: 100%; border-collapse: collapse; }
+  .power-table th { background: var(--surface2); padding: 9px 14px; font-size: 12px; font-weight: 700; color: var(--text2); text-align: center; border-bottom: 1px solid var(--border); }
+  .power-table td { padding: 9px 14px; text-align: center; border-bottom: 1px solid rgba(46,51,80,0.5); font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text); }
+  .power-table tr:last-child td { border-bottom: none; }
+  .power-table td.device { color: var(--accent); font-weight: 700; }
+  .power-table td.watt { color: var(--warn); }
+  .question-text { font-size: 15px; font-weight: 700; border-left: 3px solid var(--accent2); padding-left: 12px; margin-bottom: 18px; line-height: 1.6; }
+  .choices { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+  .choice-btn { background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px; padding: 11px 10px; font-family: 'Noto Sans KR', sans-serif; font-size: 14px; font-weight: 700; color: var(--text2); cursor: pointer; transition: all 0.15s ease; display: flex; align-items: center; gap: 8px; }
+  .choice-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--text); background: rgba(79,142,247,0.08); }
+  .choice-btn.selected { border-color: var(--accent2); color: var(--text); background: rgba(124,92,252,0.15); }
+  .choice-btn.correct { border-color: var(--success); color: var(--success); background: rgba(45,212,191,0.1); }
+  .choice-btn.wrong { border-color: var(--error); color: var(--error); background: rgba(248,113,113,0.1); }
+  .choice-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+  .choice-num { font-size: 11px; font-family: 'JetBrains Mono', monospace; opacity: 0.6; }
+  .actions { display: flex; gap: 10px; margin-top: 16px; }
+  .btn { flex: 1; padding: 13px; border-radius: 10px; font-family: 'Noto Sans KR', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; border: none; transition: all 0.15s ease; }
+  .btn-check { background: linear-gradient(135deg,var(--accent),var(--accent2)); color: #fff; }
+  .btn-check:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-check:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .btn-new { background: var(--surface2); border: 1.5px solid var(--border); color: var(--text2); }
+  .btn-new:hover { border-color: var(--accent); color: var(--text); }
+  .feedback { display: none; margin-top: 16px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+  .feedback.show { display: block; }
+  .feedback-header { display: flex; align-items: center; gap: 10px; padding: 14px 18px; font-weight: 700; font-size: 14px; }
+  .feedback-header.correct-bg { background: rgba(45,212,191,0.12); color: var(--success); border-bottom: 1px solid rgba(45,212,191,0.2); }
+  .feedback-header.wrong-bg { background: rgba(248,113,113,0.1); color: var(--error); border-bottom: 1px solid rgba(248,113,113,0.2); }
+  .feedback-body { background: var(--surface); padding: 18px; }
+  .solution-step { display: flex; gap: 12px; margin-bottom: 14px; align-items: flex-start; }
+  .solution-step:last-child { margin-bottom: 0; }
+  .step-num { flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%; background: rgba(79,142,247,0.15); border: 1px solid rgba(79,142,247,0.3); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--accent); font-family: 'JetBrains Mono', monospace; margin-top: 1px; }
+  .step-content { font-size: 13.5px; line-height: 1.8; color: #c0c8e8; }
+  .step-content .formula { font-family: 'JetBrains Mono', monospace; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; margin: 6px 0; font-size: 13px; display: block; color: var(--warn); }
+  .step-content .result { color: var(--success); font-weight: 700; }
+  .score-bar { display: flex; gap: 10px; align-items: center; font-size: 12px; color: var(--text2); margin-bottom: 20px; }
+  .score-item { display: flex; align-items: center; gap: 5px; }
+  .score-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .score-dot.c { background: var(--success); }
+  .score-dot.w { background: var(--error); }
+  .score-dot.t { background: var(--text3); }
+  .score-val { font-weight: 700; font-family: 'JetBrains Mono', monospace; color: var(--text); }
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+  @media (max-width: 480px) {
+    .choices { grid-template-columns: 1fr 1fr; }
+    .diagram-wrap { flex-direction: column; }
+    canvas#scene { width: 100% !important; height: auto !important; }
+  }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>에너지 전환 시뮬레이션</h1>
-        
-        <div class="question-box">
-            <div class="question-text" id="questionText"></div>
-            <div class="diagram" id="diagram"></div>
-            <div class="hint-box" id="hintBox"></div>
-        </div>
-        
-        <div class="choices" id="choices"></div>
-        
-        <div class="buttons">
-            <button class="new-question-btn" onclick="newQuestion()">새 문제</button>
-            <button class="submit-btn" id="submitBtn" onclick="checkAnswer()" disabled>제출하기</button>
-        </div>
-        
-        <div class="feedback" id="feedback"></div>
+<div class="container">
+  <div class="header">
+    <div class="header-icon">⚡</div>
+    <div class="header-text">
+      <h1>전기 회로 시뮬레이터</h1>
+      <p>2022 개정 교육과정 · 고등학교 물리학</p>
+    </div>
+    <div class="badge">병렬 회로</div>
+  </div>
+
+  <div class="score-bar">
+    <div class="score-item"><div class="score-dot c"></div>정답 <span class="score-val" id="sc-correct">0</span></div>
+    <div class="score-item"><div class="score-dot w"></div>오답 <span class="score-val" id="sc-wrong">0</span></div>
+    <div class="score-item"><div class="score-dot t"></div>총 <span class="score-val" id="sc-total">0</span></div>
+  </div>
+
+  <div class="card">
+    <div class="problem-header">
+      <span class="problem-num">PHYSICS</span>
+      <span class="problem-title">병렬 연결 전기 기구의 전류</span>
     </div>
 
-    <script>
-        const questions = [
-            {
-                question: "그림은 여러 가지 에너지 전환의 예를 나타낸 것이다. 이에 대한 설명으로 옳은 것만을 [보기]에서 있는 대로 고른 것은?",
-                diagram: `
-                    <svg viewBox="0 0 600 350" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <marker id="arrow1" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-                                <path d="M0,0 L0,6 L9,3 z" fill="#666"/>
-                            </marker>
-                        </defs>
-                        
-                        <circle cx="150" cy="100" r="50" fill="#b8b8b8" stroke="#666" stroke-width="2"/>
-                        <text x="150" y="105" text-anchor="middle" font-size="18" fill="#222" font-weight="bold">열에너지</text>
-                        
-                        <circle cx="450" cy="100" r="50" fill="#a0a0a0" stroke="#666" stroke-width="2"/>
-                        <text x="450" y="105" text-anchor="middle" font-size="24" fill="#fff" font-weight="bold">B</text>
-                        
-                        <circle cx="100" cy="250" r="50" fill="#c0c0c0" stroke="#666" stroke-width="2"/>
-                        <text x="100" y="255" text-anchor="middle" font-size="24" fill="#222" font-weight="bold">A</text>
-                        
-                        <circle cx="300" cy="270" r="50" fill="#989898" stroke="#666" stroke-width="2"/>
-                        <text x="300" y="265" text-anchor="middle" font-size="18" fill="#fff" font-weight="bold">전기</text>
-                        <text x="300" y="280" text-anchor="middle" font-size="18" fill="#fff" font-weight="bold">에너지</text>
-                        
-                        <circle cx="500" cy="250" r="50" fill="#b0b0b0" stroke="#666" stroke-width="2"/>
-                        <text x="500" y="255" text-anchor="middle" font-size="18" fill="#222" font-weight="bold">빛에너지</text>
-                        
-                        <path d="M 200 100 L 395 100" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow1)"/>
-                        <text x="300" y="90" text-anchor="middle" font-size="14" fill="#444">연소</text>
-                        
-                        <path d="M 415 120 L 185 120" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow1)"/>
-                        <text x="300" y="145" text-anchor="middle" font-size="14" fill="#444">마찰</text>
-                        
-                        <path d="M 120 200 L 140 145" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow1)"/>
-                        <text x="100" y="180" text-anchor="middle" font-size="14" fill="#444">발전기</text>
-                        
-                        <path d="M 170 130 L 265 245" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow1)"/>
-                        <text x="200" y="200" text-anchor="middle" font-size="13" fill="#444">Z전기</text>
-                        <text x="200" y="215" text-anchor="middle" font-size="13" fill="#444">생성</text>
-                        
-                        <path d="M 330 250 L 415 135" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow1)"/>
-                        <text x="380" y="185" text-anchor="middle" font-size="14" fill="#444">ㄱ 전동기</text>
-                        
-                        <path d="M 475 145 L 495 200" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow1)"/>
-                        <text x="510" y="175" text-anchor="middle" font-size="13" fill="#444">반도체의</text>
-                        <text x="510" y="190" text-anchor="middle" font-size="13" fill="#444">광발광</text>
-                        
-                        <path d="M 450 260 L 355 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow1)"/>
-                        <text x="400" y="280" text-anchor="middle" font-size="14" fill="#444">전동</text>
-                        
-                        <path d="M 265 295 L 155 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow1)"/>
-                        <text x="210" y="310" text-anchor="middle" font-size="13" fill="#444">ㄴ 태양</text>
-                        <text x="210" y="325" text-anchor="middle" font-size="13" fill="#444">전지</text>
-                    </svg>
-                `,
-                hints: [
-                    "ㄱ. A는 화학 에너지이다.",
-                    "ㄴ. B는 역학적 에너지이다.",
-                    "ㄷ. ㄱ의 예로 전동기, ㄴ의 예로 발전기를 들 수 있다."
-                ],
-                choices: [
-                    "ㄷ",
-                    "ㄱ, ㄴ",
-                    "ㄱ, ㄷ",
-                    "ㄴ, ㄷ",
-                    "ㄱ, ㄴ, ㄷ"
-                ],
-                correct: 3,
-                explanation: {
-                    theory: "에너지는 형태를 바꾸어 전환될 수 있으며, 전환 과정에서 에너지의 총량은 보존됩니다. 주요 에너지 형태에는 화학 에너지(연료, 음식물), 역학적 에너지(운동 에너지 + 위치 에너지), 전기 에너지, 열에너지, 빛에너지 등이 있습니다.",
-                    process: [
-                        "ㄱ. 분석: 발전기는 역학적 에너지를 전기 에너지로 전환하므로, A에서 열에너지로 가는 과정에 발전기가 표시되었습니다. 그러나 A는 화학 에너지가 맞습니다. (참)",
-                        "ㄴ. 분석: B로 들어오는 화살표(연소, 전동기)와 나가는 화살표(마찰, 광발광)를 보면 B는 역학적 에너지입니다. 연소는 화학→열, 마찰은 역학→열, 전동기는 전기→역학적 에너지 전환입니다. (참)",
-                        "ㄷ. 분석: ㄱ은 전동기(전기→역학적)이고, ㄴ은 태양전지(빛→전기)입니다. 전동기는 ㄱ의 예로 맞고, 발전기(역학→전기)는 ㄴ의 적절한 예시가 아닙니다. (참)",
-                        "최종 답: ㄴ, ㄷ이 맞으므로 정답은 ④번입니다."
-                    ]
-                }
-            },
-            {
-                question: "그림은 여러 가지 에너지 전환의 예를 나타낸 것이다. 이에 대한 설명으로 옳은 것만을 [보기]에서 있는 대로 고른 것은?",
-                diagram: `
-                    <svg viewBox="0 0 600 350" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <marker id="arrow2" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-                                <path d="M0,0 L0,6 L9,3 z" fill="#666"/>
-                            </marker>
-                        </defs>
-                        
-                        <circle cx="150" cy="100" r="50" fill="#b8b8b8" stroke="#666" stroke-width="2"/>
-                        <text x="150" y="95" text-anchor="middle" font-size="16" fill="#222" font-weight="bold">화학</text>
-                        <text x="150" y="112" text-anchor="middle" font-size="16" fill="#222" font-weight="bold">에너지</text>
-                        
-                        <circle cx="450" cy="100" r="50" fill="#a0a0a0" stroke="#666" stroke-width="2"/>
-                        <text x="450" y="105" text-anchor="middle" font-size="24" fill="#fff" font-weight="bold">B</text>
-                        
-                        <circle cx="100" cy="250" r="50" fill="#c0c0c0" stroke="#666" stroke-width="2"/>
-                        <text x="100" y="255" text-anchor="middle" font-size="24" fill="#222" font-weight="bold">A</text>
-                        
-                        <circle cx="300" cy="270" r="50" fill="#989898" stroke="#666" stroke-width="2"/>
-                        <text x="300" y="275" text-anchor="middle" font-size="18" fill="#fff" font-weight="bold">빛에너지</text>
-                        
-                        <circle cx="500" cy="250" r="50" fill="#b0b0b0" stroke="#666" stroke-width="2"/>
-                        <text x="500" y="245" text-anchor="middle" font-size="16" fill="#222" font-weight="bold">역학적</text>
-                        <text x="500" y="262" text-anchor="middle" font-size="16" fill="#222" font-weight="bold">에너지</text>
-                        
-                        <path d="M 200 100 L 395 100" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow2)"/>
-                        <text x="300" y="90" text-anchor="middle" font-size="14" fill="#444">전지</text>
-                        
-                        <path d="M 415 120 L 185 120" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow2)"/>
-                        <text x="300" y="145" text-anchor="middle" font-size="14" fill="#444">ㄱ 충전</text>
-                        
-                        <path d="M 120 150 L 105 200" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow2)"/>
-                        <text x="90" y="180" text-anchor="middle" font-size="14" fill="#444">연소</text>
-                        
-                        <path d="M 150 260 L 245 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow2)"/>
-                        <text x="200" y="280" text-anchor="middle" font-size="14" fill="#444">백열등</text>
-                        
-                        <path d="M 330 245 L 415 135" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow2)"/>
-                        <text x="380" y="185" text-anchor="middle" font-size="13" fill="#444">ㄴ 태양</text>
-                        <text x="380" y="200" text-anchor="middle" font-size="13" fill="#444">전지</text>
-                        
-                        <path d="M 475 135 L 495 200" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow2)"/>
-                        <text x="510" y="165" text-anchor="middle" font-size="14" fill="#444">전동기</text>
-                        
-                        <path d="M 450 260 L 355 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow2)"/>
-                        <text x="400" y="280" text-anchor="middle" font-size="14" fill="#444">마찰발광</text>
-                        
-                        <path d="M 265 295 L 155 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow2)"/>
-                        <text x="210" y="310" text-anchor="middle" font-size="14" fill="#444">흡수</text>
-                    </svg>
-                `,
-                hints: [
-                    "ㄱ. A는 열에너지이다.",
-                    "ㄴ. B는 전기 에너지이다.",
-                    "ㄷ. ㄱ의 예로 발전기, ㄴ의 예로 태양 전지를 들 수 있다."
-                ],
-                choices: [
-                    "ㄱ",
-                    "ㄴ",
-                    "ㄱ, ㄴ",
-                    "ㄱ, ㄷ",
-                    "ㄱ, ㄴ, ㄷ"
-                ],
-                correct: 0,
-                explanation: {
-                    theory: "에너지 전환 장치의 이해: 전지(화학→전기), 충전지(전기→화학), 태양전지(빛→전기), 전동기(전기→역학적), 발전기(역학적→전기), 백열등(전기→빛+열) 등이 있습니다.",
-                    process: [
-                        "ㄱ. 분석: 연소(화학→열), 백열등(전기→열+빛), 흡수(빛→열)의 과정을 보면 A는 열에너지가 맞습니다. (참)",
-                        "ㄴ. 분석: 전지(화학→전기), 충전(전기→화학), 태양전지(빛→전기), 전동기(전기→역학적)의 과정을 보면 B는 전기 에너지가 맞습니다. 그러나 보기의 진위를 판단해야 합니다. (거짓)",
-                        "ㄷ. 분석: ㄱ은 충전 과정(전기→화학)이므로 충전지가 맞는 예시입니다. 발전기는 역학→전기 전환이므로 ㄱ의 예시로 적절하지 않습니다. ㄴ은 태양전지(빛→전기)이므로 태양전지가 맞는 예시입니다. (거짓)",
-                        "에너지 보존 법칙: 에너지 전환 과정에서 에너지의 형태는 변하지만 총량은 보존됩니다.",
-                        "최종 답: ㄱ만 맞으므로 정답은 ①번입니다."
-                    ]
-                }
-            },
-            {
-                question: "그림은 여러 가지 에너지 전환의 예를 나타낸 것이다. 이에 대한 설명으로 옳은 것만을 [보기]에서 있는 대로 고른 것은?",
-                diagram: `
-                    <svg viewBox="0 0 600 350" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <marker id="arrow3" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-                                <path d="M0,0 L0,6 L9,3 z" fill="#666"/>
-                            </marker>
-                        </defs>
-                        
-                        <circle cx="150" cy="100" r="50" fill="#b8b8b8" stroke="#666" stroke-width="2"/>
-                        <text x="150" y="105" text-anchor="middle" font-size="18" fill="#222" font-weight="bold">빛에너지</text>
-                        
-                        <circle cx="450" cy="100" r="50" fill="#a0a0a0" stroke="#666" stroke-width="2"/>
-                        <text x="450" y="105" text-anchor="middle" font-size="24" fill="#fff" font-weight="bold">B</text>
-                        
-                        <circle cx="100" cy="250" r="50" fill="#c0c0c0" stroke="#666" stroke-width="2"/>
-                        <text x="100" y="255" text-anchor="middle" font-size="24" fill="#222" font-weight="bold">A</text>
-                        
-                        <circle cx="300" cy="270" r="50" fill="#989898" stroke="#666" stroke-width="2"/>
-                        <text x="300" y="265" text-anchor="middle" font-size="18" fill="#fff" font-weight="bold">열</text>
-                        <text x="300" y="280" text-anchor="middle" font-size="18" fill="#fff" font-weight="bold">에너지</text>
-                        
-                        <circle cx="500" cy="250" r="50" fill="#b0b0b0" stroke="#666" stroke-width="2"/>
-                        <text x="500" y="245" text-anchor="middle" font-size="16" fill="#222" font-weight="bold">역학적</text>
-                        <text x="500" y="262" text-anchor="middle" font-size="16" fill="#222" font-weight="bold">에너지</text>
-                        
-                        <path d="M 200 100 L 395 100" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow3)"/>
-                        <text x="300" y="90" text-anchor="middle" font-size="14" fill="#444">광합성</text>
-                        
-                        <path d="M 415 120 L 185 120" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow3)"/>
-                        <text x="300" y="145" text-anchor="middle" font-size="14" fill="#444">생물발광</text>
-                        
-                        <path d="M 120 150 L 105 200" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow3)"/>
-                        <text x="75" y="165" text-anchor="middle" font-size="13" fill="#444">ㄱ 태양</text>
-                        <text x="75" y="180" text-anchor="middle" font-size="13" fill="#444">전지</text>
-                        
-                        <path d="M 150 260 L 245 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow3)"/>
-                        <text x="200" y="280" text-anchor="middle" font-size="14" fill="#444">전열기</text>
-                        
-                        <path d="M 330 245 L 415 135" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow3)"/>
-                        <text x="380" y="185" text-anchor="middle" font-size="14" fill="#444">ㄴ 소화</text>
-                        
-                        <path d="M 475 135 L 495 200" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow3)"/>
-                        <text x="510" y="165" text-anchor="middle" font-size="14" fill="#444">근육운동</text>
-                        
-                        <path d="M 450 260 L 355 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow3)"/>
-                        <text x="400" y="280" text-anchor="middle" font-size="14" fill="#444">마찰</text>
-                        
-                        <path d="M 265 295 L 155 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow3)"/>
-                        <text x="210" y="310" text-anchor="middle" font-size="14" fill="#444">열전소자</text>
-                    </svg>
-                `,
-                hints: [
-                    "ㄱ. A는 전기 에너지이다.",
-                    "ㄴ. B는 화학 에너지이다.",
-                    "ㄷ. ㄱ의 예로 광전지, ㄴ의 예로 소화를 들 수 있다."
-                ],
-                choices: [
-                    "ㄱ",
-                    "ㄴ",
-                    "ㄷ",
-                    "ㄱ, ㄴ",
-                    "ㄱ, ㄴ, ㄷ"
-                ],
-                correct: 1,
-                explanation: {
-                    theory: "생명체의 에너지 전환: 광합성(빛→화학), 소화(화학→화학, 고분자→저분자), 세포호흡(화학→열+ATP), 근육운동(화학→역학적) 등이 있습니다. 태양전지는 빛에너지를 전기 에너지로 전환합니다.",
-                    process: [
-                        "ㄱ. 분석: 태양전지(빛→전기), 전열기(전기→열), 열전소자(열→전기)의 과정을 보면 A는 전기 에너지가 맞습니다. 그러나 문제를 정확히 풀어야 합니다. (거짓)",
-                        "ㄴ. 분석: 광합성(빛→화학), 생물발광(화학→빛), 소화(화학→화학), 근육운동(화학→역학적)의 과정을 보면 B는 화학 에너지가 맞습니다. (참)",
-                        "ㄷ. 분석: ㄱ은 태양전지(빛→전기)이므로 태양전지가 맞는 예시입니다. 광전지도 빛→전기 전환이지만, 문제에서는 태양전지로 명시되어 있으므로 광전지는 적절하지 않습니다. ㄴ은 소화 과정으로 음식물의 화학 에너지를 흡수 가능한 형태의 화학 에너지로 전환하는 과정입니다. (거짓)",
-                        "에너지 효율: 에너지 전환 과정에서 일부는 열에너지로 손실되어 효율이 100%가 되지 않습니다.",
-                        "최종 답: ㄴ만 맞으므로 정답은 ②번입니다."
-                    ]
-                }
-            },
-            {
-                question: "그림은 여러 가지 에너지 전환의 예를 나타낸 것이다. 이에 대한 설명으로 옳은 것만을 [보기]에서 있는 대로 고른 것은?",
-                diagram: `
-                    <svg viewBox="0 0 600 350" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <marker id="arrow4" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-                                <path d="M0,0 L0,6 L9,3 z" fill="#666"/>
-                            </marker>
-                        </defs>
-                        
-                        <circle cx="150" cy="100" r="50" fill="#b8b8b8" stroke="#666" stroke-width="2"/>
-                        <text x="150" y="95" text-anchor="middle" font-size="16" fill="#222" font-weight="bold">역학적</text>
-                        <text x="150" y="112" text-anchor="middle" font-size="16" fill="#222" font-weight="bold">에너지</text>
-                        
-                        <circle cx="450" cy="100" r="50" fill="#a0a0a0" stroke="#666" stroke-width="2"/>
-                        <text x="450" y="105" text-anchor="middle" font-size="24" fill="#fff" font-weight="bold">B</text>
-                        
-                        <circle cx="100" cy="250" r="50" fill="#c0c0c0" stroke="#666" stroke-width="2"/>
-                        <text x="100" y="255" text-anchor="middle" font-size="24" fill="#222" font-weight="bold">A</text>
-                        
-                        <circle cx="300" cy="270" r="50" fill="#989898" stroke="#666" stroke-width="2"/>
-                        <text x="300" y="265" text-anchor="middle" font-size="18" fill="#fff" font-weight="bold">전기</text>
-                        <text x="300" y="280" text-anchor="middle" font-size="18" fill="#fff" font-weight="bold">에너지</text>
-                        
-                        <circle cx="500" cy="250" r="50" fill="#b0b0b0" stroke="#666" stroke-width="2"/>
-                        <text x="500" y="245" text-anchor="middle" font-size="16" fill="#222" font-weight="bold">화학</text>
-                        <text x="500" y="262" text-anchor="middle" font-size="16" fill="#222" font-weight="bold">에너지</text>
-                        
-                        <path d="M 200 100 L 395 100" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow4)"/>
-                        <text x="300" y="90" text-anchor="middle" font-size="14" fill="#444">마찰</text>
-                        
-                        <path d="M 415 120 L 185 120" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow4)"/>
-                        <text x="300" y="145" text-anchor="middle" font-size="14" fill="#444">ㄱ 열기관</text>
-                        
-                        <path d="M 120 150 L 105 200" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow4)"/>
-                        <text x="65" y="165" text-anchor="middle" font-size="13" fill="#444">발광</text>
-                        <text x="65" y="180" text-anchor="middle" font-size="13" fill="#444">다이오드</text>
-                        
-                        <path d="M 150 260 L 245 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow4)"/>
-                        <text x="200" y="280" text-anchor="middle" font-size="14" fill="#444">태양전지</text>
-                        
-                        <path d="M 330 245 L 415 135" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow4)"/>
-                        <text x="380" y="180" text-anchor="middle" font-size="14" fill="#444">ㄴ</text>
-                        <text x="395" y="195" text-anchor="middle" font-size="14" fill="#444">전열기</text>
-                        
-                        <path d="M 475 135 L 495 200" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow4)"/>
-                        <text x="510" y="165" text-anchor="middle" font-size="14" fill="#444">광합성</text>
-                        
-                        <path d="M 450 260 L 355 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow4)"/>
-                        <text x="400" y="280" text-anchor="middle" font-size="14" fill="#444">전지</text>
-                        
-                        <path d="M 265 295 L 155 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow4)"/>
-                        <text x="210" y="310" text-anchor="middle" font-size="14" fill="#444">LED</text>
-                    </svg>
-                `,
-                hints: [
-                    "ㄱ. A는 빛에너지이다.",
-                    "ㄴ. B는 열에너지이다.",
-                    "ㄷ. ㄱ의 예로 증기기관, ㄴ의 예로 전열기를 들 수 있다."
-                ],
-                choices: [
-                    "ㄱ",
-                    "ㄷ",
-                    "ㄱ, ㄴ",
-                    "ㄴ, ㄷ",
-                    "ㄱ, ㄴ, ㄷ"
-                ],
-                correct: 2,
-                explanation: {
-                    theory: "열기관은 열에너지를 역학적 에너지로 전환하는 장치입니다(예: 증기기관, 내연기관). 전열기는 전기 에너지를 열에너지로 전환합니다(예: 전기히터, 전기밥솥). LED는 전기 에너지를 빛에너지로 효율적으로 전환합니다.",
-                    process: [
-                        "ㄱ. 분석: LED(전기→빛), 태양전지(빛→전기), 발광다이오드(역학→빛)의 과정을 보면 A는 빛에너지가 맞습니다. (참)",
-                        "ㄴ. 분석: 마찰(역학→열), 열기관(열→역학), 전열기(전기→열), 광합성에서 열이 나오는 과정을 보면 B는 열에너지가 맞습니다. (참)",
-                        "ㄷ. 분석: ㄱ은 열기관(열→역학)이므로 증기기관, 자동차 엔진 등이 예시입니다. 그러나 문제에서는 증기기관이 아닌 열기관으로 표시되어 있으므로 증기기관은 적절하지 않습니다. ㄴ은 전열기(전기→열)이므로 전기히터, 전기밥솥 등이 예시입니다. (거짓)",
-                        "에너지 효율 비교: LED는 백열등보다 에너지 효율이 높습니다. 백열등은 대부분의 에너지를 열로 손실하지만, LED는 대부분을 빛으로 전환합니다.",
-                        "최종 답: ㄱ, ㄴ이 맞으므로 정답은 ③번입니다."
-                    ]
-                }
-            },
-            {
-                question: "그림은 여러 가지 에너지 전환의 예를 나타낸 것이다. 이에 대한 설명으로 옳은 것만을 [보기]에서 있는 대로 고른 것은?",
-                diagram: `
-                    <svg viewBox="0 0 600 350" xmlns="http://www.w3.org/2000/svg">
-                        <defs>
-                            <marker id="arrow5" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
-                                <path d="M0,0 L0,6 L9,3 z" fill="#666"/>
-                            </marker>
-                        </defs>
-                        
-                        <circle cx="150" cy="100" r="50" fill="#b8b8b8" stroke="#666" stroke-width="2"/>
-                        <text x="150" y="95" text-anchor="middle" font-size="18" fill="#222" font-weight="bold">전기</text>
-                        <text x="150" y="112" text-anchor="middle" font-size="18" fill="#222" font-weight="bold">에너지</text>
-                        
-                        <circle cx="450" cy="100" r="50" fill="#a0a0a0" stroke="#666" stroke-width="2"/>
-                        <text x="450" y="105" text-anchor="middle" font-size="24" fill="#fff" font-weight="bold">B</text>
-                        
-                        <circle cx="100" cy="250" r="50" fill="#c0c0c0" stroke="#666" stroke-width="2"/>
-                        <text x="100" y="255" text-anchor="middle" font-size="24" fill="#222" font-weight="bold">A</text>
-                        
-                        <circle cx="300" cy="270" r="50" fill="#989898" stroke="#666" stroke-width="2"/>
-                        <text x="300" y="275" text-anchor="middle" font-size="18" fill="#fff" font-weight="bold">빛에너지</text>
-                        
-                        <circle cx="500" cy="250" r="50" fill="#b0b0b0" stroke="#666" stroke-width="2"/>
-                        <text x="500" y="245" text-anchor="middle" font-size="18" fill="#222" font-weight="bold">열</text>
-                        <text x="500" y="262" text-anchor="middle" font-size="18" fill="#222" font-weight="bold">에너지</text>
-                        
-                        <path d="M 200 100 L 395 100" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow5)"/>
-                        <text x="300" y="90" text-anchor="middle" font-size="14" fill="#444">ㄱ 전동기</text>
-                        
-                        <path d="M 415 120 L 185 120" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow5)"/>
-                        <text x="300" y="145" text-anchor="middle" font-size="14" fill="#444">발전기</text>
-                        
-                        <path d="M 120 150 L 105 200" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow5)"/>
-                        <text x="75" y="180" text-anchor="middle" font-size="14" fill="#444">충전지</text>
-                        
-                        <path d="M 150 260 L 245 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow5)"/>
-                        <text x="200" y="280" text-anchor="middle" font-size="14" fill="#444">생물발광</text>
-                        
-                        <path d="M 330 245 L 415 135" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow5)"/>
-                        <text x="380" y="185" text-anchor="middle" font-size="14" fill="#444">ㄴ 광압</text>
-                        
-                        <path d="M 475 135 L 495 200" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow5)"/>
-                        <text x="510" y="165" text-anchor="middle" font-size="14" fill="#444">마찰</text>
-                        
-                        <path d="M 450 260 L 355 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow5)"/>
-                        <text x="400" y="280" text-anchor="middle" font-size="14" fill="#444">백열등</text>
-                        
-                        <path d="M 265 295 L 155 270" stroke="#777" stroke-width="3" fill="none" marker-end="url(#arrow5)"/>
-                        <text x="210" y="310" text-anchor="middle" font-size="14" fill="#444">광합성</text>
-                    </svg>
-                `,
-                hints: [
-                    "ㄱ. A는 화학 에너지이다.",
-                    "ㄴ. B는 역학적 에너지이다.",
-                    "ㄷ. ㄱ의 예로 선풍기, ㄴ의 예로 태양광 범선을 들 수 있다."
-                ],
-                choices: [
-                    "ㄱ",
-                    "ㄴ",
-                    "ㄱ, ㄴ",
-                    "ㄱ, ㄷ",
-                    "ㄱ, ㄴ, ㄷ"
-                ],
-                correct: 4,
-                explanation: {
-                    theory: "광압(light pressure)은 빛이 물체에 미치는 압력으로, 빛의 입자성을 보여주는 현상입니다. 태양광 범선(solar sail)은 광압을 이용한 추진 장치입니다. 전동기는 전기 에너지를 역학적 에너지로 전환합니다.",
-                    process: [
-                        "ㄱ. 분석: 충전지(전기→화학), 생물발광(화학→빛), 광합성(빛→화학)의 과정을 보면 A는 화학 에너지가 맞습니다. (참)",
-                        "ㄴ. 분석: 전동기(전기→역학적), 발전기(역학적→전기), 광압(빛→역학적), 마찰(역학적→열)의 과정을 보면 B는 역학적 에너지가 맞습니다. (참)",
-                        "ㄷ. 분석: ㄱ은 전동기(전기→역학적)이므로 선풍기, 세탁기 등이 예시입니다. ㄴ은 광압(빛→역학적)으로 태양광 범선 등이 예시입니다. (참)",
-                        "에너지 전환의 방향성: 대부분의 에너지 전환은 결국 열에너지로 전환되며, 이는 엔트로피 증가 법칙과 관련됩니다.",
-                        "최종 답: 모든 설명이 옳으므로 정답은 ⑤번입니다."
-                    ]
-                }
-            }
-        ];
+    <div class="problem-body">
+      그림은 정격 전압이 <strong id="txt-voltage">220 V</strong>인 전기 기구 A, B, C와
+      <strong id="txt-voltage2">220 V</strong>의 전원에 연결된 멀티탭을, 표는 각 전기 기구의
+      소비 전력을 나타낸 것이다.
+    </div>
 
-        let currentQuestion = 0;
-        let selectedAnswer = null;
+    <div class="diagram-wrap">
+      <canvas id="scene" width="340" height="200"></canvas>
+      <div class="power-table">
+        <table>
+          <thead><tr><th>전기 기구</th><th>소비 전력</th></tr></thead>
+          <tbody>
+            <tr><td class="device">A</td><td class="watt" id="pa">660 W</td></tr>
+            <tr><td class="device">B</td><td class="watt" id="pb">880 W</td></tr>
+            <tr><td class="device">C</td><td class="watt" id="pc">220 W</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-        function loadQuestion() {
-            const q = questions[currentQuestion];
-            document.getElementById('questionText').innerHTML = `<strong>9.</strong> ${q.question}`;
-            document.getElementById('diagram').innerHTML = q.diagram;
-            
-            let hintsHTML = '<div class="hint-title">< 보기 ></div>';
-            q.hints.forEach(hint => {
-                hintsHTML += `<div class="hint-item">${hint}</div>`;
-            });
-            document.getElementById('hintBox').innerHTML = hintsHTML;
-            
-            let choicesHTML = '';
-            q.choices.forEach((choice, index) => {
-                choicesHTML += `<div class="choice" onclick="selectChoice(${index})">
-                    ① ${choice}
-                </div>`.replace('①', ['①', '②', '③', '④', '⑤'][index]);
-            });
-            document.getElementById('choices').innerHTML = choicesHTML;
-            
-            document.getElementById('feedback').classList.remove('show');
-            document.getElementById('submitBtn').disabled = true;
-            selectedAnswer = null;
-        }
+    <div class="divider"></div>
 
-        function selectChoice(index) {
-            const choices = document.querySelectorAll('.choice');
-            choices.forEach(c => c.classList.remove('selected'));
-            choices[index].classList.add('selected');
-            selectedAnswer = index;
-            document.getElementById('submitBtn').disabled = false;
-        }
+    <div class="question-text">
+      A, B, C를 멀티탭에 동시에 연결할 때, 멀티탭에 흐르는 전류의 세기는?
+    </div>
 
-        function checkAnswer() {
-            if (selectedAnswer === null) return;
-            
-            const q = questions[currentQuestion];
-            const choices = document.querySelectorAll('.choice');
-            const feedback = document.getElementById('feedback');
-            
-            choices.forEach(c => c.style.pointerEvents = 'none');
-            
-            if (selectedAnswer === q.correct) {
-                choices[selectedAnswer].classList.add('correct');
-                feedback.className = 'feedback correct show';
-                feedback.innerHTML = `
-                    <div class="feedback-title">✓ 정답입니다!</div>
-                    <div class="feedback-content">
-                        <div class="explanation-section">
-                            <div class="explanation-title">📚 관련 이론</div>
-                            <div class="theory-box">${q.explanation.theory}</div>
-                        </div>
-                        <div class="explanation-section">
-                            <div class="explanation-title">💡 풀이 과정</div>
-                            ${q.explanation.process.map(step => `<p style="margin: 10px 0; line-height: 1.6;">${step}</p>`).join('')}
-                        </div>
-                    </div>
-                `;
-            } else {
-                choices[selectedAnswer].classList.add('incorrect');
-                choices[q.correct].classList.add('correct');
-                feedback.className = 'feedback incorrect show';
-                feedback.innerHTML = `
-                    <div class="feedback-title">✗ 오답입니다</div>
-                    <div class="feedback-content">
-                        <p style="margin-bottom: 15px;"><strong>정답: ${['①', '②', '③', '④', '⑤'][q.correct]} ${q.choices[q.correct]}</strong></p>
-                        <div class="explanation-section">
-                            <div class="explanation-title">📚 관련 이론</div>
-                            <div class="theory-box">${q.explanation.theory}</div>
-                        </div>
-                        <div class="explanation-section">
-                            <div class="explanation-title">💡 풀이 과정</div>
-                            ${q.explanation.process.map(step => `<p style="margin: 10px 0; line-height: 1.6;">${step}</p>`).join('')}
-                        </div>
-                    </div>
-                `;
-            }
-            
-            document.getElementById('submitBtn').disabled = true;
-        }
+    <div class="choices" id="choices"></div>
 
-        function newQuestion() {
-            currentQuestion = (currentQuestion + 1) % questions.length;
-            loadQuestion();
-            const choices = document.querySelectorAll('.choice');
-            choices.forEach(c => {
-                c.style.pointerEvents = 'auto';
-                c.classList.remove('selected', 'correct', 'incorrect');
-            });
-        }
+    <div class="actions">
+      <button class="btn btn-check" id="btn-check" disabled onclick="checkAnswer()">✓ 확인</button>
+      <button class="btn btn-new" onclick="newProblem()">↻ 새 문제</button>
+    </div>
 
-        loadQuestion();
-    </script>
+    <div class="feedback" id="feedback"></div>
+  </div>
+</div>
+
+<script>
+// ── State ──────────────────────────────────────────────
+let voltage = 220, powers = [660,880,220], correctAnswer = 0;
+let selectedChoice = null, answered = false;
+let score = { correct:0, wrong:0, total:0 };
+const powerOptions = [110,220,330,440,550,660,770,880,990,1100];
+const voltageOptions = [110,220];
+function pick(a){ return a[Math.floor(Math.random()*a.length)]; }
+
+// ── Canvas Drawing ──────────────────────────────────────
+const canvas = document.getElementById('scene');
+const ctx = canvas.getContext('2d');
+const W = 340, H = 200;
+
+// Animated flow particles
+let particles = [];
+let animFrame = null;
+let animating = false;
+
+function drawScene() {
+  const c = ctx;
+  c.clearRect(0,0,W,H);
+
+  // Background gradient — room floor feel
+  const bgGrad = c.createLinearGradient(0,0,0,H);
+  bgGrad.addColorStop(0,'#1a1e2e');
+  bgGrad.addColorStop(1,'#141720');
+  c.fillStyle = bgGrad;
+  c.fillRect(0,0,W,H);
+
+  // Subtle floor line
+  c.strokeStyle = '#252a40';
+  c.lineWidth = 1;
+  c.beginPath(); c.moveTo(0,168); c.lineTo(W,168); c.stroke();
+
+  drawWall(c);
+  drawOutlet(c, 18, 95);
+  drawCord(c);
+  drawPowerStrip(c);
+  drawDevices(c);
+  drawCurrentArrow(c);
+}
+
+function drawWall(c) {
+  // Wall segment behind outlet
+  const wg = c.createLinearGradient(0,0,55,0);
+  wg.addColorStop(0,'#1e2438');
+  wg.addColorStop(1,'#252b42');
+  c.fillStyle = wg;
+  c.fillRect(0,0,55,H);
+
+  // Baseboard
+  c.fillStyle = '#1c2135';
+  c.fillRect(0,160,55,8);
+  c.strokeStyle='#2e3a55';
+  c.lineWidth=0.5;
+  c.strokeRect(0,160,55,8);
+}
+
+function drawOutlet(c, x, y) {
+  const w=38, h=52;
+  // Outlet plate shadow
+  c.shadowColor='rgba(0,0,0,0.7)';
+  c.shadowBlur=8;
+  c.shadowOffsetX=3;
+
+  // Plate body
+  const pg = c.createLinearGradient(x,y,x+w,y+h);
+  pg.addColorStop(0,'#d6d0c4');
+  pg.addColorStop(0.5,'#ccc6b8');
+  pg.addColorStop(1,'#b8b2a4');
+  c.fillStyle = pg;
+  c.beginPath();
+  c.roundRect(x,y,w,h,4);
+  c.fill();
+
+  c.shadowBlur=0; c.shadowOffsetX=0;
+
+  // Plate border
+  c.strokeStyle='#a09880';
+  c.lineWidth=1;
+  c.beginPath(); c.roundRect(x,y,w,h,4); c.stroke();
+
+  // Inner recessed area
+  c.fillStyle='#b8b2a2';
+  c.beginPath(); c.roundRect(x+4,y+4,w-8,h-8,3); c.fill();
+  c.strokeStyle='#9a9282'; c.lineWidth=0.5;
+  c.beginPath(); c.roundRect(x+4,y+4,w-8,h-8,3); c.stroke();
+
+  // Socket holes — top pair
+  drawSocketHoles(c, x+w/2-6, y+14);
+  drawSocketHoles(c, x+w/2+2, y+14);
+
+  // Socket holes — bottom pair
+  drawSocketHoles(c, x+w/2-6, y+30);
+  drawSocketHoles(c, x+w/2+2, y+30);
+
+  // Ground hole (D-shaped)
+  c.fillStyle='#555';
+  c.beginPath();
+  c.arc(x+w/2-2, y+44, 3, Math.PI, 0, false);
+  c.fill();
+
+  // Label
+  c.fillStyle='#7a7060';
+  c.font='bold 7px monospace';
+  c.textAlign='center';
+  c.fillText(voltage+'V', x+w/2, y+h-3);
+}
+
+function drawSocketHoles(c, x, y) {
+  c.fillStyle='#333';
+  c.beginPath(); c.ellipse(x,y,2.5,4,0,0,Math.PI*2); c.fill();
+  c.strokeStyle='#222'; c.lineWidth=0.5;
+  c.beginPath(); c.ellipse(x,y,2.5,4,0,0,Math.PI*2); c.stroke();
+}
+
+function drawCord(c) {
+  // Main power cord from outlet to strip
+  const startX=56, startY=118, endX=95, endY=155;
+
+  // Cord shadow
+  c.strokeStyle='rgba(0,0,0,0.5)';
+  c.lineWidth=7;
+  c.lineCap='round';
+  c.beginPath();
+  c.moveTo(startX+1, startY+1);
+  c.bezierCurveTo(70,125, 80,140, endX+1,endY+1);
+  c.stroke();
+
+  // Cord body — thick round cable
+  const cordGrad = c.createLinearGradient(startX,startY,endX,endY);
+  cordGrad.addColorStop(0,'#3a3530');
+  cordGrad.addColorStop(0.3,'#5a5248');
+  cordGrad.addColorStop(0.7,'#4a4238');
+  cordGrad.addColorStop(1,'#2e2a26');
+  c.strokeStyle = cordGrad;
+  c.lineWidth=6;
+  c.beginPath();
+  c.moveTo(startX, startY);
+  c.bezierCurveTo(70,124, 80,139, endX,endY);
+  c.stroke();
+
+  // Highlight on cord
+  c.strokeStyle='rgba(255,255,255,0.08)';
+  c.lineWidth=2;
+  c.beginPath();
+  c.moveTo(startX-1, startY-1);
+  c.bezierCurveTo(69,123,79,138, endX-1,endY-1);
+  c.stroke();
+}
+
+function drawPowerStrip(c) {
+  const x=90, y=140, w=235, h=28;
+
+  // Cast shadow
+  c.shadowColor='rgba(0,0,0,0.8)';
+  c.shadowBlur=12;
+  c.shadowOffsetY=4;
+
+  // Main body gradient (light beige/ivory plastic)
+  const sg = c.createLinearGradient(x,y,x,y+h);
+  sg.addColorStop(0,'#d8d4cc');
+  sg.addColorStop(0.3,'#ccc8be');
+  sg.addColorStop(0.7,'#b8b4aa');
+  sg.addColorStop(1,'#a8a49a');
+  c.fillStyle = sg;
+  c.beginPath(); c.roundRect(x,y,w,h,5); c.fill();
+  c.shadowBlur=0; c.shadowOffsetY=0;
+
+  // Top edge highlight
+  c.strokeStyle='rgba(255,255,255,0.5)';
+  c.lineWidth=1;
+  c.beginPath(); c.moveTo(x+5,y+1); c.lineTo(x+w-5,y+1); c.stroke();
+
+  // Bottom edge shadow
+  c.strokeStyle='rgba(0,0,0,0.3)';
+  c.lineWidth=1;
+  c.beginPath(); c.moveTo(x+5,y+h-1); c.lineTo(x+w-5,y+h-1); c.stroke();
+
+  // Outer border
+  c.strokeStyle='#888078';
+  c.lineWidth=1.5;
+  c.beginPath(); c.roundRect(x,y,w,h,5); c.stroke();
+
+  // Sockets on strip — 3 socket pairs
+  const socketXs = [145, 205, 265];
+  socketXs.forEach(sx => {
+    drawStripSocket(c, sx, y+h/2);
+  });
+
+  // Power indicator LED
+  const ledG = c.createRadialGradient(x+12,y+h/2,1,x+12,y+h/2,5);
+  ledG.addColorStop(0,'#ff4444');
+  ledG.addColorStop(0.6,'#cc0000');
+  ledG.addColorStop(1,'#660000');
+  c.fillStyle = ledG;
+  c.beginPath(); c.arc(x+12, y+h/2, 4, 0, Math.PI*2); c.fill();
+  // LED glow
+  c.shadowColor='#ff3300'; c.shadowBlur=8;
+  c.fillStyle='rgba(255,60,0,0.3)';
+  c.beginPath(); c.arc(x+12, y+h/2, 6, 0, Math.PI*2); c.fill();
+  c.shadowBlur=0;
+
+  // Power button
+  const btnG = c.createLinearGradient(x+25,y+4,x+25,y+h-4);
+  btnG.addColorStop(0,'#c8c4ba');
+  btnG.addColorStop(1,'#989288');
+  c.fillStyle=btnG;
+  c.beginPath(); c.roundRect(x+22,y+5,18,h-10,3); c.fill();
+  c.strokeStyle='#777068'; c.lineWidth=1;
+  c.beginPath(); c.roundRect(x+22,y+5,18,h-10,3); c.stroke();
+  c.fillStyle='#5a5448'; c.font='bold 7px sans-serif'; c.textAlign='center';
+  c.fillText('ON', x+31, y+h/2+3);
+
+  // Label
+  c.fillStyle='#6a6458'; c.font='bold 8px sans-serif'; c.textAlign='center';
+  c.fillText('멀티탭', x+w/2+10, y+h+14);
+}
+
+function drawStripSocket(c, cx, cy) {
+  // Socket recess
+  const rg = c.createRadialGradient(cx,cy,1,cx,cy,10);
+  rg.addColorStop(0,'#888');
+  rg.addColorStop(1,'#aaa49a');
+  c.fillStyle=rg;
+  c.beginPath(); c.ellipse(cx,cy,12,10,0,0,Math.PI*2); c.fill();
+  c.strokeStyle='#777068'; c.lineWidth=1;
+  c.beginPath(); c.ellipse(cx,cy,12,10,0,0,Math.PI*2); c.stroke();
+
+  // Two pin holes
+  c.fillStyle='#333';
+  c.beginPath(); c.ellipse(cx-4,cy,2,3.5,0,0,Math.PI*2); c.fill();
+  c.beginPath(); c.ellipse(cx+4,cy,2,3.5,0,0,Math.PI*2); c.fill();
+}
+
+function drawDevices(c) {
+  const positions = [145, 205, 265];
+  const labels = ['A','B','C'];
+  const colors = [
+    {body:'#6055c8', dark:'#4840a0', light:'#8878e8', wire:'#7c6fe8'},
+    {body:'#2a7acc', dark:'#1a5a9a', light:'#4a9aec', wire:'#5a8edc'},
+    {body:'#2aaa6c', dark:'#1a8050', light:'#4aca8c', wire:'#3aba7c'},
+  ];
+
+  positions.forEach((sx, i) => {
+    drawAppliance(c, sx, 140, labels[i], colors[i]);
+  });
+}
+
+function drawAppliance(c, plugX, plugY, label, col) {
+  // Plug prongs going into strip
+  const prong1X = plugX - 4, prong2X = plugX + 4;
+  const prongTop = plugY - 2, prongBottom = plugY + 6;
+
+  // Prong metal
+  const metalG = c.createLinearGradient(prong1X-1,0,prong1X+3,0);
+  metalG.addColorStop(0,'#c8c4b8');
+  metalG.addColorStop(0.5,'#e8e4d8');
+  metalG.addColorStop(1,'#b0aca0');
+  c.fillStyle=metalG;
+  c.fillRect(prong1X-1, prongTop, 3, prongBottom-prongTop);
+  c.fillRect(prong2X-1, prongTop, 3, prongBottom-prongTop);
+
+  // Wire from plug going up
+  const wireBottomY = plugY - 2;
+  const wireTopY = plugY - 68;
+  const wobble = (label==='A') ? -5 : (label==='B') ? 0 : 5;
+
+  // Wire shadow
+  c.strokeStyle='rgba(0,0,0,0.5)';
+  c.lineWidth=5;
+  c.lineCap='round';
+  c.beginPath();
+  c.moveTo(plugX+1, wireBottomY+1);
+  c.bezierCurveTo(plugX+wobble+1, wireBottomY-20, plugX+wobble+1, wireTopY+20, plugX+wobble+1, wireTopY+1);
+  c.stroke();
+
+  // Wire body
+  const wireGrad = c.createLinearGradient(plugX-3,0,plugX+3,0);
+  wireGrad.addColorStop(0,col.dark);
+  wireGrad.addColorStop(0.4,col.wire);
+  wireGrad.addColorStop(1,col.dark);
+  c.strokeStyle=wireGrad;
+  c.lineWidth=4.5;
+  c.beginPath();
+  c.moveTo(plugX, wireBottomY);
+  c.bezierCurveTo(plugX+wobble, wireBottomY-20, plugX+wobble, wireTopY+20, plugX+wobble, wireTopY);
+  c.stroke();
+
+  // Wire highlight
+  c.strokeStyle='rgba(255,255,255,0.12)';
+  c.lineWidth=1.5;
+  c.beginPath();
+  c.moveTo(plugX-1, wireBottomY);
+  c.bezierCurveTo(plugX+wobble-1, wireBottomY-20, plugX+wobble-1, wireTopY+20, plugX+wobble-1, wireTopY);
+  c.stroke();
+
+  // Plug head box
+  const headW=34, headH=20, headX=plugX+wobble-headW/2, headY=wireTopY-headH;
+
+  // Plug head shadow
+  c.shadowColor='rgba(0,0,0,0.7)';
+  c.shadowBlur=6; c.shadowOffsetY=3;
+
+  const headGrad = c.createLinearGradient(headX,headY,headX,headY+headH);
+  headGrad.addColorStop(0,col.light);
+  headGrad.addColorStop(0.4,col.body);
+  headGrad.addColorStop(1,col.dark);
+  c.fillStyle=headGrad;
+  c.beginPath(); c.roundRect(headX,headY,headW,headH,4); c.fill();
+  c.shadowBlur=0; c.shadowOffsetY=0;
+
+  c.strokeStyle='rgba(0,0,0,0.4)'; c.lineWidth=1;
+  c.beginPath(); c.roundRect(headX,headY,headW,headH,4); c.stroke();
+
+  // Highlight on plug head
+  c.fillStyle='rgba(255,255,255,0.15)';
+  c.beginPath(); c.roundRect(headX+2,headY+2,headW-4,5,2); c.fill();
+
+  // Label on plug head
+  c.fillStyle='rgba(255,255,255,0.9)';
+  c.font='bold 11px monospace';
+  c.textAlign='center';
+  c.fillText(label, headX+headW/2, headY+headH/2+4);
+
+  // Device body (abstract appliance shape above plug)
+  const devY = headY - 36;
+  const devX = headX;
+  const devW = headW, devH = 30;
+
+  c.shadowColor='rgba(0,0,0,0.6)'; c.shadowBlur=8; c.shadowOffsetY=2;
+  const devGrad = c.createLinearGradient(devX,devY,devX,devY+devH);
+  devGrad.addColorStop(0,'#2a2e42');
+  devGrad.addColorStop(0.5,'#22263a');
+  devGrad.addColorStop(1,'#1a1e2e');
+  c.fillStyle=devGrad;
+  c.beginPath(); c.roundRect(devX,devY,devW,devH,5); c.fill();
+  c.shadowBlur=0; c.shadowOffsetY=0;
+
+  c.strokeStyle=col.body; c.lineWidth=1.5;
+  c.beginPath(); c.roundRect(devX,devY,devW,devH,5); c.stroke();
+
+  // Device screen/vent lines (visual detail)
+  if(label==='A') {
+    // Fan / heater vent lines
+    for(let vi=0;vi<4;vi++){
+      c.strokeStyle='rgba(255,255,255,0.12)'; c.lineWidth=1.5;
+      c.beginPath(); c.moveTo(devX+5,devY+5+vi*5); c.lineTo(devX+devW-5,devY+5+vi*5); c.stroke();
+    }
+    // tiny LED
+    const ledG2=c.createRadialGradient(devX+devW-8,devY+devH-6,0,devX+devW-8,devY+devH-6,3);
+    ledG2.addColorStop(0,'#ff6'); ledG2.addColorStop(1,'#a80');
+    c.fillStyle=ledG2; c.beginPath(); c.arc(devX+devW-8,devY+devH-6,2.5,0,Math.PI*2); c.fill();
+  } else if(label==='B') {
+    // Screen
+    c.fillStyle='#0a1520';
+    c.beginPath(); c.roundRect(devX+5,devY+4,devW-10,devH-10,2); c.fill();
+    c.fillStyle='rgba(60,140,255,0.4)';
+    c.beginPath(); c.roundRect(devX+5,devY+4,devW-10,devH-10,2); c.fill();
+    c.strokeStyle='rgba(80,160,255,0.3)'; c.lineWidth=1;
+    c.beginPath(); c.roundRect(devX+5,devY+4,devW-10,devH-10,2); c.stroke();
+    // screen glow
+    c.fillStyle='rgba(80,160,255,0.15)';
+    c.beginPath(); c.roundRect(devX+5,devY+4,devW-10,(devH-10)/2,2); c.fill();
+  } else {
+    // Circular dial
+    c.strokeStyle='rgba(255,255,255,0.15)'; c.lineWidth=1;
+    c.beginPath(); c.arc(devX+devW/2,devY+devH/2,9,0,Math.PI*2); c.stroke();
+    c.beginPath(); c.arc(devX+devW/2,devY+devH/2,5,0,Math.PI*2); c.stroke();
+    // dial indicator
+    const ang = -0.5;
+    c.strokeStyle=col.light; c.lineWidth=2;
+    c.beginPath();
+    c.moveTo(devX+devW/2, devY+devH/2);
+    c.lineTo(devX+devW/2+Math.cos(ang)*7, devY+devH/2+Math.sin(ang)*7);
+    c.stroke();
+  }
+}
+
+function drawCurrentArrow(c) {
+  // Animated arrow from outlet along cord — drawn as static label
+  const ax=62, ay=112;
+  c.fillStyle='rgba(251,191,36,0.9)';
+  c.font='bold 9px monospace';
+  c.textAlign='left';
+  c.fillText('I →', ax, ay);
+}
+
+// ── Particle flow animation ─────────────────────────────
+function initParticles() {
+  particles = [];
+  for(let i=0;i<18;i++){
+    particles.push({ t: Math.random(), speed: 0.003+Math.random()*0.003, branch: Math.floor(Math.random()*3) });
+  }
+}
+
+function animateParticles() {
+  drawScene();
+  const c = ctx;
+
+  // Path: outlet(56,118) → strip entry (95,155) → branches up to devices
+  particles.forEach(p => {
+    p.t += p.speed;
+    if(p.t>1) p.t -= 1;
+
+    let px, py;
+    if(p.t < 0.4) {
+      // Along cord
+      const nt = p.t/0.4;
+      const t = nt;
+      px = bezier(56,70,80,95, t);
+      py = bezier(118,124,139,155, t);
+    } else {
+      // Up branch wire
+      const nt = (p.t-0.4)/0.6;
+      const bx = [145,205,265][p.branch];
+      const wobble = (p.branch===0)?-5:(p.branch===1)?0:5;
+      px = bezier(bx, bx+wobble, bx+wobble, bx+wobble, nt);
+      py = bezier(155, 135, 90, 72, nt);
+    }
+
+    const alpha = 0.5 + 0.5*Math.sin(p.t*Math.PI*2);
+    c.shadowColor='#fbbf24'; c.shadowBlur=6;
+    c.fillStyle=`rgba(251,191,36,${alpha*0.9})`;
+    c.beginPath(); c.arc(px,py,2.5,0,Math.PI*2); c.fill();
+    c.shadowBlur=0;
+  });
+
+  animFrame = requestAnimationFrame(animateParticles);
+}
+
+function bezier(p0,p1,p2,p3,t){
+  return Math.pow(1-t,3)*p0 + 3*Math.pow(1-t,2)*t*p1 + 3*(1-t)*t*t*p2 + Math.pow(t,3)*p3;
+}
+
+function startAnim() {
+  if(animating) return;
+  animating = true;
+  initParticles();
+  animateParticles();
+}
+
+function stopAnim() {
+  if(animFrame) cancelAnimationFrame(animFrame);
+  animating = false;
+  drawScene();
+}
+
+// ── Problem logic ───────────────────────────────────────
+function generateProblem() {
+  voltage = pick(voltageOptions);
+  let shuffled = [...powerOptions].sort(()=>Math.random()-0.5);
+  powers = shuffled.slice(0,3);
+  correctAnswer = Math.round((powers[0]+powers[1]+powers[2])/voltage);
+  updateUI();
+}
+
+function makeDistractors(correct) {
+  let seen = new Set([correct]);
+  let cands = [];
+  let partials=[
+    Math.round((powers[0]+powers[1])/voltage),
+    Math.round((powers[1]+powers[2])/voltage),
+    Math.round((powers[0]+powers[2])/voltage),
+    Math.round(powers[0]/voltage),
+    Math.round(powers[1]/voltage),
+    Math.round(powers[2]/voltage),
+    correct+1, correct-1, correct*2,
+  ];
+  for(let c of partials){
+    if(c>0 && !seen.has(c)){ seen.add(c); cands.push(c); }
+    if(cands.length>=8) break;
+  }
+  while(cands.length<4){
+    let r=correct+(Math.floor(Math.random()*10)-5);
+    if(r>0 && !seen.has(r)){ seen.add(r); cands.push(r); }
+  }
+  let all=[correct,...cands.slice(0,4)];
+  return all.sort(()=>Math.random()-0.5);
+}
+
+function updateUI() {
+  document.getElementById('txt-voltage').textContent = voltage+' V';
+  document.getElementById('txt-voltage2').textContent = voltage+' V';
+  document.getElementById('pa').textContent = powers[0]+' W';
+  document.getElementById('pb').textContent = powers[1]+' W';
+  document.getElementById('pc').textContent = powers[2]+' W';
+
+  drawScene();
+  startAnim();
+
+  const nums=['①','②','③','④','⑤'];
+  let choices = makeDistractors(correctAnswer);
+  let container = document.getElementById('choices');
+  container.innerHTML='';
+  choices.forEach((val,i)=>{
+    let btn=document.createElement('button');
+    btn.className='choice-btn';
+    btn.innerHTML=`<span class="choice-num">${nums[i]}</span> ${val} A`;
+    btn.dataset.value=val;
+    btn.onclick=()=>selectChoice(btn,val);
+    container.appendChild(btn);
+  });
+
+  selectedChoice=null; answered=false;
+  document.getElementById('btn-check').disabled=true;
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('feedback').innerHTML='';
+}
+
+function selectChoice(btn,val){
+  if(answered) return;
+  document.querySelectorAll('.choice-btn').forEach(b=>b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedChoice=val;
+  document.getElementById('btn-check').disabled=false;
+}
+
+function checkAnswer(){
+  if(selectedChoice===null||answered) return;
+  answered=true; score.total++;
+  let isCorrect=(parseInt(selectedChoice)===correctAnswer);
+  if(isCorrect) score.correct++; else score.wrong++;
+  updateScore();
+  document.querySelectorAll('.choice-btn').forEach(btn=>{
+    btn.disabled=true;
+    let v=parseInt(btn.dataset.value);
+    if(v===correctAnswer) btn.classList.add('correct');
+    else if(v===parseInt(selectedChoice)&&!isCorrect) btn.classList.add('wrong');
+    btn.classList.remove('selected');
+  });
+  showFeedback(isCorrect);
+  document.getElementById('btn-check').disabled=true;
+}
+
+function showFeedback(isCorrect){
+  let ia=Math.round(powers[0]/voltage);
+  let ib=Math.round(powers[1]/voltage);
+  let ic=Math.round(powers[2]/voltage);
+  let totalP=powers[0]+powers[1]+powers[2];
+  let fb=document.getElementById('feedback');
+  fb.className='feedback show';
+  fb.innerHTML=`
+    <div class="feedback-header ${isCorrect?'correct-bg':'wrong-bg'}">
+      ${isCorrect?'✅ 정답입니다!':'❌ 오답입니다.'}
+      &nbsp;&nbsp;정답: <strong>${correctAnswer} A</strong>
+    </div>
+    <div class="feedback-body">
+      <div class="solution-step">
+        <div class="step-num">1</div>
+        <div class="step-content">멀티탭은 A, B, C를 <strong style="color:var(--accent)">병렬</strong>로 연결합니다.
+        병렬 회로에서 각 기기에는 동일한 전압 <strong style="color:var(--warn)">${voltage} V</strong>가 걸립니다.</div>
+      </div>
+      <div class="solution-step">
+        <div class="step-num">2</div>
+        <div class="step-content">각 기구에 흐르는 전류를 구합니다 (I = P ÷ V):
+          <span class="formula">I<sub>A</sub> = ${powers[0]} ÷ ${voltage} = <span class="result">${ia} A</span>
+I<sub>B</sub> = ${powers[1]} ÷ ${voltage} = <span class="result">${ib} A</span>
+I<sub>C</sub> = ${powers[2]} ÷ ${voltage} = <span class="result">${ic} A</span></span>
+        </div>
+      </div>
+      <div class="solution-step">
+        <div class="step-num">3</div>
+        <div class="step-content">병렬 회로의 전체 전류 = 각 전류의 합:
+          <span class="formula">I = ${ia} + ${ib} + ${ic} = <span class="result">${correctAnswer} A</span></span>
+          또는 P<sub>전체</sub> = ${totalP} W → I = ${totalP} ÷ ${voltage} = <span class="result">${correctAnswer} A</span>
+        </div>
+      </div>
+    </div>`;
+  fb.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function updateScore(){
+  document.getElementById('sc-correct').textContent=score.correct;
+  document.getElementById('sc-wrong').textContent=score.wrong;
+  document.getElementById('sc-total').textContent=score.total;
+}
+
+function newProblem(){ generateProblem(); }
+
+generateProblem();
+</script>
 </body>
 </html>

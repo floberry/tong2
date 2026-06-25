@@ -1,524 +1,896 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>에너지 효율 시뮬레이션</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Malgun Gothic', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 15px;
-            line-height: 1.6;
-        }
-        
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            overflow: hidden;
-        }
-        
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        
-        .header h1 {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-        }
-        
-        .header p {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-        
-        .content {
-            padding: 20px;
-        }
-        
-        .problem-box {
-            background: #f8f9fa;
-            border-left: 4px solid #667eea;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-        }
-        
-        .problem-text {
-            font-size: 1rem;
-            margin-bottom: 15px;
-            line-height: 1.8;
-        }
-        
-        .diagram-container {
-            display: flex;
-            gap: 10px;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
-        
-        .diagram {
-            flex: 1;
-            min-width: 150px;
-            text-align: center;
-        }
-        
-        .diagram img {
-            max-width: 100%;
-            height: auto;
-        }
-        
-        .graph-container {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 15px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        canvas {
-            max-width: 100%;
-            height: auto;
-        }
-        
-        .options-title {
-            background: #667eea;
-            color: white;
-            padding: 12px;
-            border-radius: 8px;
-            margin: 20px 0 15px 0;
-            font-weight: bold;
-            text-align: center;
-        }
-        
-        .statement {
-            background: #fff;
-            border: 2px solid #e9ecef;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            transition: all 0.3s;
-        }
-        
-        .statement:hover {
-            border-color: #667eea;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
-        }
-        
-        .statement-label {
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 5px;
-        }
-        
-        .choices {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 10px;
-            margin: 20px 0;
-        }
-        
-        .choice-btn {
-            padding: 15px;
-            font-size: 1rem;
-            border: 2px solid #667eea;
-            background: white;
-            color: #667eea;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
-        }
-        
-        .choice-btn:hover {
-            background: #667eea;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
-        
-        .choice-btn.selected {
-            background: #667eea;
-            color: white;
-        }
-        
-        .choice-btn.correct {
-            background: #28a745;
-            border-color: #28a745;
-            color: white;
-        }
-        
-        .choice-btn.incorrect {
-            background: #dc3545;
-            border-color: #dc3545;
-            color: white;
-        }
-        
-        .submit-btn, .new-problem-btn {
-            width: 100%;
-            padding: 15px;
-            font-size: 1.1rem;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-        
-        .submit-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
-        
-        .submit-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .new-problem-btn {
-            background: #28a745;
-            color: white;
-        }
-        
-        .new-problem-btn:hover {
-            background: #218838;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
-        }
-        
-        .feedback {
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 10px;
-            display: none;
-        }
-        
-        .feedback.show {
-            display: block;
-        }
-        
-        .feedback.correct {
-            background: #d4edda;
-            border: 2px solid #28a745;
-            color: #155724;
-        }
-        
-        .feedback.incorrect {
-            background: #f8d7da;
-            border: 2px solid #dc3545;
-            color: #721c24;
-        }
-        
-        .feedback-title {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-        
-        .feedback-content {
-            font-size: 0.95rem;
-            line-height: 1.8;
-        }
-        
-        .theory-box {
-            background: #fff;
-            padding: 15px;
-            margin-top: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
-        }
-        
-        .theory-title {
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 10px;
-        }
-        
-        .formula {
-            background: #f8f9fa;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            font-family: 'Courier New', monospace;
-            text-align: center;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>물리학 전기 회로 문제</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --paper: #f7f6f2;
+    --ink: #1a1a1a;
+    --ink2: #3a3a3a;
+    --muted: #888;
+    --rule: #ccc;
+    --rule2: #bbb;
+    --correct: #2a6e3f;
+    --wrong: #8b1a1a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #d0cdc7;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 28px 16px 60px;
+  }
+
+  .exam-sheet {
+    max-width: 780px;
+    margin: 0 auto;
+    background: var(--paper);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.22), 0 1px 4px rgba(0,0,0,0.12);
+    border: 1px solid #aaa;
+    position: relative;
+  }
+
+  .exam-sheet::before {
+    content: '';
+    position: absolute;
+    left: -1px; top: 0; bottom: 0;
+    width: 36px;
+    background: #c8c5bf;
+    border-right: 1px solid #aaa;
+    z-index: 0;
+  }
+
+  .hole {
+    position: absolute;
+    left: 9px;
+    width: 18px; height: 18px;
+    background: #d0cdc7;
+    border-radius: 50%;
+    border: 1px solid #999;
+    z-index: 1;
+  }
+
+  .exam-content {
+    position: relative;
+    z-index: 1;
+    margin-left: 36px;
+    padding: 36px 40px 48px;
+  }
+
+  .exam-header {
+    border-bottom: 2.5px solid var(--ink);
+    padding-bottom: 14px;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .exam-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 22px; font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+
+  .exam-sub {
+    font-size: 11.5px; color: var(--muted);
+    font-weight: 400; margin-top: 4px; letter-spacing: 0.3px;
+  }
+
+  .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+
+  .score-badge {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 11px; color: var(--muted);
+    border: 1px solid var(--rule2);
+    padding: 3px 10px;
+    background: #fff;
+  }
+
+  .shuffle-btn {
+    display: flex; align-items: center; gap: 7px;
+    background: var(--ink); border: none;
+    color: var(--paper);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12.5px; font-weight: 600;
+    padding: 9px 18px; cursor: pointer;
+    letter-spacing: 0.2px; transition: background 0.15s; border-radius: 2px;
+  }
+  .shuffle-btn:hover { background: #333; }
+  .shuffle-btn:active { background: #555; }
+
+  .problem-row {
+    display: flex; align-items: flex-start; gap: 12px; margin-bottom: 22px;
+  }
+
+  .problem-num {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 18px; font-weight: 700; min-width: 28px; line-height: 1.6;
+  }
+
+  .problem-text {
+    font-size: 14.5px; line-height: 1.9; color: var(--ink2); flex: 1;
+  }
+
+  /* Circuit type tag */
+  .circuit-tag {
+    display: inline-block;
+    font-size: 11px; font-weight: 700;
+    border: 1px solid var(--ink); padding: 1px 7px;
+    margin-left: 4px; vertical-align: middle;
+    font-family: 'Noto Serif KR', serif;
+  }
+
+  .visuals {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 18px; margin-bottom: 22px;
+  }
+
+  .visual-panel {
+    border: 1px solid var(--rule2); background: #fff;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 16px 12px 10px; gap: 8px;
+  }
+
+  canvas { display: block; }
+
+  .visual-caption {
+    font-size: 12px; color: var(--muted); font-weight: 500;
+    letter-spacing: 0.5px; border-top: 1px solid var(--rule);
+    width: 100%; text-align: center; padding-top: 7px; margin-top: 2px;
+  }
+
+  .bogi-box {
+    border: 1.5px solid var(--ink); padding: 14px 18px 10px;
+    margin-bottom: 20px; position: relative; background: #fff;
+  }
+
+  .bogi-title {
+    position: absolute; top: -11px; left: 50%;
+    transform: translateX(-50%);
+    background: #fff; padding: 0 10px;
+    font-size: 13px; font-weight: 700;
+    font-family: 'Noto Serif KR', serif;
+    white-space: nowrap;
+  }
+
+  .bogi-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 7px 6px; font-size: 14px; line-height: 1.7;
+    border: 1.5px solid transparent; cursor: default;
+  }
+
+  .bogi-key {
+    font-weight: 700; font-family: 'Noto Serif KR', serif;
+    min-width: 18px;
+  }
+
+  .divider { border: none; border-top: 1px dashed var(--rule); margin: 2px 0; }
+
+  /* Dynamic answer row — rebuilt per problem */
+  #answerRow {
+    display: flex; margin-bottom: 20px;
+    border: 1px solid var(--rule2); background: #fff; overflow: hidden;
+  }
+
+  .choice-btn {
+    flex: 1; background: transparent; border: none;
+    border-right: 1px solid var(--rule);
+    color: var(--ink2);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px; font-weight: 500;
+    padding: 13px 3px; cursor: pointer;
+    transition: background 0.12s; text-align: center; position: relative;
+  }
+  .choice-btn:last-child { border-right: none; }
+  .choice-btn:hover { background: #f0eeea; }
+  .choice-btn.selected { background: #e4e0d8; font-weight: 700; color: var(--ink); }
+  .choice-btn.selected::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+    height: 3px; background: var(--ink);
+  }
+  .choice-btn.correct { background: #e6f2ec; color: var(--correct); font-weight: 700; }
+  .choice-btn.correct::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+    height: 3px; background: var(--correct);
+  }
+  .choice-btn.wrong { background: #f5e8e8; color: var(--wrong); }
+
+  .check-btn {
+    width: 100%; background: var(--ink); border: none;
+    color: var(--paper);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14.5px; font-weight: 700;
+    padding: 14px; cursor: pointer; letter-spacing: 0.5px;
+    transition: background 0.15s; border-radius: 2px;
+  }
+  .check-btn:hover { background: #2a2a2a; }
+  .check-btn:disabled { background: #bbb; cursor: not-allowed; }
+
+  .feedback { margin-top: 24px; border: 1.5px solid var(--rule2); background: #fff; display: none; }
+  .feedback.show { display: block; }
+
+  .feedback-header {
+    padding: 13px 18px; font-size: 14px; font-weight: 700;
+    border-bottom: 1px solid var(--rule);
+    display: flex; align-items: center; gap: 10px;
+    font-family: 'Noto Serif KR', serif;
+  }
+  .correct-header { background: #e6f2ec; color: var(--correct); border-left: 4px solid var(--correct); }
+  .wrong-header   { background: #f5e8e8; color: var(--wrong);   border-left: 4px solid var(--wrong); }
+
+  .feedback-body { padding: 18px 20px; font-size: 13.5px; line-height: 1.85; color: var(--ink2); }
+
+  .step { margin-bottom: 14px; padding: 10px 14px; background: #f9f8f5; border-left: 3px solid var(--rule2); }
+  .step-title { font-weight: 700; font-family: 'Noto Serif KR', serif; font-size: 12.5px; color: var(--ink); margin-bottom: 5px; }
+  .val { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: #1a3a6e; font-weight: 600; }
+  .tag-o { display:inline-block; background:#e6f2ec; color:var(--correct); font-weight:700; font-size:11.5px; padding:1px 7px; border:1px solid #9dc9ae; margin-left:4px; }
+  .tag-x { display:inline-block; background:#f5e8e8; color:var(--wrong);   font-weight:700; font-size:11.5px; padding:1px 7px; border:1px solid #d4a0a0; margin-left:4px; }
+
+  /* Stats bar */
+  .stats-bar {
+    display: flex; gap: 0; margin-top: 20px;
+    border: 1px solid var(--rule2); overflow: hidden; font-size: 12px;
+  }
+  .stat { flex: 1; padding: 8px; text-align: center; border-right: 1px solid var(--rule); background: #fff; }
+  .stat:last-child { border-right: none; }
+  .stat-val { font-family: 'JetBrains Mono', monospace; font-size: 16px; font-weight: 700; display: block; }
+  .stat-lbl { color: var(--muted); font-size: 11px; }
+
+  @media (max-width: 580px) {
+    .exam-content { padding: 24px 18px 36px; }
+    .visuals { grid-template-columns: 1fr; }
+    .exam-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+  }
+</style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>⚡ 에너지 효율 시뮬레이션</h1>
-            <p>통합과학2 - 힘 센서를 설치한 마네킹</p>
-        </div>
-        
-        <div class="content">
-            <div class="problem-box">
-                <div class="problem-text" id="problemText"></div>
-                
-                <div class="graph-container">
-                    <canvas id="graphCanvas" width="500" height="300"></canvas>
-                </div>
-            </div>
-            
-            <div class="options-title">보기</div>
-            
-            <div id="statementsContainer"></div>
-            
-            <div class="choices" id="choicesContainer"></div>
-            
-            <button class="submit-btn" id="submitBtn">정답 확인</button>
-            <button class="new-problem-btn" id="newProblemBtn">새 문제</button>
-            
-            <div class="feedback" id="feedback"></div>
-        </div>
+
+<div class="exam-sheet">
+  <div class="hole" style="top:60px"></div>
+  <div class="hole" style="top:50%"></div>
+  <div class="hole" style="bottom:60px"></div>
+
+  <div class="exam-content">
+    <div class="exam-header">
+      <div>
+        <div class="exam-title">물리학 — 전기 회로</div>
+        <div class="exam-sub">2022 개정 교육과정 · 고등학교 물리학</div>
+      </div>
+      <div class="header-right">
+        <button class="shuffle-btn" onclick="shuffle()">↺ &nbsp;새 문제</button>
+        <div class="score-badge" id="scoreBadge">0 / 0 정답</div>
+      </div>
     </div>
 
-    <script>
-        const problems = [
-            {
-                statements: {
-                    'ㄱ': '마네킹이 받은 충격량의 총출 시간의 크기가 가장 작은 경우는 A를 이용한 충돌 실험이다.',
-                    'ㄴ': 'B를 이용한 충돌 실험에서, 마네킹의 운동량의 크기는 시간 t₁일 때 가장 크다.',
-                    'ㄷ': '머리에 가해지는 충격을 줄이는 데에는 C가 A보다 효과적이다.'
-                },
-                correctAnswer: '⑤',
-                correctStatements: ['ㄱ', 'ㄴ', 'ㄷ'],
-                explanation: {
-                    theory: '충격량과 힘의 관계는 다음과 같습니다:\n\n• 충격량(I) = 힘(F) × 시간(Δt) = 운동량 변화(Δp)\n• 동일한 속도 변화(v₀ → 0)에서 충격량은 일정\n• 충돌 시간이 길수록 평균 힘이 작아짐\n• 그래프 아래 면적 = 충격량 (일정)',
-                    statement_ㄱ: 'ㄱ. 옳음 ✓\n그래프에서 A는 충돌 시간이 가장 짧고 힘의 크기가 가장 큽니다. 충격량(I) = F×Δt이고, 모든 경우 속도가 v₀에서 0으로 변하므로 충격량은 동일합니다. 따라서 총출 시간(충돌 시간)의 크기가 가장 작은 것은 A입니다.',
-                    statement_ㄴ: 'ㄴ. 옳음 ✓\nB를 이용한 충돌에서 시간 t₁은 힘이 최대가 되는 시점입니다. 이때 마네킹의 속도가 가장 빠르게 감소하고 있으며, 아직 완전히 정지하지 않았으므로 운동량의 크기는 감소 중입니다. 그러나 문제에서 "가장 크다"는 의미는 힘이 최대일 때를 의미하며, 이는 운동량 변화율이 최대임을 의미합니다.',
-                    statement_ㄷ: 'ㄷ. 옳음 ✓\nC는 충돌 시간이 가장 길고 최대 힘이 가장 작습니다. 동일한 충격량(운동량 변화)에서 충돌 시간이 길수록 평균 힘이 작아지므로, 머리에 가해지는 충격을 줄이는 데에는 C가 A보다 효과적입니다. 이것이 에어백, 헬멧 등의 안전장치가 충돌 시간을 늘리는 원리입니다.',
-                    conclusion: '따라서 ㄱ, ㄴ, ㄷ 모두 옳은 설명입니다.'
-                }
-            },
-            {
-                statements: {
-                    'ㄱ': '모든 안전모에서 마네킹이 받은 총 충격량은 같다.',
-                    'ㄴ': 'A 안전모는 충격 시간이 가장 짧아 머리 보호 효과가 가장 크다.',
-                    'ㄷ': 'C 안전모가 B 안전모보다 최대 힘이 작아 더 안전하다.'
-                },
-                correctAnswer: '③',
-                correctStatements: ['ㄱ', 'ㄷ'],
-                explanation: {
-                    theory: '충격량-운동량 정리:\n\n• 충격량 = 운동량 변화량 = mΔv\n• 동일한 낙하 조건 → 동일한 속도 변화\n• F·Δt = 일정 (그래프 면적 일정)\n• 안전장치: 충돌 시간 ↑ → 평균 힘 ↓',
-                    statement_ㄱ: 'ㄱ. 옳음 ✓\n모든 경우 마네킹이 동일한 초기 속도 v₀에서 정지(v=0)하므로, 운동량 변화량 Δp = mv₀는 모두 같습니다. 충격량은 운동량 변화량과 같으므로(충격량-운동량 정리), 모든 안전모에서 총 충격량은 같습니다.',
-                    statement_ㄴ: 'ㄴ. 틀림 ✗\nA 안전모는 충격 시간이 가장 짧고 최대 힘이 가장 큽니다. 충격 시간이 짧다는 것은 같은 충격량을 짧은 시간에 받는다는 의미이므로, 순간적으로 큰 힘이 작용합니다. 따라서 머리 보호 효과가 가장 작습니다. 안전장치는 충돌 시간을 늘려 힘을 줄이는 것이 목적입니다.',
-                    statement_ㄷ: 'ㄷ. 옳음 ✓\n그래프에서 C의 최대 힘이 B보다 작습니다. 동일한 충격량에서 최대 힘이 작다는 것은 충돌 시간이 더 길다는 의미이며, 이는 머리에 가해지는 충격이 더 작아 안전하다는 것을 의미합니다.',
-                    conclusion: '따라서 ㄱ과 ㄷ이 옳은 설명입니다.'
-                }
-            },
-            {
-                statements: {
-                    'ㄱ': 'A에서 마네킹이 받은 평균 힘이 가장 크다.',
-                    'ㄴ': '충돌 시간은 B가 C보다 길다.',
-                    'ㄷ': '안전성은 A가 C보다 우수하다.'
-                },
-                correctAnswer: '①',
-                correctStatements: ['ㄱ'],
-                explanation: {
-                    theory: '평균 힘과 충돌 시간:\n\n• 평균 힘 = 충격량 ÷ 충돌 시간\n• 충격량 일정 시: 시간 ↓ → 평균 힘 ↑\n• 그래프 면적 = 충격량 (일정)\n• 안전성: 최대 힘 ↓, 충돌 시간 ↑',
-                    statement_ㄱ: 'ㄱ. 옳음 ✓\n그래프에서 A는 충돌 시간이 가장 짧고 힘의 피크가 가장 높습니다. 평균 힘 = 충격량/시간이고, 충격량이 모두 같으므로 충돌 시간이 가장 짧은 A에서 평균 힘이 가장 큽니다.',
-                    statement_ㄴ: 'ㄴ. 틀림 ✗\n그래프를 보면 C의 충돌 시간이 B보다 깁니다. C는 힘이 천천히 증가하고 감소하여 전체 충돌 시간이 가장 길고, B는 그보다 짧습니다.',
-                    statement_ㄷ: 'ㄷ. 틀림 ✗\nA는 충돌 시간이 짧고 최대 힘이 커서 머리에 가해지는 충격이 큽니다. 반면 C는 충돌 시간이 길고 최대 힘이 작아 충격이 분산됩니다. 따라서 안전성은 C가 A보다 우수합니다.',
-                    conclusion: '따라서 ㄱ만 옳은 설명입니다.'
-                }
-            }
-        ];
+    <div class="problem-row">
+      <div class="problem-num" id="probNum">8.</div>
+      <p class="problem-text" id="problemText"></p>
+    </div>
 
-        let currentProblem = null;
-        let selectedAnswer = null;
-        let answered = false;
+    <div class="visuals">
+      <div class="visual-panel">
+        <canvas id="graphCanvas" width="270" height="210"></canvas>
+        <div class="visual-caption" id="graphCaption">(가) 전압-전류 특성 그래프</div>
+      </div>
+      <div class="visual-panel">
+        <canvas id="circuitCanvas" width="270" height="210"></canvas>
+        <div class="visual-caption" id="circuitCaption">(나) 회로도</div>
+      </div>
+    </div>
 
-        function drawGraph(problem) {
-            const canvas = document.getElementById('graphCanvas');
-            const ctx = canvas.getContext('2d');
-            const width = canvas.width;
-            const height = canvas.height;
-            
-            ctx.clearRect(0, 0, width, height);
-            
-            // 배경
-            ctx.fillStyle = '#f8f9fa';
-            ctx.fillRect(0, 0, width, height);
-            
-            // 축
-            ctx.strokeStyle = '#333';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            ctx.moveTo(50, height - 40);
-            ctx.lineTo(width - 20, height - 40);
-            ctx.moveTo(50, height - 40);
-            ctx.lineTo(50, 20);
-            ctx.stroke();
-            
-            // 축 레이블
-            ctx.fillStyle = '#333';
-            ctx.font = 'bold 14px Malgun Gothic';
-            ctx.fillText('시간', width - 50, height - 10);
-            ctx.fillText('힘의', 15, 30);
-            ctx.fillText('크기', 15, 50);
-            
-            // 원점
-            ctx.fillText('0', 35, height - 25);
-            
-            // 그래프 A, B, C 그리기
-            const curves = [
-                { color: '#ff6b6b', label: 'A', peak: 0.7, width: 0.15, offset: 0.2 },
-                { color: '#4ecdc4', label: 'B', peak: 0.5, width: 0.25, offset: 0.35 },
-                { color: '#95e1d3', label: 'C', peak: 0.35, width: 0.35, offset: 0.5 }
-            ];
-            
-            curves.forEach((curve, idx) => {
-                ctx.strokeStyle = curve.color;
-                ctx.lineWidth = 3;
-                ctx.beginPath();
-                
-                const startX = 50 + curve.offset * (width - 70);
-                const endX = startX + curve.width * (width - 70);
-                const baseY = height - 40;
-                const peakY = 20 + (1 - curve.peak) * (height - 60);
-                
-                for (let x = startX; x <= endX; x += 2) {
-                    const t = (x - startX) / (endX - startX);
-                    const y = baseY - (baseY - peakY) * Math.sin(t * Math.PI);
-                    
-                    if (x === startX) {
-                        ctx.moveTo(x, y);
-                    } else {
-                        ctx.lineTo(x, y);
-                    }
-                }
-                ctx.stroke();
-                
-                // 레이블
-                ctx.fillStyle = curve.color;
-                ctx.font = 'bold 16px Malgun Gothic';
-                ctx.fillText(curve.label, startX + (endX - startX) / 2 - 8, peakY - 10);
-            });
-            
-            // t₁ 표시
-            ctx.strokeStyle = '#666';
-            ctx.setLineDash([5, 5]);
-            ctx.beginPath();
-            ctx.moveTo(50 + 0.45 * (width - 70), height - 40);
-            ctx.lineTo(50 + 0.45 * (width - 70), 20);
-            ctx.stroke();
-            ctx.setLineDash([]);
-            
-            ctx.fillStyle = '#666';
-            ctx.font = '14px Malgun Gothic';
-            ctx.fillText('t₁', 50 + 0.45 * (width - 70) - 10, height - 20);
-        }
+    <div class="bogi-box">
+      <div class="bogi-title">보 기</div>
+      <div class="bogi-item"><span class="bogi-key">ㄱ.</span><span id="text-ga"></span></div>
+      <hr class="divider">
+      <div class="bogi-item"><span class="bogi-key">ㄴ.</span><span id="text-na"></span></div>
+      <hr class="divider">
+      <div class="bogi-item"><span class="bogi-key">ㄷ.</span><span id="text-da"></span></div>
+    </div>
 
-        function loadProblem() {
-            currentProblem = problems[Math.floor(Math.random() * problems.length)];
-            selectedAnswer = null;
-            answered = false;
-            
-            document.getElementById('problemText').innerHTML = 
-                `그림 (가)는 힘 센서를 설치한 마네킹에 안전모를 씌운 후 속력 v₀으로 벽에 충돌시키는 실험을 나타낸 것이다. 그림 (나)는 안전모 A, B, C를 이용하여 각각 (가)의 실험을 했을 때 힘 센서가 측정한 결과를 나타낸 것으로, 각각의 그래프와 시간 축이 이루는 면적은 서로 같다.<br><br>
-                이에 대한 설명으로 옳은 것만을 &lt;보기&gt;에서 있는 대로 고른 것은? [2점]`;
-            
-            drawGraph(currentProblem);
-            
-            const statementsHtml = Object.entries(currentProblem.statements)
-                .map(([key, value]) => `
-                    <div class="statement">
-                        <div class="statement-label">${key}.</div>
-                        <div>${value}</div>
-                    </div>
-                `).join('');
-            document.getElementById('statementsContainer').innerHTML = statementsHtml;
-            
-            const choices = ['①', '②', '③', '④', '⑤'];
-            const choicesHtml = choices.map(choice => 
-                `<button class="choice-btn" onclick="selectAnswer('${choice}')">${choice}</button>`
-            ).join('');
-            document.getElementById('choicesContainer').innerHTML = choicesHtml;
-            
-            document.getElementById('feedback').className = 'feedback';
-            document.getElementById('submitBtn').disabled = false;
-        }
+    <div id="answerRow"></div>
 
-        function selectAnswer(answer) {
-            if (answered) return;
-            
-            selectedAnswer = answer;
-            document.querySelectorAll('.choice-btn').forEach(btn => {
-                btn.classList.remove('selected');
-                if (btn.textContent === answer) {
-                    btn.classList.add('selected');
-                }
-            });
-        }
+    <button class="check-btn" id="checkBtn" onclick="checkAnswer()" disabled>정답 확인</button>
 
-        function checkAnswer() {
-            if (!selectedAnswer || answered) return;
-            
-            answered = true;
-            const isCorrect = selectedAnswer === currentProblem.correctAnswer;
-            const feedback = document.getElementById('feedback');
-            
-            document.querySelectorAll('.choice-btn').forEach(btn => {
-                if (btn.textContent === currentProblem.correctAnswer) {
-                    btn.classList.add('correct');
-                } else if (btn.textContent === selectedAnswer && !isCorrect) {
-                    btn.classList.add('incorrect');
-                }
-            });
-            
-            let feedbackHtml = `
-                <div class="feedback-title">${isCorrect ? '✅ 정답입니다!' : '❌ 오답입니다.'}</div>
-                <div class="feedback-content">
-                    <strong>정답: ${currentProblem.correctAnswer}</strong> (${currentProblem.correctStatements.join(', ')})<br><br>
-                    
-                    <div class="theory-box">
-                        <div class="theory-title">📚 이론 배경</div>
-                        ${currentProblem.explanation.theory.replace(/\n/g, '<br>')}
-                    </div>
-                    
-                    <div class="theory-box">
-                        <div class="theory-title">📝 보기 풀이</div>
-                        ${currentProblem.explanation.statement_ㄱ.replace(/\n/g, '<br>')}<br><br>
-                        ${currentProblem.explanation.statement_ㄴ.replace(/\n/g, '<br>')}<br><br>
-                        ${currentProblem.explanation.statement_ㄷ.replace(/\n/g, '<br>')}<br><br>
-                        <strong>${currentProblem.explanation.conclusion}</strong>
-                    </div>
-                </div>
-            `;
-            
-            feedback.innerHTML = feedbackHtml;
-            feedback.className = `feedback show ${isCorrect ? 'correct' : 'incorrect'}`;
-            document.getElementById('submitBtn').disabled = true;
-        }
+    <div class="feedback" id="feedback">
+      <div class="feedback-header" id="feedbackHeader"></div>
+      <div class="feedback-body" id="feedbackBody"></div>
+    </div>
 
-        document.getElementById('submitBtn').addEventListener('click', checkAnswer);
-        document.getElementById('newProblemBtn').addEventListener('click', loadProblem);
-        
-        window.selectAnswer = selectAnswer;
-        
-        loadProblem();
-    </script>
+    <div class="stats-bar">
+      <div class="stat"><span class="stat-val" id="stTotal">0</span><span class="stat-lbl">총 문제</span></div>
+      <div class="stat"><span class="stat-val" id="stCorrect" style="color:var(--correct)">0</span><span class="stat-lbl">정답</span></div>
+      <div class="stat"><span class="stat-val" id="stWrong" style="color:var(--wrong)">0</span><span class="stat-lbl">오답</span></div>
+      <div class="stat"><span class="stat-val" id="stRate">—</span><span class="stat-lbl">정답률</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════════════════
+let state = {};
+let choiceSelected = -1;
+let stats = { total: 0, correct: 0 };
+
+// ═══════════════════════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════════════════════
+const rnd = arr => arr[Math.floor(Math.random() * arr.length)];
+const fmt = n => Number.isInteger(n) ? String(n) : n.toFixed(1);
+// near-integer check
+const isNearInt = (x, tol=0.05) => Math.abs(x - Math.round(x)) < tol;
+// ratio as simple fraction string like "2", "3", "1/2"
+function ratioStr(a, b) {
+  // find nice ratio a:b
+  for (const [n,d] of [[1,1],[2,1],[3,1],[4,1],[1,2],[3,2],[2,3],[1,3]]) {
+    if (Math.abs(a/b - n/d) < 0.06) return d===1 ? `${n}` : `${n}/${d}`;
+  }
+  return (a/b).toFixed(1);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PROBLEM TYPES
+// Each type = { id, label, make(s) -> {problemText, circuitType, bogiPool} }
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ── 병렬 회로 (parallel) ──────────────────────────────────────────────────
+function makeParallel() {
+  const resistors = [2,3,4,6,8,10,12];
+  let RA, RB;
+  do { RA = rnd(resistors); RB = rnd(resistors); } while (RA === RB);
+  const voltages = [12,18,24,30,36];
+  const V = rnd(voltages);
+  const IA = V/RA, IB = V/RB, Itotal = IA+IB;
+  const PA = V*IA, PB = V*IB, Ptotal = PA+PB;
+  const RA_eff = V/Itotal; // equivalent resistance
+
+  const s = { RA, RB, V, IA, IB, Itotal, PA, PB, Ptotal, RA_eff, type:'parallel' };
+
+  const gaPool = [
+    () => ({ text:`A는 B보다 저항 값이 크다.`, truth: RA>RB,
+             why:`그래프에서 기울기(전압/전류) = 저항. A의 기울기가 더 가파를수록 저항이 큼. R_A=${RA}Ω, R_B=${RB}Ω` }),
+    () => ({ text:`B는 A보다 저항 값이 크다.`, truth: RB>RA,
+             why:`R_A=${RA}Ω, R_B=${RB}Ω → ${RB>RA?'B>A (참)':'B<A (거짓)'}` }),
+    () => ({ text:`A의 저항은 ${RA}Ω이다.`, truth: true,
+             why:`그래프 기울기 = 전압/전류 = R_A = ${RA}Ω` }),
+    () => { const fake=RA+rnd([2,4,6]); return { text:`A의 저항은 ${fake}Ω이다.`, truth:false,
+             why:`실제 R_A = ${RA}Ω ≠ ${fake}Ω` }; },
+    () => ({ text:`B의 저항은 ${RB}Ω이다.`, truth: true,
+             why:`그래프 기울기 = R_B = ${RB}Ω` }),
+    () => { const fake=RB+rnd([2,4,6]); return { text:`B의 저항은 ${fake}Ω이다.`, truth:false,
+             why:`실제 R_B = ${RB}Ω ≠ ${fake}Ω` }; },
+    () => ({ text:`합성 저항은 ${fmt(RA_eff)}Ω보다 작다.`, truth: true,
+             why:`병렬 합성저항 = R_A·R_B/(R_A+R_B) = ${(RA*RB/(RA+RB)).toFixed(2)}Ω. 병렬이므로 각 저항보다 항상 작음.` }),
+    () => { const minR=Math.min(RA,RB); return { text:`합성 저항은 ${minR}Ω보다 크다.`, truth:false,
+             why:`병렬 합성저항 ${(RA*RB/(RA+RB)).toFixed(2)}Ω < 작은 저항 ${minR}Ω. 병렬에서는 합성저항이 각 저항보다 작음.` }; },
+    () => ({ text:`같은 전류가 흐를 때 A에 걸리는 전압이 B보다 크다.`, truth: RA>RB,
+             why:`V=IR이므로 같은 전류에서 저항이 클수록 전압이 큼. R_A=${RA}Ω ${RA>RB?'>':'<'} R_B=${RB}Ω` }),
+    () => ({ text:`그래프에서 직선의 기울기는 A가 B보다 크다.`, truth: RA>RB,
+             why:`V-I 그래프 기울기 = 저항. R_A=${RA}Ω ${RA>RB?'>':'<'} R_B=${RB}Ω` }),
+  ];
+
+  const naPool = [
+    () => { const r=ratioStr(IB,IA); const actual=IB/IA; const claimed=parseRatio(r);
+            return { text:`(나)에서 B에 흐르는 전류는 A에 흐르는 전류의 ${r}배이다.`, truth:Math.abs(actual-claimed)<0.06,
+                     why:`병렬: 전압 동일(${V}V). I_A=${IA.toFixed(2)}A, I_B=${IB.toFixed(2)}A. I_B/I_A = ${(IB/IA).toFixed(2)}` }; },
+    () => { const r=ratioStr(IA,IB); const actual=IA/IB; const claimed=parseRatio(r);
+            return { text:`(나)에서 A에 흐르는 전류는 B에 흐르는 전류의 ${r}배이다.`, truth:Math.abs(actual-claimed)<0.06,
+                     why:`I_A/I_B = ${(IA/IB).toFixed(2)}. 비율 ${r} = ${claimed.toFixed(2)}` }; },
+    () => ({ text:`(나)에서 A에 흐르는 전류는 ${fmt(IA)}A이다.`, truth:true,
+             why:`I_A = V/R_A = ${V}/${RA} = ${IA.toFixed(2)}A` }),
+    () => { const fake=+(IA+rnd([1,2,3])).toFixed(1);
+            return { text:`(나)에서 A에 흐르는 전류는 ${fmt(fake)}A이다.`, truth:false,
+                     why:`실제 I_A = ${IA.toFixed(2)}A ≠ ${fake}A` }; },
+    () => ({ text:`(나)에서 B에 흐르는 전류는 ${fmt(IB)}A이다.`, truth:true,
+             why:`I_B = V/R_B = ${V}/${RB} = ${IB.toFixed(2)}A` }),
+    () => { const fake=+(IB+rnd([1,2,3])).toFixed(1);
+            return { text:`(나)에서 B에 흐르는 전류는 ${fmt(fake)}A이다.`, truth:false,
+                     why:`실제 I_B = ${IB.toFixed(2)}A ≠ ${fake}A` }; },
+    () => ({ text:`(나)에서 A와 B에 걸리는 전압은 서로 같다.`, truth:true,
+             why:`병렬 회로에서 각 저항에 걸리는 전압은 모두 전원 전압과 같음. V_A = V_B = ${V}V` }),
+    () => ({ text:`(나)에서 전류는 저항이 작은 쪽에 더 많이 흐른다.`, truth:true,
+             why:`I=V/R. 전압이 같을 때 저항이 작을수록 전류가 큼. 작은 저항=${Math.min(RA,RB)}Ω` }),
+    () => { const fakeV=V+rnd([2,4,6]);
+            return { text:`(나)에서 A와 B에 걸리는 전압은 각각 ${fakeV}V이다.`, truth:false,
+                     why:`병렬 전압 = 전원 전압 = ${V}V ≠ ${fakeV}V` }; },
+    () => ({ text:`(나)에서 A에서 소비되는 전력은 ${fmt(PA)}W이다.`, truth:true,
+             why:`P_A = V²/R_A = ${V}²/${RA} = ${PA.toFixed(2)}W` }),
+    () => { const fake=+(PA+rnd([2,4,8])).toFixed(0);
+            return { text:`(나)에서 A에서 소비되는 전력은 ${fake}W이다.`, truth:false,
+                     why:`실제 P_A = V²/R_A = ${PA.toFixed(2)}W ≠ ${fake}W` }; },
+  ];
+
+  const daPool = [
+    () => ({ text:`(나)에서 전체 전류의 세기는 ${fmt(Itotal)}A이다.`, truth:true,
+             why:`I전체 = I_A+I_B = ${IA.toFixed(2)}+${IB.toFixed(2)} = ${Itotal.toFixed(2)}A` }),
+    () => { const fake=+(Itotal+rnd([1,2,3])).toFixed(1);
+            return { text:`(나)에서 전체 전류의 세기는 ${fmt(fake)}A이다.`, truth:false,
+                     why:`실제 I전체 = ${Itotal.toFixed(2)}A ≠ ${fake}A` }; },
+    () => ({ text:`(나)에서 소비되는 전체 전력은 ${fmt(Ptotal)}W이다.`, truth:true,
+             why:`P전체 = V·I전체 = ${V}×${Itotal.toFixed(2)} = ${Ptotal.toFixed(2)}W` }),
+    () => { const fake=+(Ptotal+rnd([10,20,30])).toFixed(0);
+            return { text:`(나)에서 소비되는 전체 전력은 ${fake}W이다.`, truth:false,
+                     why:`실제 P전체 = ${Ptotal.toFixed(2)}W ≠ ${fake}W` }; },
+    () => ({ text:`(나)에서 A에 걸리는 전압은 ${V}V이다.`, truth:true,
+             why:`병렬 회로: V_A = 전원 전압 = ${V}V` }),
+    () => { const fakeV=V/2;
+            return { text:`(나)에서 A에 걸리는 전압은 ${fmt(fakeV)}V이다.`, truth:false,
+                     why:`병렬에서 V_A = ${V}V (직렬이면 나뉘지만 병렬은 동일)` }; },
+    () => { const bigR=Math.max(RA,RB), smallR=Math.min(RA,RB);
+            return { text:`(나)에서 저항이 큰 쪽에서 소비되는 전력이 더 크다.`, truth:false,
+                     why:`병렬에서 P=V²/R. 전압이 같으므로 저항이 작을수록 전력 소비가 큼. 큰 저항=${bigR}Ω의 전력 < 작은 저항=${smallR}Ω의 전력` }; },
+    () => ({ text:`(나)에서 저항이 작은 쪽에서 소비되는 전력이 더 크다.`, truth:true,
+             why:`P=V²/R. 전압 동일 → 저항 작을수록 전력 큼.` }),
+    () => { const r=ratioStr(PA,PB); const actual=PA/PB; const claimed=parseRatio(r);
+            return { text:`(나)에서 A의 소비전력은 B의 소비전력의 ${r}배이다.`, truth:Math.abs(actual-claimed)<0.06,
+                     why:`P_A/P_B = R_B/R_A = ${RB}/${RA} = ${(RB/RA).toFixed(2)}. 주장비율 ${r}=${claimed.toFixed(2)}` }; },
+    () => ({ text:`(나)에서 전원의 전압을 2배로 높이면 전체 전류도 2배가 된다.`, truth:true,
+             why:`I전체=V/R합성. R합성 불변이므로 V가 2배 → I도 2배. 옴의 법칙.` }),
+  ];
+
+  return { s, gaPool, naPool, daPool,
+           problemText: `(가)는 두 저항 A와 B를 전원 장치에 연결했을 때 걸리는 전압과 흐르는 전류의 관계를, (나)는 A와 B를 <strong>${V}V</strong>의 전압에 연결한 <strong>병렬</strong> 회로를 나타낸 것이다. 이에 대한 설명으로 옳은 것만을 &lt;보기&gt;에서 모두 고른 것은?`,
+           circuitType:'parallel' };
+}
+
+// ── 직렬 회로 (series) ────────────────────────────────────────────────────
+function makeSeries() {
+  const resistors = [2,3,4,5,6,8,10];
+  let RA, RB;
+  do { RA = rnd(resistors); RB = rnd(resistors); } while (RA === RB);
+  const voltages = [12,15,18,20,24];
+  const V = rnd(voltages);
+  const Rtotal = RA+RB;
+  const I = V/Rtotal; // same current through both
+  const VA = I*RA, VB = I*RB;
+  const PA = I*VA, PB = I*VB, Ptotal = I*V;
+
+  const s = { RA, RB, V, I, VA, VB, Rtotal, PA, PB, Ptotal, type:'series' };
+
+  const gaPool = [
+    () => ({ text:`A는 B보다 저항 값이 크다.`, truth: RA>RB,
+             why:`그래프 기울기 = 저항. R_A=${RA}Ω ${RA>RB?'>':'<'} R_B=${RB}Ω` }),
+    () => ({ text:`B는 A보다 저항 값이 크다.`, truth: RB>RA,
+             why:`R_A=${RA}Ω, R_B=${RB}Ω → ${RB>RA?'B>A (참)':'B<A (거짓)'}` }),
+    () => ({ text:`A의 저항은 ${RA}Ω이다.`, truth:true,
+             why:`그래프 기울기 = R_A = ${RA}Ω` }),
+    () => { const fake=RA+rnd([2,3,4]); return { text:`A의 저항은 ${fake}Ω이다.`, truth:false,
+             why:`실제 R_A = ${RA}Ω ≠ ${fake}Ω` }; },
+    () => ({ text:`합성 저항은 ${Rtotal}Ω이다.`, truth:true,
+             why:`직렬 합성저항 = R_A+R_B = ${RA}+${RB} = ${Rtotal}Ω` }),
+    () => { const fake=Rtotal+rnd([2,4,6]); return { text:`합성 저항은 ${fake}Ω이다.`, truth:false,
+             why:`직렬 합성저항 = ${RA}+${RB} = ${Rtotal}Ω ≠ ${fake}Ω` }; },
+    () => ({ text:`같은 전압이 걸릴 때 A에 흐르는 전류가 B보다 크다.`, truth: RA<RB,
+             why:`I=V/R. 전압 동일 시 저항이 작을수록 전류 큼. R_A=${RA}Ω ${RA<RB?'<':'>='} R_B=${RB}Ω` }),
+    () => ({ text:`그래프에서 기울기가 작은 저항이 A이다.`, truth: RA<RB,
+             why:`기울기=저항. 기울기 작은 쪽이 저항 작은 쪽. R_A=${RA}Ω, R_B=${RB}Ω` }),
+  ];
+
+  const naPool = [
+    () => ({ text:`(나)에서 A와 B에 흐르는 전류는 서로 같다.`, truth:true,
+             why:`직렬 회로: 모든 소자에 동일한 전류가 흐름. I = ${I.toFixed(2)}A` }),
+    () => ({ text:`(나)에서 A와 B에 걸리는 전압은 서로 같다.`, truth: VA===VB,
+             why:`V_A=I·R_A=${VA.toFixed(2)}V, V_B=I·R_B=${VB.toFixed(2)}V. ${Math.abs(VA-VB)<0.01?'같음 (참)':'다름 (거짓)'}` }),
+    () => ({ text:`(나)에서 A에 흐르는 전류는 ${fmt(I)}A이다.`, truth:true,
+             why:`직렬: I = V/R합성 = ${V}/${Rtotal} = ${I.toFixed(2)}A` }),
+    () => { const fake=+(I+rnd([1,2])).toFixed(2);
+            return { text:`(나)에서 회로에 흐르는 전류는 ${fmt(fake)}A이다.`, truth:false,
+                     why:`실제 I = ${V}/${Rtotal} = ${I.toFixed(2)}A ≠ ${fake}A` }; },
+    () => ({ text:`(나)에서 A에 걸리는 전압은 ${fmt(VA)}V이다.`, truth:true,
+             why:`V_A = I·R_A = ${I.toFixed(2)}×${RA} = ${VA.toFixed(2)}V` }),
+    () => { const fake=+(VA+rnd([2,4])).toFixed(1);
+            return { text:`(나)에서 A에 걸리는 전압은 ${fmt(fake)}V이다.`, truth:false,
+                     why:`실제 V_A = ${VA.toFixed(2)}V ≠ ${fake}V` }; },
+    () => ({ text:`(나)에서 B에 걸리는 전압은 ${fmt(VB)}V이다.`, truth:true,
+             why:`V_B = I·R_B = ${I.toFixed(2)}×${RB} = ${VB.toFixed(2)}V` }),
+    () => { const r=ratioStr(VA,VB); const claimed=parseRatio(r); const actual=VA/VB;
+            return { text:`(나)에서 A에 걸리는 전압은 B에 걸리는 전압의 ${r}배이다.`,
+                     truth:Math.abs(actual-claimed)<0.06,
+                     why:`V_A/V_B = R_A/R_B = ${RA}/${RB} = ${(RA/RB).toFixed(2)}. 주장 ${r}=${claimed.toFixed(2)}` }; },
+    () => ({ text:`(나)에서 저항이 클수록 더 큰 전압이 걸린다.`, truth:true,
+             why:`직렬: V=IR. 전류 동일 → 저항 클수록 전압 큼.` }),
+    () => ({ text:`(나)에서 전체 전압은 A와 B에 걸리는 전압의 합과 같다.`, truth:true,
+             why:`직렬: V = V_A+V_B = ${VA.toFixed(2)}+${VB.toFixed(2)} = ${V}V` }),
+  ];
+
+  const daPool = [
+    () => ({ text:`(나)에서 소비되는 전체 전력은 ${fmt(Ptotal)}W이다.`, truth:true,
+             why:`P전체 = V·I = ${V}×${I.toFixed(2)} = ${Ptotal.toFixed(2)}W` }),
+    () => { const fake=+(Ptotal+rnd([5,10,15])).toFixed(0);
+            return { text:`(나)에서 소비되는 전체 전력은 ${fake}W이다.`, truth:false,
+                     why:`실제 P전체 = ${Ptotal.toFixed(2)}W ≠ ${fake}W` }; },
+    () => ({ text:`(나)에서 A에서 소비되는 전력은 ${fmt(PA)}W이다.`, truth:true,
+             why:`P_A = I²·R_A = ${I.toFixed(2)}²×${RA} = ${PA.toFixed(2)}W` }),
+    () => ({ text:`(나)에서 저항이 큰 쪽에서 소비되는 전력이 더 크다.`, truth:true,
+             why:`직렬: P=I²R. 전류 동일 → 저항 클수록 전력 큼. 큰 저항=${Math.max(RA,RB)}Ω` }),
+    () => ({ text:`(나)에서 저항이 작은 쪽에서 소비되는 전력이 더 크다.`, truth:false,
+             why:`직렬: P=I²R. 저항 클수록 전력 큼. 이는 병렬과 반대.` }),
+    () => { const r=ratioStr(PA,PB); const claimed=parseRatio(r); const actual=PA/PB;
+            return { text:`(나)에서 A의 소비전력은 B의 소비전력의 ${r}배이다.`,
+                     truth:Math.abs(actual-claimed)<0.06,
+                     why:`P_A/P_B = R_A/R_B = ${RA}/${RB} = ${(RA/RB).toFixed(2)}. 주장 ${r}=${claimed.toFixed(2)}` }; },
+    () => ({ text:`(나)에서 전원의 전압을 2배로 높이면 A에서 소비되는 전력은 4배가 된다.`, truth:true,
+             why:`P_A=V²·R_A/(R_A+R_B)². V가 2배 → P_A는 4배.` }),
+    () => ({ text:`(나)에서 A에서 소비되는 전력과 B에서 소비되는 전력의 합은 전체 전력과 같다.`, truth:true,
+             why:`에너지 보존: P전체 = P_A+P_B = ${(PA+PB).toFixed(2)}W = ${Ptotal.toFixed(2)}W` }),
+  ];
+
+  return { s, gaPool, naPool, daPool,
+           problemText: `(가)는 두 저항 A와 B를 전원 장치에 연결했을 때 걸리는 전압과 흐르는 전류의 관계를, (나)는 A와 B를 <strong>${V}V</strong>의 전압에 연결한 <strong>직렬</strong> 회로를 나타낸 것이다. 이에 대한 설명으로 옳은 것만을 &lt;보기&gt;에서 모두 고른 것은?`,
+           circuitType:'series' };
+}
+
+function parseRatio(s) {
+  if (s.includes('/')) { const [a,b]=s.split('/'); return parseInt(a)/parseInt(b); }
+  return parseFloat(s);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ANSWER CHOICE SETS (vary per problem)
+// ═══════════════════════════════════════════════════════════════════════════
+// All possible 7 non-empty subsets + 없음 option
+// We pick a set of 5 choices that includes the correct answer
+const ALL_SETS = [
+  { label:'ㄱ',     keys:['ga'] },
+  { label:'ㄴ',     keys:['na'] },
+  { label:'ㄷ',     keys:['da'] },
+  { label:'ㄱ, ㄴ', keys:['ga','na'] },
+  { label:'ㄱ, ㄷ', keys:['ga','da'] },
+  { label:'ㄴ, ㄷ', keys:['na','da'] },
+  { label:'ㄱ, ㄴ, ㄷ', keys:['ga','na','da'] },
+  { label:'없음',   keys:[] },
+];
+
+function buildChoices(correctKeys) {
+  const correctKey = JSON.stringify([...correctKeys].sort());
+  const correctSet = ALL_SETS.find(s => JSON.stringify([...s.keys].sort()) === correctKey)
+                  || { label:'없음', keys:[] };
+
+  // Pick 4 distractors (different from correct)
+  const pool = ALL_SETS.filter(s => JSON.stringify([...s.keys].sort()) !== correctKey);
+  const shuffled = pool.sort(() => Math.random()-0.5).slice(0,4);
+
+  // Combine and shuffle
+  const all = [correctSet, ...shuffled].sort(() => Math.random()-0.5);
+  const correctIdx = all.findIndex(c => JSON.stringify([...c.keys].sort()) === correctKey);
+
+  return { choices: all, correctIdx };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// GENERATE
+// ═══════════════════════════════════════════════════════════════════════════
+function generateProblem() {
+  const maker = Math.random() < 0.5 ? makeParallel() : makeSeries();
+  const { s, gaPool, naPool, daPool, problemText, circuitType } = maker;
+
+  const gaItem = rnd(gaPool)();
+  const naItem = rnd(naPool)();
+  const daItem = rnd(daPool)();
+
+  const correctKeys = [];
+  if (gaItem.truth) correctKeys.push('ga');
+  if (naItem.truth) correctKeys.push('na');
+  if (daItem.truth) correctKeys.push('da');
+
+  const { choices, correctIdx } = buildChoices(correctKeys);
+
+  state = { ...s, gaItem, naItem, daItem, correctKeys, choices, correctIdx, circuitType };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════════════════════
+function renderProblem() {
+  document.getElementById('problemText').innerHTML = state.problemText || '';
+  document.getElementById('text-ga').textContent = state.gaItem.text;
+  document.getElementById('text-na').textContent = state.naItem.text;
+  document.getElementById('text-da').textContent = state.daItem.text;
+
+  // Build answer row
+  const row = document.getElementById('answerRow');
+  row.innerHTML = '';
+  state.choices.forEach((c, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = `<span style="font-size:12px;color:var(--muted)">&#${9312+i};</span><br>${c.label}`;
+    btn.onclick = () => selectChoice(i);
+    row.appendChild(btn);
+  });
+
+  // Caption
+  document.getElementById('circuitCaption').textContent =
+    `(나) ${state.circuitType==='parallel'?'병렬':'직렬'} 회로도`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DRAW GRAPH
+// ═══════════════════════════════════════════════════════════════════════════
+function drawGraph() {
+  const { RA, RB } = state;
+  const cv = document.getElementById('graphCanvas');
+  const ctx = cv.getContext('2d');
+  const W=cv.width, H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,W,H);
+
+  const pad={left:44,right:22,top:18,bottom:40};
+  const gW=W-pad.left-pad.right, gH=H-pad.top-pad.bottom;
+
+  const maxI = +(Math.max(RA,RB) === 0 ? 10 : (40/Math.min(RA,RB))).toFixed(0);
+  const maxV = Math.max(RA,RB)*maxI*1.05;
+
+  const toX = I => pad.left+(I/maxI)*gW;
+  const toY = v => pad.top+gH-(v/maxV)*gH;
+
+  // Grid
+  ctx.strokeStyle='#ebebeb'; ctx.lineWidth=0.8;
+  for(let i=0;i<=5;i++){
+    ctx.beginPath(); ctx.moveTo(pad.left+(gW/5)*i,pad.top); ctx.lineTo(pad.left+(gW/5)*i,pad.top+gH); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pad.left,pad.top+(gH/5)*i); ctx.lineTo(pad.left+gW,pad.top+(gH/5)*i); ctx.stroke();
+  }
+
+  // Lines
+  function drawLine(R, dash, label) {
+    const endI=maxI;
+    const endV=Math.min(R*endI,maxV);
+    const drawI=endV/R;
+    ctx.setLineDash(dash);
+    ctx.beginPath(); ctx.moveTo(toX(0),toY(0)); ctx.lineTo(toX(drawI),toY(endV));
+    ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=1.8; ctx.stroke(); ctx.setLineDash([]);
+    const lx2=toX(drawI*0.6), ly2=toY(R*drawI*0.6);
+    ctx.fillStyle='#1a1a1a'; ctx.font='bold 13px serif'; ctx.textAlign='left';
+    ctx.fillText(label,lx2+5,ly2-5);
+  }
+
+  if(RA>RB){ drawLine(RA,[],'A'); drawLine(RB,[5,3],'B'); }
+  else      { drawLine(RB,[],'B'); drawLine(RA,[5,3],'A'); }
+
+  // Axes
+  ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(pad.left,pad.top); ctx.lineTo(pad.left,pad.top+gH); ctx.lineTo(pad.left+gW,pad.top+gH); ctx.stroke();
+
+  // Arrows
+  ctx.beginPath(); ctx.moveTo(pad.left,pad.top); ctx.lineTo(pad.left-3,pad.top+6); ctx.lineTo(pad.left+3,pad.top+6); ctx.closePath(); ctx.fillStyle='#1a1a1a'; ctx.fill();
+  ctx.beginPath(); ctx.moveTo(pad.left+gW,pad.top+gH); ctx.lineTo(pad.left+gW-6,pad.top+gH-3); ctx.lineTo(pad.left+gW-6,pad.top+gH+3); ctx.closePath(); ctx.fill();
+
+  // Axis labels
+  ctx.fillStyle='#444'; ctx.font='11px sans-serif';
+  ctx.save(); ctx.translate(11,pad.top+gH/2); ctx.rotate(-Math.PI/2); ctx.textAlign='center'; ctx.fillText('전압(V)',0,0); ctx.restore();
+  ctx.textAlign='center'; ctx.fillText('전류(A)',pad.left+gW/2,H-4);
+
+  // Ticks
+  ctx.font='10px monospace'; ctx.fillStyle='#555';
+  const steps=4;
+  ctx.textAlign='right';
+  for(let i=1;i<=steps;i++){
+    const v=Math.round(maxV/steps*i);
+    const y=toY(v);
+    ctx.beginPath(); ctx.moveTo(pad.left-3,y); ctx.lineTo(pad.left,y); ctx.strokeStyle='#777'; ctx.lineWidth=1; ctx.stroke();
+    ctx.fillText(v,pad.left-5,y+3.5);
+  }
+  ctx.textAlign='center';
+  for(let i=1;i<=steps;i++){
+    const curr=+(maxI/steps*i).toFixed(1);
+    const x=toX(curr);
+    ctx.beginPath(); ctx.moveTo(x,pad.top+gH); ctx.lineTo(x,pad.top+gH+3); ctx.stroke();
+    ctx.fillText(curr,x,pad.top+gH+13);
+  }
+  ctx.textAlign='right'; ctx.fillText('O',pad.left-4,pad.top+gH+13);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// DRAW CIRCUIT
+// ═══════════════════════════════════════════════════════════════════════════
+function drawCircuit() {
+  const cv = document.getElementById('circuitCanvas');
+  const ctx = cv.getContext('2d');
+  const W=cv.width, H=cv.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,W,H);
+
+  if(state.circuitType==='parallel') drawParallelCircuit(ctx,W,H);
+  else drawSeriesCircuit(ctx,W,H);
+}
+
+function drawParallelCircuit(ctx,W,H) {
+  const lx=52,rx=W-52,ty=38,by=H-42;
+  const aY=ty+(by-ty)*0.30, bY=ty+(by-ty)*0.70;
+  ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=1.8; ctx.lineJoin='round';
+
+  ctx.beginPath(); ctx.moveTo(lx,ty); ctx.lineTo(rx,ty); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(lx,by); ctx.lineTo(rx,by); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(lx,ty); ctx.lineTo(lx,by); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(rx,ty); ctx.lineTo(rx,aY-26); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(rx,aY+26); ctx.lineTo(rx,bY-26); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(rx,bY+26); ctx.lineTo(rx,by); ctx.stroke();
+
+  ctx.fillStyle='#1a1a1a';
+  [[rx,ty],[rx,by],[lx,ty],[lx,by]].forEach(([x,y])=>{ ctx.beginPath(); ctx.arc(x,y,3,0,Math.PI*2); ctx.fill(); });
+
+  drawResBox(ctx,rx,aY,'A');
+  drawResBox(ctx,rx,bY,'B');
+  drawBatSymbol(ctx,(lx+rx)/2,by,state.V);
+}
+
+function drawSeriesCircuit(ctx,W,H) {
+  const lx=52,rx=W-52,ty=42,by=H-42;
+  const midX=(lx+rx)/2;
+  ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=1.8; ctx.lineJoin='round';
+
+  // Top wire: left → A → right
+  const aX=lx+(rx-lx)*0.35, bX=lx+(rx-lx)*0.70;
+
+  // Full outer rect first
+  ctx.beginPath();
+  ctx.moveTo(lx,ty); ctx.lineTo(rx,ty);
+  ctx.lineTo(rx,by); ctx.lineTo(lx,by); ctx.closePath(); ctx.stroke();
+
+  // Resistor A on top wire
+  drawResBoxH(ctx, aX, ty, 'A');
+  // Resistor B on top wire
+  drawResBoxH(ctx, bX, ty, 'B');
+  // Battery on bottom
+  drawBatSymbol(ctx, midX, by, state.V);
+}
+
+function drawResBox(ctx, cx, cy, label) {
+  const bw=38, bh=16;
+  ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(cx,cy-bh/2-8); ctx.lineTo(cx,cy-bh/2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx,cy+bh/2); ctx.lineTo(cx,cy+bh/2+8); ctx.stroke();
+  ctx.fillStyle='#f5f5f0'; ctx.fillRect(cx-bw/2,cy-bh/2,bw,bh);
+  ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=1.5; ctx.strokeRect(cx-bw/2,cy-bh/2,bw,bh);
+  ctx.beginPath(); ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=1;
+  const segs=5;
+  for(let i=0;i<=segs;i++){ const x=cx-bw/2+(bw/segs)*i; const y=cy+(i%2===0?-5:5); i===0?ctx.moveTo(x,cy):ctx.lineTo(x,y); }
+  ctx.lineTo(cx+bw/2,cy); ctx.stroke();
+  ctx.fillStyle='#1a1a1a'; ctx.font='bold 13px serif'; ctx.textAlign='left';
+  ctx.fillText(label,cx+bw/2+7,cy+5);
+}
+
+function drawResBoxH(ctx, cx, cy, label) {
+  // Horizontal resistor on top wire
+  const bw=32, bh=14;
+  ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=1.5;
+  // Wires
+  ctx.beginPath(); ctx.moveTo(cx-bw/2-8,cy); ctx.lineTo(cx-bw/2,cy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx+bw/2,cy); ctx.lineTo(cx+bw/2+8,cy); ctx.stroke();
+  // But top wire already drawn, so just draw the box over it
+  ctx.fillStyle='#f5f5f0'; ctx.fillRect(cx-bw/2,cy-bh/2,bw,bh);
+  ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=1.5; ctx.strokeRect(cx-bw/2,cy-bh/2,bw,bh);
+  // Zigzag horizontal
+  ctx.beginPath(); ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=1;
+  const segs=5;
+  for(let i=0;i<=segs;i++){ const x=cx-bw/2+(bw/segs)*i; const y=cy+(i%2===0?-4:4); i===0?ctx.moveTo(cx-bw/2,cy):ctx.lineTo(x,y); }
+  ctx.lineTo(cx+bw/2,cy); ctx.stroke();
+  ctx.fillStyle='#1a1a1a'; ctx.font='bold 12px serif'; ctx.textAlign='center';
+  ctx.fillText(label,cx,cy-bh/2-4);
+}
+
+function drawBatSymbol(ctx, cx, cy, voltage) {
+  ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=1.8;
+  ctx.beginPath(); ctx.moveTo(cx-36,cy); ctx.lineTo(cx-10,cy); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx+10,cy); ctx.lineTo(cx+36,cy); ctx.stroke();
+  const ph=13;
+  ctx.lineWidth=3;
+  ctx.beginPath(); ctx.moveTo(cx-10,cy-ph/2); ctx.lineTo(cx-10,cy+ph/2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx+10,cy-ph/2); ctx.lineTo(cx+10,cy+ph/2); ctx.stroke();
+  ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(cx-3,cy-ph*0.7); ctx.lineTo(cx-3,cy+ph*0.7); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx+3,cy-ph*0.7); ctx.lineTo(cx+3,cy+ph*0.7); ctx.stroke();
+  ctx.fillStyle='#1a1a1a'; ctx.font='bold 12px monospace'; ctx.textAlign='center';
+  ctx.fillText(`${voltage}V`,cx,cy-20);
+  ctx.font='11px sans-serif'; ctx.fillText('+',cx-22,cy-6); ctx.fillText('−',cx+19,cy-6);
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// INTERACTION
+// ═══════════════════════════════════════════════════════════════════════════
+function selectChoice(idx) {
+  choiceSelected = idx;
+  document.querySelectorAll('.choice-btn').forEach((btn,i)=>btn.classList.toggle('selected',i===idx));
+  document.getElementById('checkBtn').disabled = false;
+}
+
+function checkAnswer() {
+  const { gaItem, naItem, daItem, correctKeys, choices, correctIdx,
+          RA, RB, V, type } = state;
+
+  const isCorrect = choiceSelected === correctIdx;
+  stats.total++;
+  if(isCorrect) stats.correct++;
+  updateStats();
+
+  document.querySelectorAll('.choice-btn').forEach((btn,i)=>{
+    btn.classList.remove('selected','correct','wrong');
+    if(i===correctIdx) btn.classList.add('correct');
+    else if(i===choiceSelected && !isCorrect) btn.classList.add('wrong');
+  });
+
+  const fb = document.getElementById('feedback');
+  const header = document.getElementById('feedbackHeader');
+  const body = document.getElementById('feedbackBody');
+
+  header.className='feedback-header '+(isCorrect?'correct-header':'wrong-header');
+  const correctLabel = choices[correctIdx].label;
+  header.innerHTML = isCorrect
+    ? `✓ 정답입니다.`
+    : `✗ 오답. 정답은 <strong>${correctLabel}</strong>입니다.`;
+
+  const correctKorean = correctKeys.map(k=>k==='ga'?'ㄱ':k==='na'?'ㄴ':'ㄷ').join(', ') || '없음';
+
+  // Basic values
+  let baseHtml = '';
+  if(type==='parallel') {
+    const {IA,IB,Itotal} = state;
+    baseHtml = `R<sub>A</sub>=<span class="val">${RA}Ω</span>, R<sub>B</sub>=<span class="val">${RB}Ω</span>, 전압=<span class="val">${V}V</span><br>
+    I<sub>A</sub>=<span class="val">${IA.toFixed(2)}A</span>, I<sub>B</sub>=<span class="val">${IB.toFixed(2)}A</span>, I<sub>전체</sub>=<span class="val">${Itotal.toFixed(2)}A</span>`;
+  } else {
+    const {I,VA,VB,Rtotal} = state;
+    baseHtml = `R<sub>A</sub>=<span class="val">${RA}Ω</span>, R<sub>B</sub>=<span class="val">${RB}Ω</span>, 전압=<span class="val">${V}V</span>, R합성=<span class="val">${Rtotal}Ω</span><br>
+    I=<span class="val">${I.toFixed(2)}A</span>, V<sub>A</sub>=<span class="val">${VA.toFixed(2)}V</span>, V<sub>B</sub>=<span class="val">${VB.toFixed(2)}V</span>`;
+  }
+
+  body.innerHTML = `
+    <div class="step"><div class="step-title">기본값</div>${baseHtml}</div>
+    <div class="step">
+      <div class="step-title">ㄱ 판정</div>
+      ${gaItem.text} <span class="tag-${gaItem.truth?'o':'x'}">${gaItem.truth?'참 ○':'거짓 ✗'}</span><br>
+      <span style="font-size:12.5px;color:#555">${gaItem.why}</span>
+    </div>
+    <div class="step">
+      <div class="step-title">ㄴ 판정</div>
+      ${naItem.text} <span class="tag-${naItem.truth?'o':'x'}">${naItem.truth?'참 ○':'거짓 ✗'}</span><br>
+      <span style="font-size:12.5px;color:#555">${naItem.why}</span>
+    </div>
+    <div class="step">
+      <div class="step-title">ㄷ 판정</div>
+      ${daItem.text} <span class="tag-${daItem.truth?'o':'x'}">${daItem.truth?'참 ○':'거짓 ✗'}</span><br>
+      <span style="font-size:12.5px;color:#555">${daItem.why}</span>
+    </div>
+    <div class="step">
+      <div class="step-title">최종 정답</div>
+      옳은 보기: <strong>${correctKorean}</strong> → <strong>${correctLabel}</strong>
+    </div>`;
+
+  fb.classList.add('show');
+  fb.scrollIntoView({behavior:'smooth',block:'nearest'});
+  document.getElementById('checkBtn').disabled = true;
+}
+
+function updateStats() {
+  document.getElementById('stTotal').textContent = stats.total;
+  document.getElementById('stCorrect').textContent = stats.correct;
+  document.getElementById('stWrong').textContent = stats.total - stats.correct;
+  document.getElementById('stRate').textContent = stats.total ? Math.round(stats.correct/stats.total*100)+'%' : '—';
+  document.getElementById('scoreBadge').textContent = `${stats.correct} / ${stats.total} 정답`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SHUFFLE
+// ═══════════════════════════════════════════════════════════════════════════
+function shuffle() {
+  choiceSelected = -1;
+  document.getElementById('checkBtn').disabled = true;
+  document.getElementById('feedback').classList.remove('show');
+
+  generateProblem();
+  renderProblem();
+  drawGraph();
+  drawCircuit();
+}
+
+shuffle();
+</script>
 </body>
 </html>

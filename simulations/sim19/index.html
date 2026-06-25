@@ -1,421 +1,1613 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>에너지 효율 시뮬레이션</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Malgun Gothic', sans-serif;
-            background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
-            padding: 20px;
-            min-height: 100vh;
-        }
-        
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
-            padding: 30px 25px;
-        }
-        
-        h1 {
-            text-align: center;
-            color: #333;
-            font-size: 24px;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #666;
-        }
-        
-        .subtitle {
-            text-align: center;
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 25px;
-        }
-        
-        .question-box {
-            background: #f8f8f8;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            border-left: 5px solid #555;
-        }
-        
-        .question-number {
-            font-weight: bold;
-            color: #333;
-            font-size: 18px;
-            margin-bottom: 15px;
-        }
-        
-        .question-text {
-            color: #444;
-            font-size: 16px;
-            line-height: 1.6;
-        }
-        
-        .options {
-            margin: 20px 0;
-        }
-        
-        .option {
-            background: white;
-            border: 2px solid #ccc;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-        }
-        
-        .option:hover {
-            border-color: #888;
-            background: #f9f9f9;
-            transform: translateX(5px);
-        }
-        
-        .option.selected {
-            border-color: #333;
-            background: #e8e8e8;
-            font-weight: bold;
-        }
-        
-        .option-number {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: #666;
-            color: white;
-            font-weight: bold;
-            margin-right: 12px;
-            flex-shrink: 0;
-        }
-        
-        .option.selected .option-number {
-            background: #222;
-        }
-        
-        .option-text {
-            color: #333;
-            font-size: 15px;
-            line-height: 1.5;
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 25px;
-        }
-        
-        button {
-            flex: 1;
-            padding: 15px;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .new-problem-btn {
-            background: #555;
-            color: white;
-        }
-        
-        .new-problem-btn:hover {
-            background: #333;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-        
-        .submit-btn {
-            background: #777;
-            color: white;
-        }
-        
-        .submit-btn:hover {
-            background: #555;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-        
-        .submit-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .feedback {
-            margin-top: 25px;
-            padding: 20px;
-            border-radius: 10px;
-            display: none;
-        }
-        
-        .feedback.correct {
-            background: #e0e0e0;
-            border-left: 5px solid #666;
-            display: block;
-        }
-        
-        .feedback.incorrect {
-            background: #f0f0f0;
-            border-left: 5px solid #999;
-            display: block;
-        }
-        
-        .feedback-title {
-            font-weight: bold;
-            font-size: 18px;
-            margin-bottom: 15px;
-            color: #333;
-        }
-        
-        .feedback-content {
-            color: #444;
-            line-height: 1.8;
-            font-size: 15px;
-        }
-        
-        .explanation {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 2px solid #ccc;
-        }
-        
-        .explanation-title {
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>장난감 상자 물리실험실 - 자성 편</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Black+Han+Sans&family=Noto+Sans+KR:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    --yellow-bg: #FFD93D;
+    --yellow-bg-2: #FFC93C;
+    --sky: #7EC8E3;
+    --wood: #C97B3D;
+    --wood-dark: #A85A2A;
+    --red: #E8462A;
+    --red-dark: #C5371E;
+    --green: #4CAF7D;
+    --cream: #FFF8E7;
+    --ink: #3A2A1A;
+    --purple: #8B6FB5;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 10% 15%, rgba(255,255,255,0.35) 0, transparent 35%),
+      radial-gradient(circle at 90% 80%, rgba(255,255,255,0.25) 0, transparent 40%),
+      repeating-linear-gradient(135deg, var(--yellow-bg) 0px, var(--yellow-bg) 40px, var(--yellow-bg-2) 40px, var(--yellow-bg-2) 80px);
+    font-family:'Noto Sans KR', sans-serif; font-weight:800;
+    color:var(--ink);
+    padding:24px 14px 60px;
+    overflow-x:hidden;
+  }
+
+  /* floating clouds/stars deco */
+  .deco-star{
+    position:fixed;
+    font-size:28px;
+    opacity:0.5;
+    animation: floatY 6s ease-in-out infinite;
+    pointer-events:none;
+    z-index:0;
+  }
+  @keyframes floatY{
+    0%,100%{transform:translateY(0) rotate(0deg);}
+    50%{transform:translateY(-18px) rotate(10deg);}
+  }
+
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    position:relative;
+    z-index:1;
+  }
+
+  /* ---------- HEADER ---------- */
+  header{
+    text-align:center;
+    margin-bottom:18px;
+  }
+  .title-wrap{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    animation: titleBob 3s ease-in-out infinite;
+  }
+  @keyframes titleBob{
+    0%,100%{transform:translateY(0) rotate(-2deg);}
+    50%{transform:translateY(-6px) rotate(2deg);}
+  }
+  .title-mascot{
+    font-size:2.1rem;
+    display:inline-block;
+    animation: mascotWiggle 1.8s ease-in-out infinite;
+  }
+  .title-mascot.right{animation-delay:0.3s;}
+  @keyframes mascotWiggle{
+    0%,100%{transform:rotate(-8deg) scale(1);}
+    50%{transform:rotate(8deg) scale(1.08);}
+  }
+  .title-badge{
+    display:inline-block;
+    background:linear-gradient(160deg, #FF7A5C, var(--red));
+    color:#fff;
+    font-family:'Black Han Sans', sans-serif;
+    font-size:1.85rem;
+    padding:12px 30px;
+    border-radius:50px;
+    border:5px dashed var(--cream);
+    box-shadow: 0 6px 0 var(--red-dark), 0 10px 16px rgba(0,0,0,0.22);
+    letter-spacing:1px;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.15);
+    position:relative;
+  }
+  .title-badge::before, .title-badge::after{
+    content:'🎀';
+    position:absolute;
+    font-size:1.3rem;
+    top:50%;
+    transform:translateY(-50%);
+  }
+  .title-badge::before{ left:-6px; }
+  .title-badge::after{ right:-6px; }
+  .subtitle{
+    margin-top:16px;
+    font-size:1.08rem;
+    font-weight:800;
+    color:var(--ink);
+    background:#fff;
+    display:inline-block;
+    padding:6px 20px;
+    border-radius:50px;
+    border:3px solid var(--wood);
+    box-shadow:0 3px 0 var(--wood);
+  }
+
+  /* ---------- PROGRESS STARS ---------- */
+  .progress-row{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin:18px 0 22px;
+  }
+  .progress-slot{
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    background:var(--cream);
+    border:4px dashed var(--wood);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.4rem;
+    transition: transform 0.4s, background 0.4s, border 0.4s;
+  }
+  .progress-slot.filled{
+    background:linear-gradient(160deg, #FFE17D, #FFB23D);
+    border:4px solid var(--red);
+    transform:scale(1.15) rotate(-6deg);
+    box-shadow:0 4px 10px rgba(0,0,0,0.2);
+    animation: pop 0.5s ease;
+  }
+  @keyframes pop{
+    0%{transform:scale(0.4) rotate(0deg);}
+    60%{transform:scale(1.3) rotate(-10deg);}
+    100%{transform:scale(1.15) rotate(-6deg);}
+  }
+
+  /* ---------- CARD ---------- */
+  .card{
+    background:var(--cream);
+    border-radius:28px;
+    border:5px solid var(--wood);
+    padding:22px 22px 26px;
+    box-shadow:0 10px 0 var(--wood-dark), 0 14px 24px rgba(0,0,0,0.25);
+    position:relative;
+    margin-bottom:22px;
+  }
+  .card::before{
+    content:'';
+    position:absolute;
+    top:-18px; left:30px;
+    font-size:0;
+  }
+  .stitch{
+    position:absolute;
+    inset:10px;
+    border:3px dashed rgba(166,108,50,0.35);
+    border-radius:20px;
+    pointer-events:none;
+  }
+
+  .q-number{
+    display:inline-block;
+    background:var(--sky);
+    font-family:'Jua', sans-serif;
+    color:#fff;
+    padding:4px 14px;
+    border-radius:14px;
+    font-size:1rem;
+    margin-bottom:10px;
+    box-shadow:0 3px 0 #5BA8C9;
+  }
+
+  .q-text{
+    font-size:1.18rem;
+    line-height:1.65;
+    margin-bottom:16px;
+  }
+
+  .scene{
+    display:flex;
+    justify-content:center;
+    gap:30px;
+    flex-wrap:wrap;
+    margin:14px 0 18px;
+  }
+
+  /* ---------- OPTIONS ---------- */
+  .options-label{
+    font-family:'Jua', sans-serif;
+    font-size:1.05rem;
+    color:var(--red-dark);
+    margin:14px 0 8px;
+    text-align:center;
+  }
+  .bogi-box{
+    background:#fff;
+    border:3px solid var(--ink);
+    border-radius:14px;
+    padding:12px 16px;
+    margin-bottom:16px;
+  }
+  .bogi-box div{
+    font-size:1.05rem;
+    margin:5px 0;
+    line-height:1.5;
+  }
+
+  .choices{
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px,1fr));
+    gap:10px;
+    margin-top:6px;
+  }
+  .choice-btn{
+    font-family:'Noto Sans KR', sans-serif; font-weight:800;
+    font-size:1.05rem;
+    background:#fff;
+    border:3px solid var(--wood);
+    border-radius:16px;
+    padding:10px 8px;
+    cursor:pointer;
+    transition: transform 0.15s, background 0.15s, box-shadow 0.15s;
+    box-shadow:0 4px 0 var(--wood);
+  }
+  .choice-btn:hover{
+    background:#FFF3D6;
+    transform:translateY(-2px);
+  }
+  .choice-btn.selected{
+    background:var(--sky);
+    color:#fff;
+    border-color:#4F9DC4;
+    box-shadow:0 4px 0 #4F9DC4;
+  }
+  .choice-btn:active{
+    transform:translateY(2px);
+    box-shadow:0 1px 0 var(--wood);
+  }
+  .choice-btn:disabled{
+    cursor:default;
+    opacity:0.9;
+  }
+  .choice-btn.correct-answer{
+    background:var(--green) !important;
+    color:#fff;
+    border-color:#357A57 !important;
+    box-shadow:0 4px 0 #357A57 !important;
+  }
+  .choice-btn.wrong-answer{
+    background:var(--red) !important;
+    color:#fff;
+    border-color:var(--red-dark) !important;
+    box-shadow:0 4px 0 var(--red-dark) !important;
+  }
+
+  /* ---------- BUTTON ROW ---------- */
+  .btn-row{
+    display:flex;
+    gap:14px;
+    justify-content:center;
+    margin-top:20px;
+    flex-wrap:wrap;
+  }
+  .toy-btn{
+    font-family:'Jua', sans-serif;
+    font-size:1.15rem;
+    color:#fff;
+    border:none;
+    border-radius:50px;
+    padding:13px 30px;
+    cursor:pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    letter-spacing:1px;
+  }
+  .btn-check{
+    background:var(--red);
+    box-shadow:0 6px 0 var(--red-dark);
+  }
+  .btn-check:hover{transform:translateY(-2px);}
+  .btn-check:active{transform:translateY(4px); box-shadow:0 2px 0 var(--red-dark);}
+  .btn-check:disabled{
+    background:#cfa68f; box-shadow:0 6px 0 #a98568; cursor:not-allowed;
+  }
+
+  .btn-new{
+    background:var(--purple);
+    box-shadow:0 6px 0 #6A5293;
+  }
+  .btn-new:hover{transform:translateY(-2px);}
+  .btn-new:active{transform:translateY(4px); box-shadow:0 2px 0 #6A5293;}
+
+  /* ---------- FEEDBACK ---------- */
+  .feedback{
+    margin-top:18px;
+    border-radius:20px;
+    padding:18px 20px;
+    display:none;
+    border:4px solid;
+    animation: feedIn 0.4s ease;
+  }
+  @keyframes feedIn{
+    0%{opacity:0; transform:translateY(10px);}
+    100%{opacity:1; transform:translateY(0);}
+  }
+  .feedback.show{display:block;}
+  .feedback.correct{
+    background:#E9FAF0;
+    border-color:var(--green);
+  }
+  .feedback.wrong{
+    background:#FFEDE8;
+    border-color:var(--red);
+  }
+  .feedback-title{
+    font-family:'Jua', sans-serif;
+    font-size:1.3rem;
+    margin-bottom:8px;
+  }
+  .feedback.correct .feedback-title{color:#2E7D52;}
+  .feedback.wrong .feedback-title{color:var(--red-dark);}
+  .feedback-body{
+    font-size:1.08rem;
+    line-height:1.6;
+    white-space:pre-line;
+  }
+
+  /* ---------- TOY CHARACTER STAGE ---------- */
+  .toy-stage{
+    display:flex;
+    justify-content:center;
+    align-items:flex-end;
+    gap:18px;
+    height:170px;
+    margin:30px 0 10px;
+    position:relative;
+  }
+  .toy{
+    width:90px;
+    transition: transform 0.3s;
+    transform-origin:bottom center;
+    position:relative;
+  }
+
+  /* idle bobbing */
+  .toy.idle{ animation: bob 2.6s ease-in-out infinite; }
+  @keyframes bob{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-6px);}
+  }
+
+  /* happy: grow big + bounce */
+  .toy.happy{ animation: growHappy 0.9s cubic-bezier(.34,1.56,.64,1) forwards; }
+  @keyframes growHappy{
+    0%{transform:scale(1) rotate(0deg);}
+    45%{transform:scale(1.55) rotate(-6deg) translateY(-14px);}
+    70%{transform:scale(1.35) rotate(5deg) translateY(-4px);}
+    100%{transform:scale(1.42) rotate(0deg) translateY(-8px);}
+  }
+  /* sad: grow big + droop */
+  .toy.sad{ animation: growSad 0.9s cubic-bezier(.34,1.2,.64,1) forwards; }
+  @keyframes growSad{
+    0%{transform:scale(1) rotate(0deg);}
+    45%{transform:scale(1.5) rotate(-4deg) translateY(-8px);}
+    70%{transform:scale(1.32) rotate(3deg) translateY(2px);}
+    100%{transform:scale(1.38) rotate(-2deg) translateY(4px);}
+  }
+
+  .speech-bubble{
+    position:absolute;
+    top:-6px;
+    left:50%;
+    transform:translateX(-50%) scale(0);
+    background:#fff;
+    border:4px solid var(--ink);
+    border-radius:24px;
+    padding:10px 22px;
+    font-family:'Black Han Sans', sans-serif;
+    font-size:1.3rem;
+    white-space:nowrap;
+    box-shadow:0 5px 0 rgba(0,0,0,0.15);
+    z-index:10;
+    animation: bubblePop 0.5s cubic-bezier(.34,1.56,.64,1) 0.25s forwards;
+  }
+  .speech-bubble::after{
+    content:'';
+    position:absolute;
+    bottom:-14px;
+    left:50%;
+    transform:translateX(-50%);
+    border-width:14px 10px 0 10px;
+    border-style:solid;
+    border-color:var(--ink) transparent transparent transparent;
+  }
+  .speech-bubble::before{
+    content:'';
+    position:absolute;
+    bottom:-9px;
+    left:50%;
+    transform:translateX(-50%);
+    border-width:11px 7px 0 7px;
+    border-style:solid;
+    border-color:#fff transparent transparent transparent;
+    z-index:1;
+  }
+  .speech-bubble.correct{ color:var(--green); }
+  .speech-bubble.wrong{ color:var(--red); }
+  @keyframes bubblePop{
+    0%{transform:translateX(-50%) scale(0) rotate(-8deg);}
+    60%{transform:translateX(-50%) scale(1.15) rotate(3deg);}
+    100%{transform:translateX(-50%) scale(1) rotate(0deg);}
+  }
+
+  .sparkle{
+    position:absolute;
+    font-size:1.4rem;
+    animation: sparkleUp 1s ease-out forwards;
+    pointer-events:none;
+  }
+  @keyframes sparkleUp{
+    0%{opacity:1; transform:translateY(0) scale(0.6);}
+    100%{opacity:0; transform:translateY(-40px) scale(1.3);}
+  }
+
+  .teardrop{
+    position:absolute;
+    font-size:1.1rem;
+    animation: tearFall 1.3s ease-in forwards;
+    pointer-events:none;
+  }
+  @keyframes tearFall{
+    0%{opacity:1; transform:translateY(0);}
+    100%{opacity:0; transform:translateY(30px);}
+  }
+
+  /* ---------- BADGE MODAL ---------- */
+  .modal-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(58,42,26,0.55);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:50;
+    padding:20px;
+  }
+  .modal-overlay.show{display:flex;}
+  .badge-card{
+    background:var(--cream);
+    border-radius:30px;
+    border:6px solid var(--red);
+    padding:32px 26px;
+    text-align:center;
+    max-width:380px;
+    box-shadow:0 14px 0 var(--red-dark), 0 20px 30px rgba(0,0,0,0.35);
+    animation: badgePop 0.5s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes badgePop{
+    0%{transform:scale(0.3) rotate(-15deg); opacity:0;}
+    100%{transform:scale(1) rotate(0deg); opacity:1;}
+  }
+  .badge-medal{
+    font-size:5rem;
+    margin-bottom:10px;
+    display:inline-block;
+    animation: medalSpin 1.2s ease-in-out;
+  }
+  @keyframes medalSpin{
+    0%{transform:rotateY(0deg) scale(0.5);}
+    100%{transform:rotateY(720deg) scale(1);}
+  }
+  .badge-title{
+    font-family:'Black Han Sans', sans-serif;
+    font-size:1.5rem;
+    line-height:1.5;
+    color:var(--red-dark);
+    margin-bottom:12px;
+  }
+  .badge-desc{
+    font-size:1.1rem;
+    line-height:1.6;
+    margin-bottom:18px;
+  }
+  .badge-close{
+    font-family:'Jua', sans-serif;
+    background:var(--green);
+    color:#fff;
+    border:none;
+    border-radius:50px;
+    padding:11px 26px;
+    font-size:1.05rem;
+    cursor:pointer;
+    box-shadow:0 5px 0 #357A57;
+  }
+  .badge-close:active{transform:translateY(3px); box-shadow:0 2px 0 #357A57;}
+
+  /* ---------- 타이머 ---------- */
+  .timer-wrap{
+    display:flex;
+    justify-content:center;
+    margin:0 0 14px;
+  }
+  .timer-box{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:#fff;
+    border:4px solid var(--wood);
+    border-radius:50px;
+    padding:8px 22px;
+    box-shadow:0 4px 0 var(--wood-dark);
+    font-family:'Black Han Sans', sans-serif;
+    font-size:1.5rem;
+    color:var(--ink);
+    transition: color 0.3s, border-color 0.3s;
+  }
+  .timer-box.danger{
+    color:var(--red);
+    border-color:var(--red);
+    animation: timerPulse 0.5s ease-in-out infinite;
+  }
+  @keyframes timerPulse{
+    0%,100%{transform:scale(1);}
+    50%{transform:scale(1.04);}
+  }
+  .timer-icon{ font-size:1.3rem; }
+
+  /* ---------- 닉네임 입력 ---------- */
+  .nickname-row{
+    display:flex;
+    gap:8px;
+    margin:14px 0 14px;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+  .nickname-input{
+    font-family:'Noto Sans KR', sans-serif;
+    font-weight:800;
+    font-size:1.05rem;
+    border:3px solid var(--wood);
+    border-radius:14px;
+    padding:9px 14px;
+    width:170px;
+    outline:none;
+    background:var(--cream);
+    box-shadow:0 3px 0 var(--wood);
+    color:var(--ink);
+  }
+  .nickname-input:focus{border-color:var(--sky); box-shadow:0 3px 0 #5BA8C9;}
+  .nickname-submit{
+    font-family:'Jua', sans-serif;
+    font-size:1rem;
+    background:var(--red);
+    color:#fff;
+    border:none;
+    border-radius:14px;
+    padding:9px 18px;
+    cursor:pointer;
+    box-shadow:0 4px 0 var(--red-dark);
+    transition:transform 0.1s;
+  }
+  .nickname-submit:active{transform:translateY(3px); box-shadow:0 1px 0 var(--red-dark);}
+
+  /* ---------- 명예의 전당 ---------- */
+  .hall-wrap{
+    max-width:760px;
+    margin:0 auto 40px;
+    position:relative;
+    z-index:1;
+  }
+  .hall-title{
+    font-family:'Black Han Sans', sans-serif;
+    font-size:1.6rem;
+    text-align:center;
+    color:var(--ink);
+    background:linear-gradient(160deg, #FFE17D, #FFB23D);
+    border:5px solid var(--wood);
+    border-radius:20px 20px 0 0;
+    padding:14px 10px 10px;
+    box-shadow:0 4px 0 var(--wood-dark);
+    letter-spacing:2px;
+  }
+  .hall-list{
+    background:var(--cream);
+    border:5px solid var(--wood);
+    border-top:none;
+    border-radius:0 0 20px 20px;
+    padding:16px 16px 10px;
+    min-height:80px;
+    box-shadow:0 6px 0 var(--wood-dark);
+  }
+  .hall-empty{
+    text-align:center;
+    color:#aaa;
+    font-size:1.05rem;
+    padding:18px 0;
+    font-weight:800;
+  }
+  .hall-entry{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:#fff;
+    border:3px solid var(--wood);
+    border-radius:14px;
+    padding:10px 14px;
+    margin-bottom:10px;
+    box-shadow:0 3px 0 var(--wood);
+    animation: entrySlide 0.4s cubic-bezier(.34,1.4,.64,1);
+  }
+  @keyframes entrySlide{
+    0%{transform:translateX(-30px); opacity:0;}
+    100%{transform:translateX(0); opacity:1;}
+  }
+  .hall-rank{
+    font-family:'Black Han Sans', sans-serif;
+    font-size:1.4rem;
+    min-width:36px;
+    text-align:center;
+  }
+  .hall-name{
+    font-family:'Noto Sans KR', sans-serif;
+    font-weight:800;
+    font-size:1.05rem;
+    flex:1;
+    color:var(--ink);
+  }
+  .hall-time{
+    font-family:'Black Han Sans', sans-serif;
+    font-size:1.1rem;
+    color:var(--red-dark);
+    white-space:nowrap;
+    background:#FFF3D6;
+    border:2px solid #FFB23D;
+    border-radius:10px;
+    padding:2px 10px;
+  }
+  .hall-date{
+    font-size:0.82rem;
+    color:#bbb;
+    font-weight:700;
+    white-space:nowrap;
+  }
+  .hall-clear-btn{
+    display:block;
+    margin:14px auto 0;
+    font-family:'Jua', sans-serif;
+    font-size:0.9rem;
+    background:transparent;
+    color:#bbb;
+    border:2px dashed #ccc;
+    border-radius:50px;
+    padding:6px 18px;
+    cursor:pointer;
+  }
+  .hall-clear-btn:hover{color:var(--red); border-color:var(--red);}
+
+  /* ---------- 시작 화면 ---------- */
+  .start-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(58,42,26,0.55);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:200;
+    padding:20px;
+  }
+  .start-card{
+    background:var(--cream);
+    border-radius:36px;
+    border:6px solid var(--wood);
+    box-shadow:0 14px 0 var(--wood-dark), 0 20px 40px rgba(0,0,0,0.35);
+    padding:40px 32px 36px;
+    text-align:center;
+    max-width:400px;
+    width:100%;
+    animation: startCardIn 0.5s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes startCardIn{
+    0%{transform:scale(0.5) translateY(40px); opacity:0;}
+    100%{transform:scale(1) translateY(0); opacity:1;}
+  }
+  .start-mascots{
+    font-size:2.8rem;
+    margin-bottom:10px;
+    display:flex;
+    justify-content:center;
+    gap:12px;
+  }
+  .start-mascots span{
+    display:inline-block;
+    animation: mascotBob 1.8s ease-in-out infinite;
+  }
+  .start-mascots span:nth-child(2){ animation-delay:0.3s; }
+  .start-mascots span:nth-child(3){ animation-delay:0.6s; }
+  .start-mascots span:nth-child(4){ animation-delay:0.9s; }
+  @keyframes mascotBob{
+    0%,100%{transform:translateY(0);}
+    50%{transform:translateY(-10px);}
+  }
+  .start-title{
+    font-family:'Black Han Sans', sans-serif;
+    font-size:1.7rem;
+    color:var(--red-dark);
+    line-height:1.4;
+    margin-bottom:8px;
+  }
+  .start-desc{
+    font-family:'Noto Sans KR', sans-serif;
+    font-weight:800;
+    font-size:1rem;
+    color:#888;
+    margin-bottom:28px;
+    line-height:1.6;
+  }
+  .start-btn{
+    font-family:'Black Han Sans', sans-serif;
+    font-size:1.6rem;
+    color:#fff;
+    background:linear-gradient(160deg, #FF7A5C, var(--red));
+    border:none;
+    border-radius:50px;
+    padding:18px 48px;
+    cursor:pointer;
+    box-shadow:0 8px 0 var(--red-dark), 0 12px 20px rgba(200,50,30,0.3);
+    letter-spacing:2px;
+    white-space:nowrap;
+    transition:transform 0.15s, box-shadow 0.15s;
+    animation: startBtnPulse 2s ease-in-out infinite;
+  }
+  @keyframes startBtnPulse{
+    0%,100%{transform:scale(1);}
+    50%{transform:scale(1.05);}
+  }
+  .start-btn:hover{
+    transform:scale(1.08) translateY(-3px);
+    box-shadow:0 12px 0 var(--red-dark), 0 16px 24px rgba(200,50,30,0.35);
+  }
+  .start-btn:active{
+    transform:translateY(6px);
+    box-shadow:0 2px 0 var(--red-dark);
+    animation:none;
+  }
+  .start-overlay.hide{
+    animation: overlayOut 0.4s ease forwards;
+    pointer-events:none;
+  }
+  @keyframes overlayOut{
+    0%{opacity:1; transform:scale(1);}
+    100%{opacity:0; transform:scale(1.06);}
+  }
+
+  footer{
+    text-align:center;
+    margin-top:10px;
+    font-size:0.9rem;
+    color:rgba(58,42,26,0.6);
+  }
+
+  @media (max-width:480px){
+    .title-badge{font-size:1.4rem; padding:8px 18px;}
+    .card{padding:16px 14px 20px;}
+    .toy{width:68px;}
+    .toy-stage{height:120px;}
+  }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>에너지 효율 시뮬레이션</h1>
-        <div class="subtitle">통합과학2 - 에너지 전환 효율</div>
-        
-        <div class="question-box">
-            <div class="question-number" id="questionNumber">7. 일상생활에서 일어나는 에너지 전환을 나타낸 것으로 옳지 않은 것은?</div>
-            <div class="question-text" id="questionText"></div>
-        </div>
-        
-        <div class="options" id="options"></div>
-        
-        <div class="button-group">
-            <button class="new-problem-btn" onclick="generateNewProblem()">새 문제</button>
-            <button class="submit-btn" id="submitBtn" onclick="checkAnswer()" disabled>정답 확인</button>
-        </div>
-        
-        <div class="feedback" id="feedback"></div>
+
+<div class="deco-star" style="top:8%; left:6%;">⭐</div>
+<div class="deco-star" style="top:20%; right:8%; animation-delay:1.5s;">✨</div>
+<div class="deco-star" style="bottom:15%; left:4%; animation-delay:3s;">🌟</div>
+<div class="deco-star" style="bottom:30%; right:5%; animation-delay:2s;">⭐</div>
+
+<!-- 시작 화면 오버레이 -->
+<div class="start-overlay" id="startOverlay">
+  <div class="start-card">
+    <div class="start-mascots">
+      <span>🤠</span><span>🚀</span><span>🐷</span><span>🦖</span>
+    </div>
+    <div class="start-title">🧸 장난감 상자<br>물리실험실</div>
+    <div class="start-desc">
+      자석과 자성체 — 2022 개정 고등학교 물리학<br>
+      5개 문제를 가장 빠르게 맞춰 1등을 차지하세요!
+    </div>
+    <button class="start-btn" id="startBtn">🚀 시작하기!</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <header>
+    <div class="title-wrap">
+      <span class="title-mascot">🤠</span>
+      <div class="title-badge">🧸 장난감 상자 물리실험실</div>
+      <span class="title-mascot right">🚀</span>
+    </div>
+    <div><span class="subtitle">✨ 자석과 자성체 — 2022 개정 고등학교 물리학 ✨</span></div>
+  </header>
+
+  <div class="progress-row" id="progressRow"></div>
+  <div class="timer-wrap">
+    <div class="timer-box" id="timerBox">
+      <span class="timer-icon">⏱️</span>
+      <span id="timerDisplay">00:00</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="stitch"></div>
+    <div class="q-number" id="qNumber">문제 1</div>
+    <div class="q-text" id="qText"></div>
+
+    <div class="scene" id="qScene"></div>
+
+    <div class="options-label">&lt; 보기 &gt;</div>
+    <div class="bogi-box" id="bogiBox"></div>
+
+    <div class="choices" id="choices"></div>
+
+    <div class="toy-stage" id="toyStage"></div>
+
+    <div class="btn-row">
+      <button class="toy-btn btn-check" id="checkBtn">✔ 확인</button>
+      <button class="toy-btn btn-new" id="newBtn">🔄 새 문제</button>
     </div>
 
-    <script>
-        const problems = [
-            {
-                question: "일상생활에서 일어나는 에너지 전환을 나타낸 것으로 옳지 않은 것은?",
-                options: [
-                    "가스레인지: 화학에너지 → 열에너지",
-                    "TV화면: 전기에너지 → 빛에너지",
-                    "마이크: 소리에너지 → 전기에너지",
-                    "스피커: 전기에너지 → 소리에너지",
-                    "열기관: 역학적에너지 → 열에너지"
-                ],
-                correct: 4,
-                explanation: `<div class="explanation-title">【이론】에너지 전환의 원리</div>
-에너지는 한 형태에서 다른 형태로 전환될 수 있으며, 각 장치는 특정한 에너지 전환을 수행합니다.
+    <div class="feedback" id="feedback">
+      <div class="feedback-title" id="feedbackTitle"></div>
+      <div class="feedback-body" id="feedbackBody"></div>
+    </div>
+  </div>
 
-<div class="explanation-title">【풀이과정】</div>
-① 가스레인지: 연료의 화학에너지 → 연소 시 열에너지 (O)
-② TV화면: 전기에너지 → 화면을 통한 빛에너지 (O)
-③ 마이크: 소리의 진동(소리에너지) → 전기신호(전기에너지) (O)
-④ 스피커: 전기신호(전기에너지) → 진동을 통한 소리에너지 (O)
-⑤ 열기관: 열에너지 → 역학적에너지 (X)
+  <footer>장난감 친구들과 함께 자성체 개념을 익혀봐요 🧲</footer>
+</div>
 
-<div class="explanation-title">【핵심개념】</div>
-열기관(자동차 엔진 등)은 연료의 화학에너지를 열에너지로 변환한 후, 이를 다시 역학적 에너지로 전환하는 장치입니다. 따라서 "역학적에너지 → 열에너지"가 아니라 "열에너지 → 역학적에너지" 전환이 올바른 표현입니다.`
-            },
-            {
-                question: "다음 중 전기에너지를 다른 형태의 에너지로 전환하는 장치가 아닌 것은?",
-                options: [
-                    "선풍기: 전기에너지 → 운동에너지",
-                    "전등: 전기에너지 → 빛에너지",
-                    "태양전지: 전기에너지 → 빛에너지",
-                    "전기난로: 전기에너지 → 열에너지",
-                    "이어폰: 전기에너지 → 소리에너지"
-                ],
-                correct: 2,
-                explanation: `<div class="explanation-title">【이론】에너지 전환 장치의 분류</div>
-에너지 전환 장치는 입력 에너지와 출력 에너지의 형태에 따라 분류됩니다.
+<!-- 폭죽 캔버스 (전체 화면 위에 오버레이) -->
+<canvas id="fireworksCanvas" style="position:fixed;inset:0;pointer-events:none;z-index:100;display:none;"></canvas>
 
-<div class="explanation-title">【풀이과정】</div>
-① 선풍기: 전기에너지 → 회전 운동에너지 (O)
-② 전등: 전기에너지 → 빛에너지 (O)
-③ 태양전지: 빛에너지 → 전기에너지 (X)
-④ 전기난로: 전기에너지 → 열에너지 (O)
-⑤ 이어폰: 전기에너지 → 소리에너지 (O)
+<!-- 배지 + 닉네임 입력 모달 -->
+<div class="modal-overlay" id="badgeOverlay">
+  <div class="badge-card">
+    <div class="badge-medal" id="badgeMedal">🏅</div>
+    <div class="badge-title">당신은 이제<br>물리박사 뱃지를<br>획득하였습니다!</div>
+    <div class="badge-desc">축하드립니다! 🎉<br>명예의 전당에 이름을 올려보세요!</div>
+    <div style="font-family:'Black Han Sans',sans-serif; font-size:1.4rem; color:var(--red-dark); background:#FFF3D6; border:3px solid #FFB23D; border-radius:14px; padding:8px 20px; margin:0 0 14px; display:inline-block;">
+      ⏱️ 완료 시간: <span id="finalTimeDisplay">00:00</span>
+    </div>
+    <div class="nickname-row">
+      <input type="text" id="nicknameInput" class="nickname-input" placeholder="닉네임을 입력하세요" maxlength="12">
+      <button class="nickname-submit" id="nicknameSubmitBtn">등록 🏆</button>
+    </div>
+    <button class="badge-close" id="badgeCloseBtn">계속 놀기</button>
+  </div>
+</div>
 
-<div class="explanation-title">【핵심개념】</div>
-태양전지(태양광 패널)는 태양의 빛에너지를 전기에너지로 변환하는 장치입니다. 따라서 전기에너지를 다른 형태로 전환하는 것이 아니라, 빛에너지를 전기에너지로 전환합니다.`
-            },
-            {
-                question: "다음 에너지 전환 중 효율이 가장 낮은 것은?",
-                options: [
-                    "LED 전구: 전기에너지 → 빛에너지",
-                    "발전기: 운동에너지 → 전기에너지",
-                    "백열전구: 전기에너지 → 빛에너지",
-                    "전기모터: 전기에너지 → 운동에너지",
-                    "변압기: 전기에너지 → 전기에너지"
-                ],
-                correct: 2,
-                explanation: `<div class="explanation-title">【이론】에너지 전환 효율</div>
-에너지 효율 = (유용한 에너지 출력 / 총 에너지 입력) × 100%
-전환 과정에서 일부 에너지는 열 등의 형태로 손실됩니다.
+<!-- 명예의 전당 섹션 -->
+<div class="hall-wrap" id="hallWrap">
+  <div class="hall-title">🏆 명예의 전당 🏆</div>
+  <div class="hall-list" id="hallList"></div>
+  <button class="hall-clear-btn" id="hallClearBtn">기록 초기화</button>
+</div>
 
-<div class="explanation-title">【풀이과정】</div>
-① LED 전구: 효율 약 80-90% (매우 높음)
-② 발전기: 효율 약 95% 이상 (높음)
-③ 백열전구: 효율 약 5% (매우 낮음) - 대부분이 열로 손실
-④ 전기모터: 효율 약 85-95% (높음)
-⑤ 변압기: 효율 약 98% 이상 (매우 높음)
+<script>
+/* ===================== 캐릭터 (장난감 상자 친구들, 토이스토리에서 영감을 받은 오리지널 디자인) ===================== */
+function cowboyToySVG(face){
+  // face: 'idle' | 'happy' | 'sad'
+  const mouth = face==='happy'
+    ? '<path d="M30 58 Q40 70 50 58" stroke="#5a3a1a" stroke-width="3" fill="none" stroke-linecap="round"/>'
+    : face==='sad'
+    ? '<path d="M30 64 Q40 54 50 64" stroke="#5a3a1a" stroke-width="3" fill="none" stroke-linecap="round"/>'
+    : '<path d="M33 60 Q40 64 47 60" stroke="#5a3a1a" stroke-width="3" fill="none" stroke-linecap="round"/>';
+  const eyes = face==='happy'
+    ? '<path d="M27 46 Q31 42 35 46" stroke="#3a2a1a" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M45 46 Q49 42 53 46" stroke="#3a2a1a" stroke-width="3" fill="none" stroke-linecap="round"/>'
+    : '<circle cx="31" cy="47" r="3" fill="#3a2a1a"/><circle cx="49" cy="47" r="3" fill="#3a2a1a"/>';
+  return `
+  <svg viewBox="0 0 80 130" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="40" cy="122" rx="22" ry="6" fill="rgba(0,0,0,0.15)"/>
+    <rect x="20" y="70" width="40" height="42" rx="10" fill="#E8C547"/>
+    <rect x="20" y="70" width="40" height="10" rx="5" fill="#D94F2B"/>
+    <rect x="14" y="78" width="14" height="30" rx="7" fill="#E8C547"/>
+    <rect x="52" y="78" width="14" height="30" rx="7" fill="#E8C547"/>
+    <rect x="24" y="106" width="14" height="20" rx="6" fill="#5B7DB1"/>
+    <rect x="42" y="106" width="14" height="20" rx="6" fill="#5B7DB1"/>
+    <circle cx="40" cy="48" r="26" fill="#F4C39C"/>
+    <path d="M14 40 Q40 8 66 40 Q66 20 40 16 Q14 20 14 40Z" fill="#D94F2B"/>
+    <path d="M10 38 Q40 30 70 38 L68 44 Q40 36 12 44Z" fill="#C5371E"/>
+    ${eyes}
+    <ellipse cx="22" cy="55" rx="5" ry="3.5" fill="#F4A28C" opacity="0.7"/>
+    <ellipse cx="58" cy="55" rx="5" ry="3.5" fill="#F4A28C" opacity="0.7"/>
+    <ellipse cx="40" cy="54" rx="4" ry="3" fill="#E8956B"/>
+    ${mouth}
+    <path d="M14 60 Q12 70 20 72" stroke="#8b6b3a" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M66 60 Q68 70 60 72" stroke="#8b6b3a" stroke-width="3" fill="none" stroke-linecap="round"/>
+  </svg>`;
+}
 
-<div class="explanation-title">【핵심개념】</div>
-백열전구는 필라멘트를 가열하여 빛을 내는데, 입력 전기에너지의 약 95%가 열에너지로 손실되고 단 5%만이 빛에너지로 전환됩니다. 이것이 LED로 교체를 권장하는 이유입니다.`
-            },
-            {
-                question: "화석연료 발전소의 에너지 전환 과정을 올바르게 나타낸 것은?",
-                options: [
-                    "화학에너지 → 전기에너지 → 열에너지 → 운동에너지",
-                    "화학에너지 → 열에너지 → 운동에너지 → 전기에너지",
-                    "열에너지 → 화학에너지 → 운동에너지 → 전기에너지",
-                    "운동에너지 → 열에너지 → 화학에너지 → 전기에너지",
-                    "화학에너지 → 운동에너지 → 열에너지 → 전기에너지"
-                ],
-                correct: 1,
-                explanation: `<div class="explanation-title">【이론】화력발전의 에너지 전환</div>
-화력발전소는 여러 단계의 에너지 전환을 거쳐 전기를 생산합니다.
+function astroToySVG(face){
+  const mouth = face==='happy'
+    ? '<path d="M32 56 Q40 66 48 56" stroke="#2a3a4a" stroke-width="3" fill="none" stroke-linecap="round"/>'
+    : face==='sad'
+    ? '<path d="M32 62 Q40 53 48 62" stroke="#2a3a4a" stroke-width="3" fill="none" stroke-linecap="round"/>'
+    : '<path d="M34 58 Q40 61 46 58" stroke="#2a3a4a" stroke-width="3" fill="none" stroke-linecap="round"/>';
+  const eyes = face==='happy'
+    ? '<path d="M28 45 Q32 41 36 45" stroke="#2a3a4a" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M44 45 Q48 41 52 45" stroke="#2a3a4a" stroke-width="3" fill="none" stroke-linecap="round"/>'
+    : '<circle cx="32" cy="46" r="3" fill="#2a3a4a"/><circle cx="48" cy="46" r="3" fill="#2a3a4a"/>';
+  return `
+  <svg viewBox="0 0 80 130" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="40" cy="122" rx="22" ry="6" fill="rgba(0,0,0,0.15)"/>
+    <rect x="18" y="68" width="44" height="44" rx="12" fill="#fff"/>
+    <rect x="18" y="68" width="44" height="44" rx="12" fill="none" stroke="#8B6FB5" stroke-width="3"/>
+    <circle cx="40" cy="86" r="9" fill="#D94F2B"/>
+    <rect x="12" y="76" width="14" height="32" rx="7" fill="#fff" stroke="#8B6FB5" stroke-width="3"/>
+    <rect x="54" y="76" width="14" height="32" rx="7" fill="#fff" stroke="#8B6FB5" stroke-width="3"/>
+    <rect x="22" y="106" width="14" height="20" rx="6" fill="#5B7DB1"/>
+    <rect x="40" y="106" width="14" height="20" rx="6" fill="#5B7DB1"/>
+    <circle cx="40" cy="46" r="27" fill="#fff" stroke="#cfcfcf" stroke-width="2"/>
+    <circle cx="40" cy="48" r="22" fill="#F4C39C"/>
+    ${eyes}
+    <ellipse cx="23" cy="54" rx="5" ry="3.5" fill="#F4A28C" opacity="0.6"/>
+    <ellipse cx="57" cy="54" rx="5" ry="3.5" fill="#F4A28C" opacity="0.6"/>
+    ${mouth}
+  </svg>`;
+}
 
-<div class="explanation-title">【풀이과정】</div>
-화력발전소의 에너지 전환 단계:
-1. 화석연료(석탄, 석유, 천연가스) 연소: 화학에너지 → 열에너지
-2. 물을 가열하여 증기 발생: 열에너지 → 운동에너지(증기의 운동)
-3. 증기가 터빈을 회전: 운동에너지 유지
-4. 터빈이 발전기를 구동: 운동에너지 → 전기에너지
+function piggyToySVG(face){
+  const mouth = face==='happy'
+    ? '<path d="M30 60 Q40 70 50 60" stroke="#a35a6a" stroke-width="3" fill="none" stroke-linecap="round"/>'
+    : face==='sad'
+    ? '<path d="M30 66 Q40 57 50 66" stroke="#a35a6a" stroke-width="3" fill="none" stroke-linecap="round"/>'
+    : '<path d="M33 62 Q40 65 47 62" stroke="#a35a6a" stroke-width="3" fill="none" stroke-linecap="round"/>';
+  const eyes = face==='happy'
+    ? '<path d="M27 48 Q31 44 35 48" stroke="#5a2a3a" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M45 48 Q49 44 53 48" stroke="#5a2a3a" stroke-width="3" fill="none" stroke-linecap="round"/>'
+    : '<circle cx="31" cy="49" r="3" fill="#5a2a3a"/><circle cx="49" cy="49" r="3" fill="#5a2a3a"/>';
+  return `
+  <svg viewBox="0 0 80 120" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="40" cy="112" rx="26" ry="6" fill="rgba(0,0,0,0.15)"/>
+    <ellipse cx="40" cy="78" rx="34" ry="28" fill="#F4A6B7"/>
+    <ellipse cx="22" cy="56" rx="9" ry="9" fill="#F4A6B7"/>
+    <ellipse cx="58" cy="56" rx="9" ry="9" fill="#F4A6B7"/>
+    <ellipse cx="22" cy="56" rx="4" ry="4" fill="#E889A0"/>
+    <ellipse cx="58" cy="56" rx="4" ry="4" fill="#E889A0"/>
+    <ellipse cx="16" cy="100" rx="8" ry="10" fill="#F4A6B7"/>
+    <ellipse cx="64" cy="100" rx="8" ry="10" fill="#F4A6B7"/>
+    ${eyes}
+    <circle cx="29" cy="44" r="1.6" fill="#fff"/>
+    <circle cx="47" cy="44" r="1.6" fill="#fff"/>
+    <ellipse cx="40" cy="82" rx="11" ry="8" fill="#E889A0"/>
+    <ellipse cx="35" cy="82" rx="2.4" ry="3" fill="#a35a6a"/>
+    <ellipse cx="45" cy="82" rx="2.4" ry="3" fill="#a35a6a"/>
+    ${mouth}
+  </svg>`;
+}
 
-<div class="explanation-title">【핵심개념】</div>
-화력발전의 전체 효율은 약 35-40%로, 많은 에너지가 열의 형태로 손실됩니다. 이는 열역학 제2법칙에 따라 열에너지를 일(운동에너지)로 완전히 전환할 수 없기 때문입니다.`
-            },
-            {
-                question: "다음 중 에너지 전환 효율을 높이는 방법으로 적절하지 않은 것은?",
-                options: [
-                    "마찰을 줄이기 위해 윤활유를 사용한다",
-                    "단열재를 사용하여 열 손실을 줄인다",
-                    "전선의 굵기를 가능한 한 가늘게 한다",
-                    "LED 조명을 사용한다",
-                    "폐열을 재활용하는 시스템을 구축한다"
-                ],
-                correct: 2,
-                explanation: `<div class="explanation-title">【이론】에너지 효율 향상 방법</div>
-에너지 효율을 높이려면 에너지 손실을 최소화해야 합니다. 주요 손실 원인은 마찰, 열손실, 전기저항 등입니다.
+function rexToySVG(face){
+  const mouth = face==='happy'
+    ? '<path d="M34 58 Q44 68 54 58" stroke="#1a4a2a" stroke-width="3" fill="none" stroke-linecap="round"/>'
+    : face==='sad'
+    ? '<path d="M34 64 Q44 55 54 64" stroke="#1a4a2a" stroke-width="3" fill="none" stroke-linecap="round"/>'
+    : '<path d="M37 60 Q44 63 51 60" stroke="#1a4a2a" stroke-width="3" fill="none" stroke-linecap="round"/>';
+  const eyes = face==='happy'
+    ? '<path d="M30 46 Q34 42 38 46" stroke="#1a3a2a" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M50 46 Q54 42 58 46" stroke="#1a3a2a" stroke-width="3" fill="none" stroke-linecap="round"/>'
+    : '<circle cx="34" cy="47" r="3" fill="#1a3a2a"/><circle cx="54" cy="47" r="3" fill="#1a3a2a"/>';
+  return `
+  <svg viewBox="0 0 90 130" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="45" cy="122" rx="26" ry="6" fill="rgba(0,0,0,0.15)"/>
+    <path d="M20 110 Q10 60 30 40 Q40 28 58 32 Q72 36 70 56 Q68 76 50 84 Q60 96 50 112 Z" fill="#5FBE82"/>
+    <path d="M30 40 L26 28 L34 34 Z" fill="#3E9A63"/>
+    <path d="M40 32 L38 20 L46 28 Z" fill="#3E9A63"/>
+    <path d="M50 32 L50 20 L56 30 Z" fill="#3E9A63"/>
+    <circle cx="44" cy="50" r="24" fill="#6FCB8F"/>
+    ${eyes}
+    <ellipse cx="33" cy="53" rx="4.5" ry="3" fill="#FFD27D" opacity="0.7"/>
+    <ellipse cx="55" cy="53" rx="4.5" ry="3" fill="#FFD27D" opacity="0.7"/>
+    <ellipse cx="44" cy="54" rx="6" ry="3" fill="#3E9A63"/>
+    ${mouth}
+    <rect x="22" y="104" width="12" height="18" rx="5" fill="#5FBE82"/>
+    <rect x="48" y="104" width="12" height="18" rx="5" fill="#5FBE82"/>
+  </svg>`;
+}
 
-<div class="explanation-title">【풀이과정】</div>
-① 윤활유 사용: 마찰 감소 → 열손실 감소 (O)
-② 단열재 사용: 열 손실 최소화 (O)
-③ 전선을 가늘게: 전기저항 증가 → 열손실 증가 (X)
-④ LED 조명: 높은 에너지 효율 (약 80-90%) (O)
-⑤ 폐열 재활용: 버려지는 에너지 재사용 (O)
+const TOY_BUILDERS = [cowboyToySVG, astroToySVG, piggyToySVG, rexToySVG];
 
-<div class="explanation-title">【핵심개념】</div>
-전선의 저항 R은 길이에 비례하고 단면적에 반비례합니다 (R = ρL/A). 전선을 가늘게 하면 단면적이 감소하여 저항이 증가하고, P = I²R에 따라 열손실이 증가합니다. 따라서 송전선은 굵을수록 효율적입니다.`
-            }
-        ];
+function renderToyStage(face){
+  const stage = document.getElementById('toyStage');
+  stage.innerHTML = '';
+  TOY_BUILDERS.forEach((builder, i)=>{
+    const div = document.createElement('div');
+    div.className = 'toy ' + (face==='happy' ? 'happy' : face==='sad' ? 'sad' : 'idle');
+    div.style.animationDelay = (i*0.12)+'s';
+    div.innerHTML = builder(face);
+    stage.appendChild(div);
+  });
 
-        let currentProblem = null;
-        let selectedOption = null;
+  if(face === 'happy' || face === 'sad'){
+    const bubble = document.createElement('div');
+    bubble.className = 'speech-bubble ' + (face==='happy' ? 'correct' : 'wrong');
+    bubble.textContent = face==='happy' ? '정답입니다! 🎉' : '틀렸습니다 ㅠㅠ';
+    stage.appendChild(bubble);
+  }
+}
 
-        function generateNewProblem() {
-            currentProblem = problems[Math.floor(Math.random() * problems.length)];
-            selectedOption = null;
-            
-            document.getElementById('questionNumber').textContent = '7. ' + currentProblem.question;
-            
-            const optionsDiv = document.getElementById('options');
-            optionsDiv.innerHTML = '';
-            
-            currentProblem.options.forEach((option, index) => {
-                const optionDiv = document.createElement('div');
-                optionDiv.className = 'option';
-                optionDiv.onclick = () => selectOption(index);
-                
-                optionDiv.innerHTML = `
-                    <div class="option-number">${index + 1}</div>
-                    <div class="option-text">${option}</div>
-                `;
-                
-                optionsDiv.appendChild(optionDiv);
-            });
-            
-            document.getElementById('feedback').style.display = 'none';
-            document.getElementById('submitBtn').disabled = true;
-        }
+function burstEffect(type){
+  const stage = document.getElementById('toyStage');
+  const rect = stage.getBoundingClientRect();
+  const symbols = type==='happy' ? ['✨','⭐','🎉','💫'] : ['💧','😢'];
+  for(let i=0;i<10;i++){
+    const el = document.createElement('div');
+    el.className = type==='happy' ? 'sparkle' : 'teardrop';
+    el.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+    el.style.left = (20 + Math.random()*(rect.width-40))+'px';
+    el.style.top = (Math.random()*40)+'px';
+    el.style.animationDelay = (Math.random()*0.4)+'s';
+    stage.appendChild(el);
+    setTimeout(()=>el.remove(), 1600);
+  }
+}
 
-        function selectOption(index) {
-            const options = document.querySelectorAll('.option');
-            
-            if (selectedOption === index) {
-                options[index].classList.remove('selected');
-                selectedOption = null;
-                document.getElementById('submitBtn').disabled = true;
-            } else {
-                options.forEach(opt => opt.classList.remove('selected'));
-                options[index].classList.add('selected');
-                selectedOption = index;
-                document.getElementById('submitBtn').disabled = false;
-            }
-        }
+/* ===================== 자석 SVG 도식 ===================== */
+function needleSVG(rotateDeg){
+  return `
+  <svg width="150" height="150" viewBox="0 0 150 150">
+    <circle cx="75" cy="75" r="62" fill="#fff" stroke="${'#C97B3D'}" stroke-width="6"/>
+    <circle cx="75" cy="75" r="62" fill="none" stroke="${'#A85A2A'}" stroke-width="2" stroke-dasharray="3 4"/>
+    <text x="75" y="24" font-size="14" text-anchor="middle" font-family="Jua, sans-serif" fill="#3A2A1A">북</text>
+    <g transform="rotate(${rotateDeg} 75 75)">
+      <polygon points="75,28 70,75 75,84 80,75" fill="#3A2A1A"/>
+      <circle cx="75" cy="75" r="4" fill="#5a3a1a"/>
+    </g>
+    <text x="75" y="138" font-size="13" text-anchor="middle" font-family="Noto Sans KR, sans-serif" font-weight="800" fill="#3A2A1A">바늘</text>
+  </svg>`;
+}
 
-        function checkAnswer() {
-            if (selectedOption === null) return;
-            
-            const feedbackDiv = document.getElementById('feedback');
-            const isCorrect = selectedOption === currentProblem.correct;
-            
-            feedbackDiv.className = 'feedback ' + (isCorrect ? 'correct' : 'incorrect');
-            
-            let feedbackHTML = `
-                <div class="feedback-title">${isCorrect ? '✓ 정답입니다!' : '✗ 오답입니다.'}</div>
-                <div class="feedback-content">
-                    선택한 답: ${selectedOption + 1}번<br>
-                    정답: ${currentProblem.correct + 1}번
-                </div>
-                <div class="explanation">
-                    ${currentProblem.explanation}
-                </div>
-            `;
-            
-            feedbackDiv.innerHTML = feedbackHTML;
-            feedbackDiv.style.display = 'block';
-            
-            document.getElementById('submitBtn').disabled = true;
-        }
+function magnetStrawSVG(approach){
+  // approach: true = 빨대가 자석에서 멀어짐(반자성), false = 끌려감(상자성/강자성)
+  const arrow = approach
+    ? `<path d="M58 70 L40 55" stroke="#C5371E" stroke-width="4" fill="none" marker-end="url(#arrow1)"/>`
+    : `<path d="M40 55 L58 70" stroke="#4CAF7D" stroke-width="4" fill="none" marker-end="url(#arrow1)"/>`;
+  return `
+  <svg width="170" height="140" viewBox="0 0 170 140">
+    <defs>
+      <marker id="arrow1" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+        <path d="M0,0 L8,4 L0,8 Z" fill="${approach?'#C5371E':'#4CAF7D'}"/>
+      </marker>
+    </defs>
+    <rect x="98" y="40" width="55" height="22" rx="8" fill="#D9D9D9" transform="rotate(20 98 51)"/>
+    <text x="128" y="30" font-size="13" text-anchor="middle" font-family="Jua, sans-serif" fill="#3A2A1A">자석</text>
+    <rect x="22" y="50" width="48" height="9" rx="4" fill="#9FD8F0" stroke="#5BA8C9" stroke-width="2" transform="rotate(-18 22 50)"/>
+    <text x="35" y="78" font-size="13" text-anchor="middle" font-family="Noto Sans KR, sans-serif" font-weight="800" fill="#3A2A1A">빨대</text>
+    ${arrow}
+  </svg>`;
+}
 
-        generateNewProblem();
-    </script>
+function barMagnetFieldSVG(){
+  return `
+  <svg width="190" height="120" viewBox="0 0 190 120">
+    <rect x="20" y="40" width="60" height="40" fill="#C5371E"/>
+    <rect x="80" y="40" width="60" height="40" fill="#5B7DB1"/>
+    <text x="50" y="65" font-size="16" text-anchor="middle" fill="#fff" font-family="Jua, sans-serif">N</text>
+    <text x="110" y="65" font-size="16" text-anchor="middle" fill="#fff" font-family="Jua, sans-serif">S</text>
+    <path d="M140 60 Q165 30 165 60 Q165 90 140 60" stroke="#3A2A1A" stroke-width="2" fill="none" marker-end="url(#arrow2)"/>
+    <defs>
+      <marker id="arrow2" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+        <path d="M0,0 L8,4 L0,8 Z" fill="#3A2A1A"/>
+      </marker>
+    </defs>
+  </svg>`;
+}
+
+function ironFilingsSVG(){
+  return `
+  <svg width="190" height="120" viewBox="0 0 190 120">
+    <rect x="60" y="45" width="70" height="30" fill="#999" rx="4"/>
+    <text x="95" y="65" font-size="13" text-anchor="middle" fill="#fff" font-family="Jua, sans-serif">철 막대</text>
+    <circle cx="40" cy="30" r="3" fill="#3A2A1A"/>
+    <circle cx="50" cy="20" r="3" fill="#3A2A1A"/>
+    <circle cx="150" cy="30" r="3" fill="#3A2A1A"/>
+    <circle cx="140" cy="20" r="3" fill="#3A2A1A"/>
+    <path d="M40 30 Q55 40 70 47" stroke="#3A2A1A" stroke-width="2" fill="none" marker-end="url(#arrow3)"/>
+    <path d="M150 30 Q135 40 120 47" stroke="#3A2A1A" stroke-width="2" fill="none" marker-end="url(#arrow3)"/>
+    <defs>
+      <marker id="arrow3" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto">
+        <path d="M0,0 L7,3.5 L0,7 Z" fill="#3A2A1A"/>
+      </marker>
+    </defs>
+    <text x="95" y="100" font-size="12" text-anchor="middle" font-family="Noto Sans KR, sans-serif" font-weight="800" fill="#3A2A1A">철 가루가 끌려와 붙음</text>
+  </svg>`;
+}
+
+/* ===================== 문제 은행 ===================== */
+const QUESTIONS = [
+  {
+    id:1,
+    text:"그림 (가)는 철 바늘을 물 위에 띄웠더니 회전하여 북쪽을 가리키는 모습을, (나)는 플라스틱 빨대에 자석을 가까이 하였더니 빨대가 자석으로부터 멀어지는 모습을 나타낸 것이다.",
+    scene:[
+      {svg:needleSVG(-25), label:"(가)"},
+      {svg:magnetStrawSVG(true), label:"(나)"}
+    ],
+    bogi:[
+      "ㄱ. (가)의 철 바늘은 자기화되어 있다.",
+      "ㄴ. 철 바늘은 강자성체이다.",
+      "ㄷ. 플라스틱 빨대는 반자성체이다."
+    ],
+    choices:["ㄱ","ㄷ","ㄱ, ㄴ","ㄴ, ㄷ","ㄱ, ㄴ, ㄷ"],
+    answerIndex:4, // ㄱ,ㄴ,ㄷ
+    explain:"ㄱ (O): 철 바늘이 북쪽을 향해 정렬한 것은 지구 자기장 방향으로 자기화되었기 때문이에요.\nㄴ (O): 철은 외부 자기장에 강하게 반응해 스스로 자석이 되는 강자성체예요.\nㄷ (O): 빨대가 자석에서 밀려나는(약하게 반발하는) 것은 반자성체의 특징이에요.\n→ 정답은 ㄱ, ㄴ, ㄷ 모두입니다."
+  },
+  {
+    id:2,
+    text:"그림은 막대자석 주위에 형성된 자기장의 모습을 화살표로 나타낸 것이다. 자기력선은 자석의 N극에서 나와 S극으로 들어간다.",
+    scene:[
+      {svg:barMagnetFieldSVG(), label:"막대자석"}
+    ],
+    bogi:[
+      "ㄱ. 자기력선은 N극에서 나와 S극으로 들어간다.",
+      "ㄴ. 자석 내부에서 자기력선은 S극에서 N극 방향으로 이어진다.",
+      "ㄷ. 자기력선의 밀도가 높을수록 자기장의 세기가 약하다."
+    ],
+    choices:["ㄱ","ㄷ","ㄱ, ㄴ","ㄴ, ㄷ","ㄱ, ㄴ, ㄷ"],
+    answerIndex:2, // ㄱ,ㄴ
+    explain:"ㄱ (O): 자기력선은 자석 외부에서 N극을 나와 S극으로 들어가는 방향으로 그려요.\nㄴ (O): 자석 내부에서는 자기력선이 끊기지 않고 S극에서 N극으로 이어져 폐곡선을 이뤄요.\nㄷ (X): 자기력선의 밀도가 높을수록 그 지점의 자기장 세기는 더 강해요.\n→ 정답은 ㄱ, ㄴ입니다."
+  },
+  {
+    id:3,
+    text:"그림은 철로 된 막대 근처에 자석을 가까이 가져갔을 때, 철 가루가 자석 쪽으로 끌려와 붙는 모습을 나타낸 것이다.",
+    scene:[
+      {svg:ironFilingsSVG(), label:"철 가루 실험"}
+    ],
+    bogi:[
+      "ㄱ. 철은 외부 자기장 방향으로 자기화되어 자석에 끌려간다.",
+      "ㄴ. 이러한 성질을 가진 물질을 상자성체라고 한다.",
+      "ㄷ. 자기장을 제거하면 철은 자성을 거의 잃지 않고 영구 자석으로 남는다."
+    ],
+    choices:["ㄱ","ㄱ, ㄴ","ㄱ, ㄷ","ㄴ, ㄷ","ㄱ, ㄴ, ㄷ"],
+    answerIndex:0, // ㄱ only
+    explain:"ㄱ (O): 철은 외부 자기장 방향으로 강하게 자기화되어 자석 쪽으로 끌려가요.\nㄴ (X): 이렇게 강하게 자기화되는 성질은 강자성체의 특징이에요. 상자성체는 훨씬 약하게 끌려요.\nㄷ (X): 순수한 철(연철)은 자기장을 제거하면 자성을 거의 잃어요. 자성을 오래 유지하는 건 특별히 가공한 영구자석(강철 등)이에요.\n→ 정답은 ㄱ뿐입니다."
+  },
+  {
+    id:4,
+    text:"그림 (가)는 알루미늄 막대를, (나)는 구리 막대를 각각 강한 자석 근처에 놓았을 때의 모습을 나타낸 것이다. 알루미늄은 자석 쪽으로 아주 약하게 끌리고, 구리는 자석으로부터 아주 약하게 밀려난다.",
+    scene:[
+      {svg:magnetStrawSVG(false), label:"(가) 알루미늄"},
+      {svg:magnetStrawSVG(true), label:"(나) 구리"}
+    ],
+    bogi:[
+      "ㄱ. 알루미늄은 상자성체이다.",
+      "ㄴ. 구리는 반자성체이다.",
+      "ㄷ. (가), (나) 모두 외부 자기장을 제거해도 자성이 영구히 유지된다."
+    ],
+    choices:["ㄱ","ㄷ","ㄱ, ㄴ","ㄴ, ㄷ","ㄱ, ㄴ, ㄷ"],
+    answerIndex:2, // ㄱ,ㄴ
+    explain:"ㄱ (O): 외부 자기장 방향으로 약하게 끌리는 알루미늄은 상자성체예요.\nㄴ (O): 외부 자기장과 반대 방향으로 약하게 밀려나는 구리는 반자성체예요.\nㄷ (X): 상자성체와 반자성체는 모두 자기화가 매우 약하고, 외부 자기장을 제거하면 자성이 거의 사라져요. 영구히 유지되는 건 강자성체의 일부(영구자석)뿐이에요.\n→ 정답은 ㄱ, ㄴ입니다."
+  },
+  {
+    id:5,
+    text:"그림은 자성체 A, B, C를 동일한 세기의 외부 자기장 속에 넣었을 때의 반응을 나타낸 것이다. A는 자기장 방향으로 강하게 자기화되고, B는 자기장 방향으로 매우 약하게 자기화되며, C는 자기장 반대 방향으로 매우 약하게 자기화된다.",
+    scene:[
+      {svg:needleSVG(0), label:"A: 강하게 정렬"},
+    ],
+    bogi:[
+      "ㄱ. A는 강자성체, B는 상자성체, C는 반자성체이다.",
+      "ㄴ. A는 코발트, 니켈과 같은 물질이 해당될 수 있다.",
+      "ㄷ. C는 외부 자기장 방향과 같은 방향으로 자기화된다."
+    ],
+    choices:["ㄱ","ㄱ, ㄴ","ㄱ, ㄷ","ㄴ, ㄷ","ㄱ, ㄴ, ㄷ"],
+    answerIndex:1, // ㄱ,ㄴ
+    explain:"ㄱ (O): 강하게 자기화되는 A는 강자성체, 약하게 같은 방향으로 자기화되는 B는 상자성체, 반대 방향으로 자기화되는 C는 반자성체예요.\nㄴ (O): 철, 코발트, 니켈은 대표적인 강자성체예요.\nㄷ (X): C(반자성체)는 외부 자기장과 반대 방향으로 자기화돼요.\n→ 정답은 ㄱ, ㄴ입니다."
+  },
+  {
+    id:6,
+    text:"그림은 종이 위에 막대자석을 놓고 그 주위에 나침반 여러 개를 놓았을 때, 나침반 바늘이 자기력선을 따라 정렬된 모습을 나타낸 것이다.",
+    scene:[
+      {svg:barMagnetFieldSVG(), label:"나침반 배치"},
+      {svg:needleSVG(40), label:"나침반 바늘"}
+    ],
+    bogi:[
+      "ㄱ. 나침반 바늘의 N극은 자기력선의 방향을 가리킨다.",
+      "ㄴ. 막대자석에서 멀어질수록 나침반 바늘에 작용하는 자기력은 약해진다.",
+      "ㄷ. 나침반 바늘 자체는 반자성체이다."
+    ],
+    choices:["ㄱ","ㄱ, ㄴ","ㄱ, ㄷ","ㄴ, ㄷ","ㄱ, ㄴ, ㄷ"],
+    answerIndex:1, // ㄱ,ㄴ
+    explain:"ㄱ (O): 나침반 바늘의 N극은 그 지점에서의 자기력선 방향(자기장 방향)을 가리켜요.\nㄴ (O): 자석에서 멀어질수록 자기장의 세기가 약해지므로 작용하는 자기력도 약해져요.\nㄷ (X): 나침반 바늘은 철과 같은 강자성체로 만들어져 있어요. 외부 자기장과 같은 방향으로 강하게 자기화되는 성질이지, 자기장을 밀어내는 반자성체가 아니에요.\n→ 정답은 ㄱ, ㄴ입니다."
+  }
+];
+
+/* ===================== 상태 ===================== */
+let currentQ = null;
+let selectedIndex = null;
+let answered = false;
+let correctCount = 0;
+const TOTAL_SLOTS = 5;
+let usedIds = [];
+
+/* ===================== 타이머 ===================== */
+let timerInterval = null;
+let elapsedSeconds = 0;
+let timerRunning = false;
+
+function formatTime(sec){
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+
+function startTimer(){
+  if(timerRunning) return;
+  timerRunning = true;
+  elapsedSeconds = 0;
+  updateTimerDisplay();
+  timerInterval = setInterval(()=>{
+    elapsedSeconds++;
+    updateTimerDisplay();
+  }, 1000);
+}
+
+function stopTimer(){
+  clearInterval(timerInterval);
+  timerRunning = false;
+}
+
+function resetTimer(){
+  stopTimer();
+  elapsedSeconds = 0;
+  updateTimerDisplay();
+  document.getElementById('timerBox').classList.remove('danger');
+}
+
+function updateTimerDisplay(){
+  const display = document.getElementById('timerDisplay');
+  if(display) display.textContent = formatTime(elapsedSeconds);
+  // 2분 넘으면 위험 표시
+  const box = document.getElementById('timerBox');
+  if(box){
+    if(elapsedSeconds >= 120) box.classList.add('danger');
+    else box.classList.remove('danger');
+  }
+}
+
+/* ===================== 렌더링 ===================== */
+function initProgress(){
+  const row = document.getElementById('progressRow');
+  row.innerHTML = '';
+  for(let i=0;i<TOTAL_SLOTS;i++){
+    const slot = document.createElement('div');
+    slot.className = 'progress-slot';
+    slot.id = 'slot-'+i;
+    slot.textContent = '';
+    row.appendChild(slot);
+  }
+}
+
+function fillNextSlot(){
+  if(correctCount > TOTAL_SLOTS) return;
+  const idx = correctCount - 1;
+  const slot = document.getElementById('slot-'+idx);
+  if(slot){
+    slot.classList.add('filled');
+    slot.textContent = '⭐';
+  }
+}
+
+function pickQuestion(){
+  let pool = QUESTIONS.filter(q => !usedIds.includes(q.id));
+  if(pool.length === 0){
+    usedIds = [];
+    pool = QUESTIONS;
+  }
+  const q = pool[Math.floor(Math.random()*pool.length)];
+  usedIds.push(q.id);
+  return q;
+}
+
+function loadQuestion(){
+  currentQ = pickQuestion();
+  selectedIndex = null;
+  answered = false;
+
+  const qNum = (correctCount % TOTAL_SLOTS) + 1;
+  document.getElementById('qNumber').textContent = '문제 ' + qNum;
+  // 타이머는 시작하기 버튼 또는 startNewRound에서만 시작
+  document.getElementById('qText').textContent = currentQ.text;
+  document.getElementById('qText').textContent = currentQ.text;
+
+  const sceneEl = document.getElementById('qScene');
+  sceneEl.innerHTML = '';
+  currentQ.scene.forEach(item=>{
+    const box = document.createElement('div');
+    box.style.textAlign = 'center';
+    box.innerHTML = item.svg + `<div style="font-family:'Jua',sans-serif; margin-top:4px; color:#3A2A1A;">${item.label}</div>`;
+    sceneEl.appendChild(box);
+  });
+
+  const bogiEl = document.getElementById('bogiBox');
+  bogiEl.innerHTML = currentQ.bogi.map(line=>`<div>${line}</div>`).join('');
+
+  const choicesEl = document.getElementById('choices');
+  choicesEl.innerHTML = '';
+  currentQ.choices.forEach((choice, i)=>{
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = `① ② ③ ④ ⑤`.split(' ')[i] + ' ' + choice;
+    btn.dataset.index = i;
+    btn.addEventListener('click', ()=>{
+      if(answered) return;
+      document.querySelectorAll('.choice-btn').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedIndex = i;
+    });
+    choicesEl.appendChild(btn);
+  });
+
+  document.getElementById('feedback').classList.remove('show','correct','wrong');
+  document.getElementById('checkBtn').disabled = false;
+  renderToyStage('idle');
+}
+
+function showFeedback(isCorrect){
+  const fb = document.getElementById('feedback');
+  const title = document.getElementById('feedbackTitle');
+  const body = document.getElementById('feedbackBody');
+  fb.classList.remove('correct','wrong');
+  fb.classList.add('show', isCorrect ? 'correct' : 'wrong');
+  title.textContent = isCorrect ? '🎉 정답이에요!' : '😢 아쉬워요!';
+  body.textContent = currentQ.explain;
+}
+
+function handleCheck(){
+  if(answered) return;
+  if(selectedIndex === null){
+    alert('보기 중 하나를 선택해주세요!');
+    return;
+  }
+  answered = true;
+  document.getElementById('checkBtn').disabled = true;
+
+  const isCorrect = selectedIndex === currentQ.answerIndex;
+
+  document.querySelectorAll('.choice-btn').forEach((b,i)=>{
+    b.disabled = true;
+    if(i === currentQ.answerIndex){
+      b.classList.add('correct-answer');
+    } else if(i === selectedIndex && !isCorrect){
+      b.classList.add('wrong-answer');
+    }
+  });
+
+  renderToyStage(isCorrect ? 'happy' : 'sad');
+  burstEffect(isCorrect ? 'happy' : 'sad');
+  showFeedback(isCorrect);
+
+  if(isCorrect){
+    correctCount++;
+    fillNextSlot();
+    if(correctCount > 0 && correctCount % TOTAL_SLOTS === 0){
+      stopTimer();
+      const finalTime = elapsedSeconds;
+      setTimeout(()=>{
+        // 배지에 완료 시간 표시
+        const ftDisplay = document.getElementById('finalTimeDisplay');
+        if(ftDisplay) ftDisplay.textContent = formatTime(finalTime);
+        launchFireworks();
+        document.getElementById('badgeOverlay').classList.add('show');
+      }, 900);
+    }
+  }
+}
+
+function resetProgressIfBadgeClosed(){
+  document.querySelectorAll('.progress-slot').forEach(slot=>{
+    slot.classList.remove('filled');
+    slot.textContent = '';
+  });
+}
+
+/* ===================== 폭죽 ===================== */
+let fireworksTimer = null;
+function launchFireworks(){
+  const canvas = document.getElementById('fireworksCanvas');
+  canvas.style.display = 'block';
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const ctx = canvas.getContext('2d');
+  const COLORS = ['#FF4E4E','#FFD700','#4ECAFF','#7BFF4E','#FF9AEB','#FF8C00','#00FFD1','#FF4EAA'];
+  const particles = [];
+
+  function spawnBurst(x, y){
+    const count = 90 + Math.floor(Math.random()*40);
+    for(let i=0;i<count;i++){
+      const angle = (Math.PI*2/count)*i + (Math.random()-0.5)*0.4;
+      const speed = 3 + Math.random()*8;
+      particles.push({
+        x, y,
+        vx: Math.cos(angle)*speed,
+        vy: Math.sin(angle)*speed,
+        alpha: 1,
+        color: COLORS[Math.floor(Math.random()*COLORS.length)],
+        size: 2 + Math.random()*4,
+        gravity: 0.12 + Math.random()*0.1,
+        decay: 0.012 + Math.random()*0.01,
+        trail: [],
+        type: Math.random()<0.3 ? 'star' : 'circle'
+      });
+    }
+  }
+
+  let t = 0;
+  function drawStar(ctx, x, y, r, color){
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.beginPath();
+    for(let i=0;i<5;i++){
+      const a = (Math.PI*2/5)*i - Math.PI/2;
+      const b = a + Math.PI/5;
+      ctx.lineTo(Math.cos(a)*r, Math.sin(a)*r);
+      ctx.lineTo(Math.cos(b)*(r*0.45), Math.sin(b)*(r*0.45));
+    }
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    // 팡팡팡 — 랜덤 위치에서 연속 발사
+    t++;
+    if(t % 22 === 0 || t === 1 || t === 10){
+      const x = canvas.width * (0.15 + Math.random()*0.7);
+      const y = canvas.height * (0.1 + Math.random()*0.45);
+      spawnBurst(x, y);
+    }
+
+    for(let i = particles.length-1; i>=0; i--){
+      const p = particles[i];
+      p.trail.push({x:p.x, y:p.y, alpha:p.alpha});
+      if(p.trail.length > 6) p.trail.shift();
+      p.vx *= 0.98;
+      p.vy = p.vy * 0.98 + p.gravity;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.alpha -= p.decay;
+      if(p.alpha <= 0){ particles.splice(i,1); continue; }
+      // 꼬리
+      for(let j=0;j<p.trail.length;j++){
+        ctx.globalAlpha = (p.trail[j].alpha * j/p.trail.length) * 0.4;
+        ctx.beginPath();
+        ctx.arc(p.trail[j].x, p.trail[j].y, p.size*0.5, 0, Math.PI*2);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+      }
+      ctx.globalAlpha = p.alpha;
+      if(p.type === 'star'){
+        drawStar(ctx, p.x, p.y, p.size*1.5, p.color);
+      } else {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+    if(t < 260){
+      requestAnimationFrame(animate);
+    } else {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      canvas.style.display = 'none';
+      particles.length = 0;
+    }
+  }
+  animate();
+}
+
+/* ===================== 명예의 전당 ===================== */
+const HALL_KEY = 'physics_hall_of_fame';
+
+function loadHall(){
+  try{
+    return JSON.parse(localStorage.getItem(HALL_KEY) || '[]');
+  }catch(e){ return []; }
+}
+
+function saveHall(hall){
+  try{ localStorage.setItem(HALL_KEY, JSON.stringify(hall)); }catch(e){}
+}
+
+function addToHall(name){
+  const hall = loadHall();
+  const now = new Date();
+  const dateStr = `${now.getMonth()+1}/${now.getDate()} ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+  hall.push({ name, date: dateStr, seconds: elapsedSeconds });
+  // 시간 빠른 순으로 정렬 (오름차순)
+  hall.sort((a,b) => (a.seconds||9999) - (b.seconds||9999));
+  if(hall.length > 20) hall.pop();
+  saveHall(hall);
+  renderHall();
+}
+
+const RANK_ICONS = ['🥇','🥈','🥉','🏅','🏅','⭐','⭐','⭐','⭐','⭐'];
+
+function renderHall(){
+  const list = document.getElementById('hallList');
+  const hall = loadHall();
+  if(hall.length === 0){
+    list.innerHTML = '<div class="hall-empty">아직 아무도 없어요...<br>첫 번째 물리박사가 되어보세요! 🔬</div>';
+    return;
+  }
+  list.innerHTML = hall.map((entry, i) => `
+    <div class="hall-entry">
+      <span class="hall-rank">${RANK_ICONS[i] || '🌟'}</span>
+      <span class="hall-name">${escapeHtml(entry.name)}</span>
+      <span class="hall-time">⏱️ ${entry.seconds != null ? formatTime(entry.seconds) : '--:--'}</span>
+      <span class="hall-date">${entry.date}</span>
+    </div>
+  `).join('');
+}
+
+function escapeHtml(str){
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+/* ===================== 초기화 (안전 실행) ===================== */
+function startNewRound(){
+  resetProgressIfBadgeClosed();
+  resetTimer();
+  correctCount = 0;
+  usedIds = [];
+  loadQuestion();
+  startTimer();
+}
+
+function initApp(){
+  try{
+    // 시작하기 버튼
+    document.getElementById('startBtn').addEventListener('click', ()=>{
+      const overlay = document.getElementById('startOverlay');
+      overlay.classList.add('hide');
+      setTimeout(()=>{ overlay.style.display='none'; }, 400);
+      startTimer();
+    });
+
+    document.getElementById('checkBtn').addEventListener('click', handleCheck);
+
+    // 새 문제 버튼: 타이머 유지하면서 그냥 다음 문제로
+    document.getElementById('newBtn').addEventListener('click', ()=>{
+      loadQuestion();
+    });
+
+    // 배지 닫기: 새 라운드 시작 (타이머 리셋)
+    document.getElementById('badgeCloseBtn').addEventListener('click', ()=>{
+      document.getElementById('badgeOverlay').classList.remove('show');
+      startNewRound();
+    });
+
+    // 닉네임 등록: 저장 후 새 라운드 시작 (타이머 리셋)
+    document.getElementById('nicknameSubmitBtn').addEventListener('click', ()=>{
+      const input = document.getElementById('nicknameInput');
+      const name = input.value.trim();
+      if(!name){ input.focus(); return; }
+      addToHall(name);
+      input.value = '';
+      document.getElementById('badgeOverlay').classList.remove('show');
+      startNewRound();
+      setTimeout(()=>{
+        document.getElementById('hallWrap').scrollIntoView({behavior:'smooth'});
+      }, 300);
+    });
+
+    document.getElementById('nicknameInput').addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter') document.getElementById('nicknameSubmitBtn').click();
+    });
+
+    // 기록 초기화: confirm 없이 바로 삭제
+    document.getElementById('hallClearBtn').addEventListener('click', ()=>{
+      localStorage.removeItem(HALL_KEY);
+      renderHall();
+    });
+
+    initProgress();
+    loadQuestion();
+    renderHall();
+
+  }catch(err){
+    console.error('초기화 중 오류:', err);
+    const qText = document.getElementById('qText');
+    if(qText) qText.textContent = '문제를 불러오는 중 오류가 발생했어요. 새로고침 해주세요.';
+  }
+}
+
+if(document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', initApp);
+}else{
+  initApp();
+}
+</script>
 </body>
 </html>

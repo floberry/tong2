@@ -1,425 +1,442 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>에너지 효율 계산 시뮬레이션</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Malgun Gothic', sans-serif;
-            background: linear-gradient(135deg, #e8f4f8 0%, #f0e8f8 100%);
-            min-height: 100vh;
-            padding: 15px;
-        }
-        
-        .container {
-            max-width: 480px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-            padding: 20px;
-        }
-        
-        h1 {
-            text-align: center;
-            color: #333;
-            font-size: 22px;
-            margin-bottom: 10px;
-        }
-        
-        .subtitle {
-            text-align: center;
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-        
-        .problem-box {
-            background: #fff9f0;
-            border: 2px solid #ffd6a5;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .problem-text {
-            font-size: 15px;
-            line-height: 1.6;
-            color: #333;
-            margin-bottom: 15px;
-        }
-        
-        .device-info {
-            background: white;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 10px;
-            border: 1px solid #ffd6a5;
-        }
-        
-        .info-line {
-            font-size: 14px;
-            color: #555;
-            line-height: 1.8;
-        }
-        
-        .instruction {
-            background: #f0f8ff;
-            border-left: 4px solid #6eb5ff;
-            padding: 12px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            color: #444;
-            border-radius: 5px;
-        }
-        
-        .choice-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-        
-        .choice-card {
-            background: white;
-            border: 3px solid #c8b6ff;
-            border-radius: 10px;
-            padding: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .choice-card:active {
-            transform: scale(0.98);
-        }
-        
-        .choice-card.selected {
-            border-color: #6eb5ff;
-            background: linear-gradient(135deg, #e0f0ff 0%, #f0f8ff 100%);
-            box-shadow: 0 4px 12px rgba(110, 181, 255, 0.3);
-        }
-        
-        .choice-label {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #a78bfa 0%, #c4b5fd 100%);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: bold;
-            flex-shrink: 0;
-        }
-        
-        .choice-card.selected .choice-label {
-            background: linear-gradient(135deg, #6eb5ff 0%, #94caff 100%);
-        }
-        
-        .choice-text {
-            font-size: 16px;
-            color: #333;
-            font-weight: 500;
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        
-        button {
-            flex: 1;
-            padding: 15px;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .new-problem-btn {
-            background: linear-gradient(135deg, #a78bfa 0%, #c4b5fd 100%);
-            color: white;
-            box-shadow: 0 4px 10px rgba(167, 139, 250, 0.3);
-        }
-        
-        .new-problem-btn:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 5px rgba(167, 139, 250, 0.3);
-        }
-        
-        .submit-btn {
-            background: linear-gradient(135deg, #6eb5ff 0%, #94caff 100%);
-            color: white;
-            box-shadow: 0 4px 10px rgba(110, 181, 255, 0.3);
-        }
-        
-        .submit-btn:disabled {
-            background: #e0e0e0;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-        
-        .submit-btn:active:not(:disabled) {
-            transform: translateY(2px);
-            box-shadow: 0 2px 5px rgba(110, 181, 255, 0.3);
-        }
-        
-        .feedback {
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
-            font-size: 14px;
-            line-height: 1.6;
-            display: none;
-        }
-        
-        .feedback.show {
-            display: block;
-        }
-        
-        .feedback.correct {
-            background: linear-gradient(135deg, #d4f4dd 0%, #e8f9ec 100%);
-            border: 2px solid #86d293;
-            color: #2d5f3d;
-        }
-        
-        .feedback.incorrect {
-            background: linear-gradient(135deg, #ffd6d6 0%, #ffe8e8 100%);
-            border: 2px solid #ff9999;
-            color: #8b3a3a;
-        }
-        
-        .feedback-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-        
-        .explanation {
-            background: white;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 10px;
-            border: 1px solid #ddd;
-        }
-        
-        .explanation-section {
-            margin-bottom: 10px;
-        }
-        
-        .explanation-title {
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 5px;
-        }
-        
-        .formula {
-            background: #f8f0ff;
-            padding: 8px;
-            border-radius: 5px;
-            font-family: 'Courier New', monospace;
-            margin: 5px 0;
-            text-align: center;
-            border: 1px solid #dac5ff;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>18번 p-n 접합 다이오드 실험</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Malgun Gothic',sans-serif;background:#1a1a2e;color:#e0e0e0;min-height:100vh;padding:12px;font-size:14px}
+h2{text-align:center;color:#7eb8f7;font-size:1.05em;margin-bottom:10px}
+.card{background:#16213e;border:1px solid #0f3460;border-radius:8px;padding:12px;margin-bottom:10px}
+button{padding:6px 13px;border-radius:5px;border:none;cursor:pointer;font-size:.85em;font-weight:bold}
+#genBtn{background:#e94560;color:#fff}
+#checkBtn{background:#0f7a4a;color:#fff}
+svg{width:100%;max-width:460px;display:block;margin:0 auto}
+.choices label{display:block;padding:5px 8px;margin:3px 0;border-radius:4px;cursor:pointer;font-size:.84em;border:1px solid #0f3460;transition:background .15s}
+.choices label:hover{background:#0f3460}
+.choices input{margin-right:6px}
+#feedback{margin-top:8px;padding:10px 12px;border-radius:6px;font-size:.82em;line-height:1.85;display:none}
+.correct{background:#0a3a2a;border:1px solid #0f7a4a;color:#c8ffe8}
+.wrong{background:#3a0a0a;border:1px solid #7a0f0f;color:#ffd0d0}
+/* 각 보기 줄을 블록으로 분리 */
+.fbline{display:block;padding:5px 0 5px 4px;border-bottom:1px solid rgba(255,255,255,.06)}
+.fbline:last-child{border-bottom:none}
+.tag{display:inline-block;background:#1a3a6a;border-radius:3px;padding:2px 7px;font-size:.78em;font-weight:bold;color:#7eb8f7;margin-right:6px;vertical-align:middle}
+.tag-ok{background:#0a3a2a;color:#4dff9e}
+.tag-ng{background:#3a0a0a;color:#ff6b6b}
+.row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px}
+select{background:#0f3460;color:#e0e0e0;border:none;padding:4px 8px;border-radius:4px;font-size:.85em}
+table{width:100%;border-collapse:collapse;font-size:.82em;margin-bottom:10px}
+td,th{padding:5px;border:1px solid #1a4a8a;text-align:center}
+th{background:#0f3460}
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>⚡ 에너지 효율 계산</h1>
-        <div class="subtitle">2022개정 통합과학2</div>
-        
-        <div class="problem-box">
-            <div class="problem-text" id="problemText"></div>
-            <div class="device-info" id="deviceInfo"></div>
-        </div>
-        
-        <div class="instruction">
-            📌 기기의 에너지 효율을 계산하여 정답을 선택하세요<br>
-            (다시 클릭하면 선택 취소됩니다)
-        </div>
-        
-        <div class="choice-grid" id="choiceGrid"></div>
-        
-        <div class="button-group">
-            <button class="new-problem-btn" onclick="generateNewProblem()">🔄 새문제</button>
-            <button class="submit-btn" id="submitBtn" onclick="checkAnswer()" disabled>✓ 정답확인</button>
-        </div>
-        
-        <div class="feedback" id="feedback"></div>
-    </div>
+<h2>🔬 18번 p-n 접합 다이오드 실험 시뮬레이터</h2>
 
-    <script>
-        let currentProblem = {};
-        let selectedChoice = null;
-        
-        function generateRandomValue() {
-            const multipliers = [5, 10];
-            const multiplier = multipliers[Math.floor(Math.random() * multipliers.length)];
-            const maxMultiples = Math.floor(100 / multiplier);
-            const minMultiples = Math.floor(10 / multiplier);
-            return (Math.floor(Math.random() * (maxMultiples - minMultiples + 1)) + minMultiples) * multiplier;
-        }
-        
-        function generateNewProblem() {
-            selectedChoice = null;
-            document.getElementById('feedback').classList.remove('show');
-            
-            const input = generateRandomValue();
-            const output = generateRandomValue();
-            const correctEfficiency = (output / input) * 100;
-            
-            // 오답 생성 (정답과 충분히 다른 값들)
-            let choices = [correctEfficiency];
-            
-            while (choices.length < 3) {
-                const variation = (Math.random() * 40 + 10) * (Math.random() < 0.5 ? 1 : -1);
-                const wrongAnswer = correctEfficiency + variation;
-                
-                if (wrongAnswer > 5 && wrongAnswer < 200) {
-                    const rounded = Math.round(wrongAnswer * 10) / 10;
-                    if (!choices.some(c => Math.abs(c - rounded) < 5)) {
-                        choices.push(rounded);
-                    }
-                }
-            }
-            
-            // 선택지 섞기
-            choices.sort(() => Math.random() - 0.5);
-            
-            const correctIndex = choices.indexOf(correctEfficiency);
-            const correctLabel = ['A', 'B', 'C'][correctIndex];
-            
-            currentProblem = {
-                input: input,
-                output: output,
-                correctEfficiency: correctEfficiency,
-                choices: choices,
-                correctAnswer: correctLabel
-            };
-            
-            document.getElementById('problemText').innerHTML = `
-                다음 전기기기의 에너지 효율을 계산하세요.
-            `;
-            
-            document.getElementById('deviceInfo').innerHTML = `
-                <div class="info-line"><strong>⚡ 입력 에너지:</strong> ${input} J</div>
-                <div class="info-line"><strong>💡 출력 에너지:</strong> ${output} J</div>
-            `;
-            
-            updateChoiceDisplay();
-            updateSubmitButton();
-        }
-        
-        function updateChoiceDisplay() {
-            const grid = document.getElementById('choiceGrid');
-            grid.innerHTML = '';
-            
-            ['A', 'B', 'C'].forEach((label, index) => {
-                const card = document.createElement('div');
-                card.className = 'choice-card';
-                if (selectedChoice === label) {
-                    card.classList.add('selected');
-                }
-                
-                card.innerHTML = `
-                    <div class="choice-label">${label}</div>
-                    <div class="choice-text">${currentProblem.choices[index].toFixed(1)}%</div>
-                `;
-                
-                card.onclick = () => selectChoice(label);
-                grid.appendChild(card);
-            });
-        }
-        
-        function selectChoice(choice) {
-            if (selectedChoice === choice) {
-                selectedChoice = null;
-            } else {
-                selectedChoice = choice;
-            }
-            
-            updateChoiceDisplay();
-            updateSubmitButton();
-        }
-        
-        function updateSubmitButton() {
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = selectedChoice === null;
-        }
-        
-        function checkAnswer() {
-            const isCorrect = selectedChoice === currentProblem.correctAnswer;
-            const feedback = document.getElementById('feedback');
-            
-            let explanation = '<div class="explanation">';
-            
-            explanation += '<div class="explanation-section">';
-            explanation += '<div class="explanation-title">📚 이론: 에너지 효율</div>';
-            explanation += '에너지 효율은 투입한 에너지 대비 유용하게 사용된 에너지의 비율을 나타냅니다. 효율이 높을수록 에너지 손실이 적고 경제적입니다.';
-            explanation += '<div class="formula">에너지 효율 = (출력 에너지 / 입력 에너지) × 100%</div>';
-            explanation += '</div>';
-            
-            explanation += '<div class="explanation-section">';
-            explanation += '<div class="explanation-title">🔢 계산 과정</div>';
-            explanation += `<strong>주어진 정보:</strong><br>`;
-            explanation += `• 입력 에너지 = ${currentProblem.input} J<br>`;
-            explanation += `• 출력 에너지 = ${currentProblem.output} J<br><br>`;
-            explanation += `<strong>계산:</strong><br>`;
-            explanation += `에너지 효율 = (${currentProblem.output} ÷ ${currentProblem.input}) × 100%<br>`;
-            explanation += `= ${(currentProblem.output / currentProblem.input).toFixed(4)} × 100%<br>`;
-            explanation += `= ${currentProblem.correctEfficiency.toFixed(1)}%`;
-            explanation += '</div>';
-            
-            explanation += '<div class="explanation-section">';
-            explanation += '<div class="explanation-title">✅ 정답</div>';
-            explanation += `<strong>${currentProblem.correctAnswer}. ${currentProblem.correctEfficiency.toFixed(1)}%</strong><br><br>`;
-            
-            if (currentProblem.correctEfficiency > 90) {
-                explanation += '💡 효율이 90%를 넘어 매우 우수한 기기입니다.';
-            } else if (currentProblem.correctEfficiency > 70) {
-                explanation += '💡 효율이 70% 이상으로 효율적인 기기입니다.';
-            } else if (currentProblem.correctEfficiency > 50) {
-                explanation += '💡 효율이 50% 이상으로 보통 수준의 기기입니다.';
-            } else {
-                explanation += '💡 효율이 50% 미만으로 에너지 손실이 많은 기기입니다.';
-            }
-            
-            explanation += '</div>';
-            explanation += '</div>';
-            
-            if (isCorrect) {
-                feedback.className = 'feedback correct show';
-                feedback.innerHTML = `
-                    <div class="feedback-title">🎉 정답입니다!</div>
-                    <div>선택한 답: ${selectedChoice}. ${currentProblem.choices[['A', 'B', 'C'].indexOf(selectedChoice)].toFixed(1)}%</div>
-                    ${explanation}
-                `;
-            } else {
-                feedback.className = 'feedback incorrect show';
-                feedback.innerHTML = `
-                    <div class="feedback-title">❌ 틀렸습니다</div>
-                    <div>선택한 답: ${selectedChoice}. ${currentProblem.choices[['A', 'B', 'C'].indexOf(selectedChoice)].toFixed(1)}%</div>
-                    ${explanation}
-                `;
-            }
-        }
-        
-        generateNewProblem();
-    </script>
+<div class="card">
+  <div class="row">
+    <span id="stateLabel" style="font-size:.85em;font-weight:bold;color:#7eb8f7">로딩중...</span>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span style="font-size:.8em;color:#aaa">스위치:</span>
+      <select id="swSel">
+        <option value="ga">(가) — S를 c에</option>
+        <option value="na">(나) — S를 d에</option>
+      </select>
+    </div>
+  </div>
+
+  <svg viewBox="0 0 460 240" xmlns="http://www.w3.org/2000/svg">
+    <!-- 상단 도선 -->
+    <line x1="50" y1="65" x2="410" y2="65" stroke="#445" stroke-width="2"/>
+    <!-- 하단 도선 -->
+    <line x1="50" y1="180" x2="410" y2="180" stroke="#445" stroke-width="2"/>
+    <!-- 좌 수직 (전지) -->
+    <line x1="50" y1="65" x2="50" y2="95" stroke="#445" stroke-width="2"/>
+    <line x1="50" y1="150" x2="50" y2="180" stroke="#445" stroke-width="2"/>
+    <!-- 우 수직 (전구) -->
+    <line x1="410" y1="65" x2="410" y2="100" stroke="#445" stroke-width="2"/>
+    <line x1="410" y1="155" x2="410" y2="180" stroke="#445" stroke-width="2"/>
+
+    <!-- ── 전지 (좌측) ── -->
+    <rect x="36" y="95" width="28" height="55" rx="3" fill="#0d1e3c" stroke="#7eb8f7" stroke-width="1.5"/>
+    <text id="batTop" x="50" y="113" text-anchor="middle" font-size="14" font-weight="bold">+</text>
+    <text id="batBot" x="50" y="140" text-anchor="middle" font-size="14" font-weight="bold">−</text>
+    <!-- a 단자 -->
+    <text x="50" y="58" text-anchor="middle" fill="#ffd700" font-size="10" font-weight="bold">a</text>
+
+    <!-- ── 다이오드 X ── (삼각형 방향은 xDir에 따라 동적) -->
+    <!-- 기본 와이어 -->
+    <line x1="50" y1="65" x2="100" y2="65" stroke="#445" stroke-width="2"/>
+    <line x1="175" y1="65" x2="215" y2="65" stroke="#445" stroke-width="2"/>
+    <!-- 삼각형+바 (JS로 그림) -->
+    <g id="dxGroup"></g>
+    <text x="137" y="44" text-anchor="middle" fill="#e94560" font-size="11" font-weight="bold">X</text>
+    <!-- p/n 라벨 배경 + 텍스트 -->
+    <rect id="xLbg" x="97" y="47" width="16" height="12" rx="2" fill="#16213e"/>
+    <rect id="xRbg" x="155" y="47" width="16" height="12" rx="2" fill="#16213e"/>
+    <text id="xL" x="105" y="57" text-anchor="middle" font-size="10" font-weight="bold"></text>
+    <text id="xR" x="163" y="57" text-anchor="middle" font-size="10" font-weight="bold"></text>
+
+    <!-- ── 다이오드 A ── (항상 →방향: 왼쪽=p, 오른쪽=n 고정) -->
+    <line x1="215" y1="65" x2="215" y2="65" stroke="#445" stroke-width="2"/>
+    <line x1="290" y1="65" x2="320" y2="65" stroke="#445" stroke-width="2"/>
+    <!-- A 삼각형 (→ 고정) -->
+    <polygon points="215,50 255,65 215,80" fill="#7eb8f7" stroke="#7eb8f7" stroke-width="1"/>
+    <line x1="255" y1="50" x2="255" y2="80" stroke="#7eb8f7" stroke-width="3"/>
+    <line x1="255" y1="65" x2="290" y2="65" stroke="#445" stroke-width="2"/>
+    <text x="235" y="44" text-anchor="middle" fill="#7eb8f7" font-size="11" font-weight="bold">A</text>
+    <text x="215" y="58" fill="#e94560" font-size="9">p</text>
+    <text x="258" y="58" fill="#7eb8f7" font-size="9">n</text>
+
+    <!-- ── 스위치 S ── -->
+    <circle cx="320" cy="65" r="4" fill="#ffd700"/>
+    <!-- c 접점 (위), d 접점 (아래) -->
+    <circle cx="355" cy="50" r="3" fill="#4dff9e"/>
+    <circle cx="355" cy="80" r="3" fill="#ff6b6b"/>
+    <text x="362" y="53" fill="#4dff9e" font-size="9">c</text>
+    <text x="362" y="83" fill="#ff6b6b" font-size="9">d</text>
+    <line id="swArm" x1="320" y1="65" x2="355" y2="50" stroke="#ffd700" stroke-width="2"/>
+    <!-- c→상단, d→하단 각 경로를 상단선(y=65)으로 합류 -->
+    <line x1="355" y1="50" x2="390" y2="50" stroke="#445" stroke-width="2"/>
+    <line x1="355" y1="80" x2="390" y2="80" stroke="#445" stroke-width="2"/>
+    <line x1="390" y1="50" x2="390" y2="80" stroke="#445" stroke-width="2"/>
+    <line x1="390" y1="65" x2="410" y2="65" stroke="#445" stroke-width="2"/>
+    <!-- b 단자 -->
+    <text x="410" y="58" text-anchor="middle" fill="#ffd700" font-size="10" font-weight="bold">b</text>
+
+    <!-- ── 전구 (우측) ── -->
+    <!-- 발광 후광 (순방향 시 표시) -->
+    <circle id="bulbGlow" cx="410" cy="127" r="32" fill="#ffe066" opacity="0" style="transition:opacity .4s,r .4s"/>
+    <circle id="bulb" cx="410" cy="127" r="22" fill="#1e1e3a" stroke="#aaa" stroke-width="1.5" style="transition:fill .4s,stroke .4s"/>
+    <text id="bulbEmoji" x="410" y="134" text-anchor="middle" font-size="18" style="filter:none;transition:opacity .4s">💡</text>
+
+    <!-- ── 검류계 G (하단 중앙) ── -->
+    <circle cx="230" cy="180" r="22" fill="#0d1e3c" stroke="#7eb8f7" stroke-width="1.5"/>
+    <text x="230" y="184" text-anchor="middle" fill="#7eb8f7" font-size="12" font-weight="bold">G</text>
+    <!-- 바늘: pivot = 원 중심 (230, 180), 바늘 길이 위로 18px -->
+    <line id="needle" x1="230" y1="180" x2="230" y2="162"
+      stroke="#ffd700" stroke-width="3" stroke-linecap="round"
+      style="transform-origin:230px 180px;transform:rotate(0deg);transition:transform .45s"/>
+    <!-- 눈금 보조선 -->
+    <line x1="212" y1="180" x2="248" y2="180" stroke="#1a3a6a" stroke-width="1"/>
+    <text x="196" y="176" fill="#aaa" font-size="8" text-anchor="middle">①</text>
+    <text x="264" y="176" fill="#aaa" font-size="8" text-anchor="middle">②</text>
+
+    <!-- 전류 흐름 점 (순방향 시 애니메이션) -->
+    <!-- 상단: 좌→우 -->
+    <circle id="dp1" cx="80"  cy="65" r="5" fill="#4dff9e" opacity="0"/>
+    <circle id="dp2" cx="190" cy="65" r="5" fill="#4dff9e" opacity="0"/>
+    <circle id="dp3" cx="300" cy="65" r="5" fill="#4dff9e" opacity="0"/>
+    <!-- 우 수직 아래 -->
+    <circle id="dp4" cx="410" cy="107" r="5" fill="#4dff9e" opacity="0"/>
+    <!-- 하단: 우→좌 -->
+    <circle id="dp5" cx="340" cy="180" r="5" fill="#4dff9e" opacity="0"/>
+    <circle id="dp6" cx="230" cy="180" r="5" fill="#4dff9e" opacity="0"/>
+    <circle id="dp7" cx="110" cy="180" r="5" fill="#4dff9e" opacity="0"/>
+  </svg>
+
+  <div id="statusBar" style="text-align:center;font-size:.78em;color:#aaa;margin-top:6px"></div>
+</div>
+
+<div class="card">
+  <div class="row">
+    <span style="font-size:.9em;font-weight:bold;color:#7eb8f7">📋 실험 결과표</span>
+    <button id="genBtn">🎲 새 문제 생성</button>
+  </div>
+  <table>
+    <tr><th>과정</th><th>전구</th><th>검류계 전류 방향</th></tr>
+    <tr><td>(가)</td><td id="tGaB"></td><td id="tGaG"></td></tr>
+    <tr><td>(나)</td><td id="tNaB"></td><td id="tNaG"></td></tr>
+  </table>
+
+  <div style="font-size:.8em;font-weight:bold;color:#ccc;margin-bottom:6px;border-top:1px solid #0f3460;padding-top:8px">─ &lt;보기&gt; ─</div>
+  <div id="bogi" style="font-size:.83em;line-height:2;margin-bottom:10px;background:#0d1a30;padding:8px;border-radius:5px"></div>
+
+  <div style="font-size:.8em;color:#aaa;margin-bottom:4px">옳은 것만을 &lt;보기&gt;에서 있는 대로 고르면?</div>
+  <div id="choices"></div>
+  <div style="text-align:center;margin-top:10px"><button id="checkBtn">✅ 정답 확인</button></div>
+  <div id="feedback"></div>
+</div>
+
+<script>
+/*
+ * ── 회로 물리 모델 (수능 기출 구조) ──────────────────────────────
+ *
+ * 직렬 회로: 전지 — X — A — 스위치S — 전구 — 검류계G — (전지로 귀환)
+ *
+ * 다이오드 방향 표기:
+ *   삼각형 꼭짓점이 가리키는 방향 = 전류 허용 방향 (p→n 순서)
+ *   A는 항상 → 방향 고정 (p: 좌측, n: 우측)
+ *
+ * X의 방향(xDir): 'right'(→, p좌-n우) 또는 'left'(←, n좌-p우)
+ *
+ * 전지 극성(batDir): 'normal'(+극이 상단=a단자 측) 또는 'flip'(+극이 하단)
+ *
+ * (가) 스위치 c: batDir 그대로 사용
+ * (나) 스위치 d: 전지 극성 반전 효과 (우회 경로로 극성 바뀜)
+ *
+ * 순방향 조건 (두 다이오드 모두 동시에 순방향이어야 전류 흐름):
+ *   A는 → 고정이므로 A 순방향 = 전류가 왼→오 = a(상단)가 + 극
+ *   X→ 방향이면: X 순방향도 a(상단)가 + 극
+ *   X← 방향이면: X 순방향은 a(상단)가 - 극 = b(상단)가 + 극
+ *
+ *   따라서:
+ *     xDir='right': 두 다이오드 모두 → → a가 +극이어야 순방향
+ *     xDir='left' : X←, A→ → 전류 방향이 반대 → 항상 하나가 역방향
+ *                   → 어느 극성도 전류 못 흐름 (이 경우는 생성하지 않음)
+ *
+ * ∴ 유효한 문제 = X와 A가 같은 방향일 때만 전류 흐름 가능
+ *   수능 패턴: X가 → 이면 (가)/(나) 중 하나만 순방향 (배터리 극성으로 제어)
+ *              X가 ← 이면 (가)/(나) 중 하나만 순방향 (A는 → 고정이므로 X 단독으로 통제)
+ *
+ * 실제 구현:
+ *   xDir = 'right' | 'left'  (X 다이오드 삼각형 방향)
+ *   gaTopPlus = true|false    ((가)에서 a단자(상단)가 +극인가)
+ *
+ *   A 순방향 조건: gaTopPlus = true  (A는 →, p쪽=좌=a가 +극)
+ *   X 순방향 조건:
+ *     xDir='right': gaTopPlus = true
+ *     xDir='left' : gaTopPlus = false (X의 p쪽=우=b가 +극)
+ *
+ *   gaFwd = (A_fwd) AND (X_fwd)
+ *   naFwd = !gaFwd  (스위치d = 극성 반전)
+ *
+ *   보장: 반드시 (가)와 (나) 중 정확히 하나만 전류 흐름
+ *         (양쪽 모두 흐르거나 모두 안 흐르는 경우 재생성)
+ */
+
+let P = {};
+let dotTimer = null;
+const dpIds = ['dp1','dp2','dp3','dp4','dp5','dp6','dp7'];
+const dpts = dpIds.map(id => document.getElementById(id));
+
+function rnd(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+function generateProblem(){
+  // 무작위 파라미터
+  const xDir = rnd(['right','left']);       // X 다이오드 방향
+  const gaTopPlus = Math.random() < 0.5;   // (가)에서 a단자가 +극?
+
+  // 각 다이오드의 순방향 여부 계산
+  const A_ga_fwd = gaTopPlus;              // A(→): p쪽(좌=a)에 +극 → 순방향
+  const X_ga_fwd = xDir==='right'
+    ? gaTopPlus                            // X(→): 같은 조건
+    : !gaTopPlus;                          // X(←): p쪽(우=b)에 +극 → 조건 반대
+
+  const gaFwd = A_ga_fwd && X_ga_fwd;     // 직렬: 둘 다 순방향이어야 전류 흐름
+  const naFwd = !gaFwd;                    // (나)는 극성 반전 → 정확히 반대
+
+  // gaFwd XOR naFwd 보장 확인 (항상 성립하지만 명시)
+  // gaFwd !== naFwd 항상 true
+
+  // ── 보기 진위 (물리 역산) ──
+  // ㄱ: "X는 p형 반도체이다"
+  //   → X의 왼쪽(a쪽)이 p형인가? xDir='right'이면 왼쪽=p → true
+  const g1_Xis_p = xDir === 'right';  // X 왼쪽(삼각형 꼭짓점 쪽) = p형
+  // 보기 문장은 50% 확률로 참/거짓 서술 선택
+  const g1_says_p = Math.random() < 0.5;
+  const g1_true = (g1_says_p === g1_Xis_p);
+
+  // ㄴ: "(가)에서 b→G→a 방향이 ①에 해당한다"
+  //   (가) 순방향이면 전류: a→X→A→b→전구→G→a
+  //   G 통과: b→a 방향 = ① → gaFwd=true 이면 참
+  //   (가) 역방향이면 전류 없음 → ①에 해당 안 함 → false
+  const g2_true = gaFwd;
+  // ㄴ 서술은 항상 "①에 해당한다"로 고정 (진위만 달라짐)
+
+  // ㄷ: "(나)에서 A의 양공과 전자는 p-n 접합면 [방향]으로 이동한다"
+  //   naFwd=true → 순방향 → 접합면 쪽으로 이동 → 참
+  //   naFwd=false → 역방향 → 접합면 반대쪽으로 이동
+  // 서술을 50% 확률로 "쪽으로" / "반대쪽으로" 선택
+  const g3_says_toward = Math.random() < 0.5;
+  const g3_true = (g3_says_toward === naFwd);
+
+  // ── 정답 세트 ──
+  const truthMap = [g1_true, g2_true, g3_true];
+  const allLabels = ['ㄱ','ㄴ','ㄷ'];
+  const correctLabels = allLabels.filter((_,i) => truthMap[i]);
+  const correctKey = correctLabels.join(',') || '없음';
+
+  // ── 선택지 생성 (중복 없이) ──
+  const pool = [
+    ['ㄱ'],['ㄴ'],['ㄷ'],
+    ['ㄱ','ㄴ'],['ㄱ','ㄷ'],['ㄴ','ㄷ'],['ㄱ','ㄴ','ㄷ']
+  ];
+  const wrongs = pool.filter(c => c.join(',') !== correctKey)
+                     .sort(() => Math.random()-.5).slice(0,4);
+  const opts = [...wrongs, correctLabels.length ? correctLabels : ['없음']]
+                     .sort(() => Math.random()-.5);
+  const correctIdx = opts.findIndex(o => o.join(',') === correctKey);
+
+  P = {
+    xDir, gaTopPlus, gaFwd, naFwd,
+    g1_Xis_p, g1_says_p, g1_true,
+    g2_true,
+    g3_says_toward, g3_true,
+    truthMap, correctKey, opts, correctIdx
+  };
+
+  renderProblem();
+}
+
+function drawDiodeX(){
+  const g = document.getElementById('dxGroup');
+  g.innerHTML = '';
+  // X 다이오드 영역: x=100~175, y중심=65
+  // right(→): 삼각형 꼭짓점이 오른쪽 (전류 →), p=좌, n=우
+  // left(←) : 삼각형 꼭짓점이 왼쪽  (전류 ←), n=좌, p=우
+  const svg = (tag,attrs,txt='') => {
+    const el = document.createElementNS('http://www.w3.org/2000/svg',tag);
+    Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));
+    if(txt) el.textContent=txt;
+    g.appendChild(el); return el;
+  };
+  // p형 색: 선명한 빨강(#ff4d6d), n형 색: 선명한 하늘(#5bc8ff) — 어두운 배경 대비 극대화
+  const pColor = '#ff4d6d', nColor = '#5bc8ff';
+  if(P.xDir==='right'){
+    // → 방향: p=좌(100), n=우(140 bar쪽)
+    svg('polygon',{points:'100,50 140,65 100,80',fill:'#e94560',stroke:'#e94560','stroke-width':'1'});
+    svg('line',{x1:'140',y1:'50',x2:'140',y2:'80',stroke:'#e94560','stroke-width':'3'});
+    svg('line',{x1:'140',y1:'65',x2:'175',y2:'65',stroke:'#445','stroke-width':'2'});
+    // 라벨: p는 삼각형 꼭짓점(좌) 쪽, n은 bar(우) 바깥쪽
+    document.getElementById('xLbg').setAttribute('x','97');
+    document.getElementById('xRbg').setAttribute('x','155');
+    document.getElementById('xL').setAttribute('x','105'); document.getElementById('xL').textContent='p'; document.getElementById('xL').setAttribute('fill',pColor);
+    document.getElementById('xR').setAttribute('x','163'); document.getElementById('xR').textContent='n'; document.getElementById('xR').setAttribute('fill',nColor);
+  } else {
+    // ← 방향: n=좌(100), p=우(135 bar 바깥쪽)
+    svg('polygon',{points:'175,50 135,65 175,80',fill:'#e94560',stroke:'#e94560','stroke-width':'1'});
+    svg('line',{x1:'135',y1:'50',x2:'135',y2:'80',stroke:'#e94560','stroke-width':'3'});
+    svg('line',{x1:'100',y1:'65',x2:'135',y2:'65',stroke:'#445','stroke-width':'2'});
+    document.getElementById('xLbg').setAttribute('x','97');
+    document.getElementById('xRbg').setAttribute('x','155');
+    document.getElementById('xL').setAttribute('x','105'); document.getElementById('xL').textContent='n'; document.getElementById('xL').setAttribute('fill',nColor);
+    document.getElementById('xR').setAttribute('x','163'); document.getElementById('xR').textContent='p'; document.getElementById('xR').setAttribute('fill',pColor);
+  }
+}
+
+function updateCircuit(){
+  const pos = document.getElementById('swSel').value; // 'ga'|'na'
+  const isGa = pos === 'ga';
+  const fwd = isGa ? P.gaFwd : P.naFwd;
+  const topPlus = isGa ? P.gaTopPlus : !P.gaTopPlus;
+
+  // 전지 극성
+  document.getElementById('batTop').textContent = topPlus ? '+' : '−';
+  document.getElementById('batTop').setAttribute('fill', topPlus ? '#e94560' : '#7eb8f7');
+  document.getElementById('batBot').textContent = topPlus ? '−' : '+';
+  document.getElementById('batBot').setAttribute('fill', topPlus ? '#7eb8f7' : '#e94560');
+
+  // 스위치 팔
+  const arm = document.getElementById('swArm');
+  arm.setAttribute('x2','355'); arm.setAttribute('y2', isGa ? '50' : '80');
+  arm.setAttribute('stroke', isGa ? '#4dff9e' : '#ff6b6b');
+
+  // 상태 라벨
+  const sl = document.getElementById('stateLabel');
+  sl.textContent = fwd
+    ? `${isGa?'(가)':'(나)'} 순방향 ✅ — 두 다이오드 모두 순방향 → 전류 흐름`
+    : `${isGa?'(가)':'(나)'} 역방향 ⛔ — 하나 이상 역방향 → 전류 차단`;
+  sl.style.color = fwd ? '#4dff9e' : '#ff6b6b';
+
+  // 전구 — 순방향: 후광+밝은 노랑 / 역방향: 소등+반투명
+  document.getElementById('bulb').style.fill         = fwd ? '#fff5aa' : '#1e1e3a';
+  document.getElementById('bulb').style.stroke       = fwd ? '#ffd700' : '#666';
+  document.getElementById('bulbGlow').style.opacity  = fwd ? '0.22'    : '0';
+  document.getElementById('bulbEmoji').style.opacity = fwd ? '1'       : '0.3';
+
+  // 검류계 바늘 (pivot = 원 중심 230,180 → 순방향=① = 왼쪽 회전)
+  document.getElementById('needle').style.transform = fwd ? 'rotate(-35deg)' : 'rotate(0deg)';
+
+  // 상태바
+  document.getElementById('statusBar').innerHTML =
+    `X 방향: <b style="color:#e94560">${P.xDir==='right'?'→(p좌-n우)':'←(n좌-p우)'}</b> &nbsp;|&nbsp; ` +
+    `현재: <b style="color:${fwd?'#4dff9e':'#ff6b6b'}">${fwd?'순방향':'역방향'}</b> &nbsp;|&nbsp; ` +
+    `전구: ${fwd?'<b style="color:#ffe066">켜짐</b>':'꺼짐'} &nbsp;|&nbsp; ` +
+    `검류계: ${fwd?'<b>① 방향</b>':'없음'}`;
+
+  // 점 애니메이션
+  clearInterval(dotTimer);
+  dpts.forEach(d => d.setAttribute('opacity','0'));
+  if(fwd){
+    let t=0;
+    dotTimer = setInterval(()=>{
+      dpts.forEach((d,i)=>d.setAttribute('opacity', i===t%dpts.length ? '1':'0'));
+      t++;
+    }, 180);
+  }
+}
+
+function renderProblem(){
+  drawDiodeX();
+
+  // 결과표
+  const yn = (v,col) => v
+    ? `<span style="color:#ffe066;font-weight:bold">켜짐</span>`
+    : `<span style="color:#888">꺼짐</span>`;
+  document.getElementById('tGaB').innerHTML = yn(P.gaFwd);
+  document.getElementById('tGaG').textContent = P.gaFwd ? '①' : '해당 없음';
+  document.getElementById('tNaB').innerHTML = yn(P.naFwd);
+  document.getElementById('tNaG').textContent = P.naFwd ? '①' : '해당 없음';
+
+  // 보기 문장
+  const g1text = `ㄱ. X는 <b>${P.g1_says_p?'p형':'n형'}</b> 반도체이다.`;
+  const g2text = `ㄴ. (가)에서 b → ⓔ(G) → a 방향의 전류가 <b>①</b>에 해당한다.`;
+  const g3text = `ㄷ. (나)에서 A의 양공과 전자는 p-n 접합면 <b>${P.g3_says_toward?'쪽으로':'반대쪽으로'}</b> 이동한다.`;
+  document.getElementById('bogi').innerHTML = [g1text,g2text,g3text].join('<br>');
+
+  // 선택지
+  const nums=['①','②','③','④','⑤'];
+  document.getElementById('choices').innerHTML = P.opts.map((o,i)=>
+    `<label><input type="radio" name="ans" value="${i}"> ${nums[i]} ${o.join(', ')}</label>`
+  ).join('');
+
+  document.getElementById('feedback').style.display='none';
+  document.getElementById('swSel').value='ga';
+  updateCircuit();
+}
+
+document.getElementById('swSel').addEventListener('change', updateCircuit);
+
+document.getElementById('checkBtn').addEventListener('click',()=>{
+  const sel = document.querySelector('input[name="ans"]:checked');
+  const fb = document.getElementById('feedback');
+  if(!sel){ fb.style.display='block'; fb.className='wrong'; fb.innerHTML='보기를 선택하세요.'; return; }
+  const ok = parseInt(sel.value) === P.correctIdx;
+
+  // 상세 해설 — 각 보기를 .fbline 블록으로 분리해 가독성 확보
+  const tag = (label, ok) =>
+    `<span class="tag ${ok?'tag-ok':'tag-ng'}">${label} ${ok?'✅':'❌'}</span>`;
+
+  const xPside  = P.xDir==='right' ? '왼쪽(a쪽)' : '오른쪽(b쪽)';
+  const xActual = P.g1_Xis_p ? 'p형' : 'n형';
+  const e1 = P.g1_true
+    ? `${tag('ㄱ',true)} X의 ${xPside}이 p형 → X는 ${xActual}. 보기(${P.g1_says_p?'p형':'n형'})와 <b>일치</b>.`
+    : `${tag('ㄱ',false)} X는 실제로 ${xActual}이지만 보기는 ${P.g1_says_p?'p형':'n형'}으로 서술 → <b>불일치</b>.`;
+
+  const e2 = P.g2_true
+    ? `${tag('ㄴ',true)} (가) 순방향 → 전류: a→X→A→b→전구→G→a. G 통과 방향 b→a = <b>①</b>.`
+    : `${tag('ㄴ',false)} (가) 역방향 → 전류 차단 → G 전류 없음 → ① <b>해당 안 됨</b>.`;
+
+  const naState     = P.naFwd ? '순방향' : '역방향';
+  const carrierReal = P.naFwd ? '접합면 <b>쪽으로</b> 이동 (재결합→전류)' : '접합면 <b>반대쪽으로</b> 이동 (공핍층 확대→차단)';
+  const e3 = P.g3_true
+    ? `${tag('ㄷ',true)} (나) ${naState} → A 캐리어: ${carrierReal}. 보기 서술과 <b>일치</b>.`
+    : `${tag('ㄷ',false)} (나) ${naState} → A 캐리어: ${carrierReal}. 보기(${P.g3_says_toward?'접합면 쪽':'반대쪽'})와 <b>불일치</b>.`;
+
+  fb.style.display='block';
+  fb.className = ok ? 'correct' : 'wrong';
+  fb.innerHTML =
+    `<b style="font-size:.9em">${ok ? '✅ 정답!' : '❌ 오답 — 정답: ' + (P.correctKey||'없음')}</b>` +
+    `<span class="fbline">${e1}</span>` +
+    `<span class="fbline">${e2}</span>` +
+    `<span class="fbline">${e3}</span>`;
+});
+
+document.getElementById('genBtn').addEventListener('click', generateProblem);
+generateProblem();
+</script>
 </body>
 </html>

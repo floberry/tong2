@@ -1,567 +1,1963 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>통합과학2 에너지 전환 O/X 퀴즈</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>전기장 모험 – 물리 퀘스트</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Jua&display=swap');
 
-        body {
-            font-family: 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px 15px;
-        }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            padding: 25px 20px;
-        }
+  body {
+    font-family: 'Jua', 'Apple SD Gothic Neo', sans-serif;
+    background: linear-gradient(180deg, #5c94fc 0%, #5c94fc 55%, #76c442 55%, #5db832 100%);
+    min-height: 100vh;
+    padding: 24px 14px 90px;
+    overflow-x: hidden;
+    position: relative;
+  }
 
-        h1 {
-            text-align: center;
-            color: #667eea;
-            font-size: 22px;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
+  /* ── 떠다니는 구름 ── */
+  .cloud {
+    position: fixed;
+    pointer-events: none;
+    opacity: 0.95;
+    z-index: 0;
+  }
+  .cloud svg { display: block; }
+  .cloud-1 { top: 40px; left: 6%; width: 90px; animation: drift 30s linear infinite; }
+  .cloud-2 { top: 110px; left: 70%; width: 70px; animation: drift 22s linear infinite reverse; }
+  .cloud-3 { top: 20px; left: 40%; width: 60px; animation: drift 26s linear infinite; }
 
-        .subtitle {
-            text-align: center;
-            color: #666;
-            font-size: 13px;
-            margin-bottom: 25px;
-        }
+  @keyframes drift {
+    0% { transform: translateX(0); }
+    50% { transform: translateX(20px); }
+    100% { transform: translateX(0); }
+  }
 
-        .instruction {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            border-left: 4px solid #667eea;
-        }
+  /* ── 둥둥 떠다니는 코인 장식 ── */
+  .coin-deco {
+    position: fixed;
+    font-size: 22px;
+    animation: coinFloat 2.2s ease-in-out infinite;
+    z-index: 0;
+    filter: drop-shadow(0 2px 2px rgba(0,0,0,0.2));
+  }
+  @keyframes coinFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(15deg); }
+  }
 
-        .instruction-title {
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 15px;
-        }
+  /* ── 배경 언덕 (패럴랙스) ── */
+  .hill {
+    position: fixed;
+    bottom: 0;
+    border-radius: 50% 50% 0 0;
+    background: #4a9e1f;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .hill-1 { width: 220px; height: 110px; left: -40px; background: #5db832; }
+  .hill-2 { width: 280px; height: 90px; left: 55%; background: #4a9e1f; }
 
-        .question-item {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            border-left: 4px solid #667eea;
-        }
+  /* ── 땅 위 벽돌 라인 (화면 하단 고정) ── */
+  .ground-strip {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 26px;
+    background: repeating-linear-gradient(90deg, #c84c0c 0 38px, #a83a08 38px 40px);
+    border-top: 4px solid #000;
+    z-index: 0;
+    pointer-events: none;
+  }
 
-        .question-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
+  /* ── 바닥에 고정된 마스코트 캐릭터 (가만히 서있기) ── */
+  .mascot-walker {
+    position: fixed;
+    bottom: 26px;
+    left: 24px;
+    width: 56px;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .mascot-walker svg { display: block; animation: idleBob 2.4s ease-in-out infinite; }
+  @keyframes idleBob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-2px); }
+  }
 
-        .question-number {
-            color: #667eea;
-            font-weight: bold;
-            font-size: 15px;
-            flex-shrink: 0;
-        }
+  /* ── 카드 위 마스코트 (가만히 서있기) ── */
+  .mascot-jump {
+    position: absolute;
+    top: -50px;
+    right: 18px;
+    width: 52px;
+    transform-origin: bottom center;
+    z-index: 3;
+  }
+  .mascot-jump svg { display: block; animation: idleBob 2.4s ease-in-out infinite 0.3s; }
 
-        .question-text {
-            font-size: 16px;
-            line-height: 1.7;
-            color: #333;
-            flex-grow: 1;
-            margin-left: 10px;
-        }
+  /* 마스코트 위 '?' 코인 블록 */
+  .coin-block {
+    position: absolute;
+    top: -84px;
+    right: 24px;
+    width: 30px;
+    height: 30px;
+    background: linear-gradient(180deg, #ffb700 0%, #d99400 100%);
+    border: 3px solid #000;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 13px;
+    color: #fff;
+    z-index: 3;
+    box-shadow: 0 3px 0 #8a5a00;
+  }
 
-        .answer-boxes {
-            display: flex;
-            gap: 12px;
-            justify-content: flex-end;
-        }
+  /* ── 파이프 장식 ── */
+  .pipe-deco {
+    position: fixed;
+    bottom: 26px;
+    width: 54px;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .pipe-left { left: 18px; }
+  .pipe-right { right: 18px; }
 
-        .answer-box {
-            width: 60px;
-            height: 50px;
-            border: 3px solid #ddd;
-            border-radius: 8px;
-            background: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            user-select: none;
-        }
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
 
-        .answer-box:hover {
-            border-color: #667eea;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
+  /* ── 게임 헤더 (HUD) ── */
+  .hud {
+    background: #1a1a2e;
+    border: 4px solid #000;
+    border-radius: 14px;
+    padding: 14px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    box-shadow: 0 6px 0 rgba(0,0,0,0.3);
+    flex-wrap: wrap;
+  }
 
-        .answer-box.o {
-            color: #28a745;
-        }
+  .hud-title {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 13px;
+    color: #ffd23f;
+    text-shadow: 2px 2px 0 #000;
+    line-height: 1.6;
+  }
 
-        .answer-box.x {
-            color: #dc3545;
-        }
+  .hud-sub {
+    font-size: 11px;
+    color: #9fd8ff;
+    margin-top: 4px;
+    font-family: 'Jua', sans-serif;
+  }
 
-        .answer-box.selected {
-            border-width: 4px;
-            transform: scale(1.08);
-        }
+  .hud-score {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #000;
+    border: 3px solid #ffd23f;
+    border-radius: 10px;
+    padding: 8px 16px;
+  }
 
-        .answer-box.o.selected {
-            border-color: #28a745;
-            background: #d4edda;
-        }
+  .hud-score .coin-icon {
+    font-size: 22px;
+    animation: coinSpin 1.6s linear infinite;
+  }
+  @keyframes coinSpin {
+    0% { transform: rotateY(0deg); }
+    100% { transform: rotateY(360deg); }
+  }
 
-        .answer-box.x.selected {
-            border-color: #dc3545;
-            background: #f8d7da;
-        }
+  .hud-score-text {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14px;
+    color: #fff;
+    text-shadow: 1px 1px 0 #000;
+  }
 
-        .answer-box.correct {
-            border-color: #28a745 !important;
-            background: #d4edda !important;
-            animation: pulse 0.5s;
-        }
+  .hud-score-text .pct {
+    font-size: 10px;
+    color: #76c442;
+    display: block;
+    margin-top: 2px;
+  }
 
-        .answer-box.incorrect {
-            border-color: #dc3545 !important;
-            background: #f8d7da !important;
-            animation: shake 0.5s;
-        }
+  /* ── 메인 게임 카드 ── */
+  .game-card {
+    background: #fff8e7;
+    border: 5px solid #000;
+    border-radius: 18px;
+    margin-top: 18px;
+    padding: 24px 24px 20px;
+    box-shadow: 0 8px 0 rgba(0,0,0,0.25), inset 0 0 0 4px #ffd23f;
+    position: relative;
+  }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
+  /* 벽돌 패턴 상단 장식 */
+  .brick-strip {
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    height: 14px;
+    background: repeating-linear-gradient(90deg, #c84c0c 0 28px, #a83a08 28px 30px);
+    border-radius: 14px 14px 0 0;
+    border-bottom: 3px solid #000;
+  }
 
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
+  .quest-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #ff6b9d;
+    color: #fff;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 2.5px solid #000;
+    margin-bottom: 14px;
+    box-shadow: 2px 2px 0 #000;
+  }
 
-        .result-section {
-            background: #fff3cd;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            border-left: 4px solid #ffc107;
-            display: none;
-        }
+  .problem-text {
+    font-size: 16px;
+    line-height: 1.85;
+    color: #2d2d2d;
+    margin-bottom: 18px;
+    background: #fffaf0;
+    border: 3px solid #ffd23f;
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
 
-        .result-section.show {
-            display: block;
-        }
+  .problem-text .var {
+    font-weight: 800;
+    color: #c8410c;
+    font-family: 'Jua', sans-serif;
+    background: #fff3cd;
+    padding: 0 3px;
+    border-radius: 4px;
+  }
 
-        .result-title {
-            font-weight: bold;
-            color: #856404;
-            margin-bottom: 15px;
-            font-size: 17px;
-            text-align: center;
-        }
+  .problem-text b {
+    color: #1a1a2e;
+  }
 
-        .result-item {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 12px;
-        }
+  /* ── 시각화 영역 (게임 필드) ── */
+  .field-viz {
+    display: flex;
+    justify-content: center;
+    margin: 6px 0 18px;
+  }
 
-        .result-item:last-child {
-            margin-bottom: 0;
-        }
+  .field-viz svg {
+    background: linear-gradient(180deg, #cdeaff 0%, #e8f7ff 100%);
+    border: 4px solid #000;
+    border-radius: 12px;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+  }
 
-        .result-question {
-            font-size: 14px;
-            color: #333;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
+  /* ── 선지: 벽돌 블록 스타일 ── */
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
 
-        .result-answer {
-            font-size: 13px;
-            color: #666;
-            line-height: 1.6;
-        }
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 13px 16px;
+    background: #fffaf0;
+    border: 3px solid #2d2d2d;
+    border-radius: 10px;
+    transition: transform 0.1s, box-shadow 0.1s;
+    box-shadow: 0 3px 0 #c2b280;
+  }
 
-        .result-answer.correct {
-            color: #28a745;
-            font-weight: bold;
-        }
+  .option.correct {
+    background: #d4f7d4;
+    border-color: #2e7d32;
+    box-shadow: 0 3px 0 #1b5e20;
+    animation: popIn 0.35s ease;
+  }
 
-        .result-answer.incorrect {
-            color: #dc3545;
-            font-weight: bold;
-        }
+  .option.wrong {
+    background: #ffd9d9;
+    border-color: #c62828;
+    box-shadow: 0 3px 0 #8e1f1f;
+    opacity: 0.85;
+  }
 
-        .score-display {
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #667eea;
-        }
+  .option.neutral-reveal {
+    opacity: 0.55;
+  }
 
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
+  @keyframes popIn {
+    0% { transform: scale(0.92); }
+    50% { transform: scale(1.04); }
+    100% { transform: scale(1); }
+  }
 
-        .submit-btn, .new-problem-btn {
-            flex: 1;
-            padding: 16px;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
+  .opt-num {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #5c94fc;
+    border: 2.5px solid #000;
+    color: #fff;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
 
-        .submit-btn {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
-        }
+  .option.correct .opt-num { background: #4caf50; }
+  .option.wrong .opt-num   { background: #e53935; }
 
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.6);
-        }
+  .opt-text {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #2d2d2d;
+  }
 
-        .submit-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
+  .opt-text .math {
+    font-weight: 800;
+    color: #c8410c;
+  }
 
-        .new-problem-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-        }
+  /* ── 번호 선택 버튼 (마리오 블록) ── */
+  .answer-input-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 4px 4px;
+    flex-wrap: wrap;
+  }
 
-        .new-problem-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-        }
+  .answer-input-row label {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 11px;
+    color: #1a1a2e;
+    white-space: nowrap;
+  }
 
-        @media (max-width: 480px) {
-            .container {
-                padding: 20px 15px;
-            }
+  .num-choice-row {
+    display: flex;
+    gap: 8px;
+  }
 
-            h1 {
-                font-size: 20px;
-            }
+  .num-btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    border: 3px solid #000;
+    background: linear-gradient(180deg, #ffd23f 0%, #ffb700 100%);
+    color: #1a1a2e;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 15px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #8a5a00;
+    transition: transform 0.08s, box-shadow 0.08s;
+  }
 
-            .question-text {
-                font-size: 15px;
-            }
+  .num-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #8a5a00;
+  }
 
-            .answer-box {
-                width: 55px;
-                height: 45px;
-                font-size: 18px;
-            }
+  .num-btn:active:not(:disabled) {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #8a5a00;
+  }
 
-            .submit-btn, .new-problem-btn {
-                padding: 14px;
-                font-size: 15px;
-            }
-        }
-    </style>
+  .num-btn.picked {
+    background: linear-gradient(180deg, #76c442 0%, #54a02e 100%);
+    box-shadow: 0 2px 0 #2e5e16;
+    transform: translateY(2px);
+  }
+
+  .num-btn:disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+
+  .answer-hint {
+    font-size: 12px;
+    color: #6b6b6b;
+    font-family: 'Jua', sans-serif;
+  }
+
+  .btn-submit {
+    padding: 12px 28px;
+    border-radius: 10px;
+    border: 3px solid #000;
+    background: linear-gradient(180deg, #ff6b6b 0%, #e53935 100%);
+    color: #fff;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #8e1f1f;
+    transition: transform 0.08s, box-shadow 0.08s;
+  }
+  .btn-submit:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 0 #8e1f1f;
+  }
+  .btn-submit:active:not(:disabled) {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 #8e1f1f;
+  }
+  .btn-submit:disabled {
+    background: #ccc;
+    box-shadow: 0 4px 0 #999;
+    cursor: default;
+  }
+
+  /* ── 새 문제 버튼 (파이프 모양) ── */
+  .btn-row {
+    padding: 18px 0 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  .btn-new {
+    padding: 13px 34px;
+    border-radius: 10px;
+    border: 3px solid #000;
+    background: linear-gradient(180deg, #76c442 0%, #4a9e1f 100%);
+    color: #fff;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 12px;
+    cursor: pointer;
+    box-shadow: 0 5px 0 #2e5e16;
+    transition: transform 0.08s, box-shadow 0.08s;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+  }
+  .btn-new:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 0 #2e5e16;
+  }
+  .btn-new:active {
+    transform: translateY(3px);
+    box-shadow: 0 2px 0 #2e5e16;
+  }
+
+  /* ── 피드백 패널 ── */
+  .feedback {
+    display: none;
+    margin-top: 18px;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 4px solid #000;
+  }
+
+  .feedback.show {
+    display: block;
+    animation: slideUp 0.3s ease;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .feedback-header {
+    padding: 14px 20px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .feedback-header.pass {
+    background: linear-gradient(90deg, #76c442, #4a9e1f);
+    color: #fff;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.25);
+  }
+
+  .feedback-header.fail {
+    background: linear-gradient(90deg, #ff8a80, #e53935);
+    color: #fff;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.25);
+  }
+
+  .feedback-header .chosen-info {
+    font-family: 'Jua', sans-serif;
+    font-size: 11px;
+    margin-left: auto;
+    background: rgba(0,0,0,0.2);
+    padding: 4px 10px;
+    border-radius: 8px;
+  }
+
+  .feedback-body {
+    padding: 20px 22px 24px;
+    background: #fffaf0;
+  }
+
+  .feedback-body h3 {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 11px;
+    color: #c8410c;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .solution-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+
+  .step {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 12px 14px;
+    background: #fff;
+    border: 2.5px solid #ffd23f;
+    border-radius: 10px;
+  }
+
+  .step-num {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #5c94fc;
+    border: 2px solid #000;
+    color: #fff;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .step-content {
+    font-size: 14px;
+    line-height: 1.75;
+    color: #2d2d2d;
+  }
+
+  .step-content b {
+    color: #c8410c;
+  }
+
+  .step-content .eq {
+    display: inline-block;
+    background: #1a1a2e;
+    border: 2px solid #000;
+    border-radius: 6px;
+    padding: 2px 9px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    color: #ffd23f;
+    margin: 2px 0;
+  }
+
+  .opt-analysis {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .opt-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 10px 14px;
+    font-size: 13.5px;
+    line-height: 1.65;
+    border-radius: 10px;
+  }
+
+  .opt-row.ok  { background: #e3f7e3; border: 2px solid #4caf50; }
+  .opt-row.ng  { background: #ffe5e5; border: 2px solid #e53935; }
+
+  .opt-tag {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* ── 시뮬레이션 버튼 ── */
+  .sim-btn-wrap {
+    margin-top: 20px;
+    padding-top: 18px;
+    border-top: 3px dashed #ffd23f;
+  }
+
+  .btn-sim {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(180deg, #9c6bff 0%, #7c3fe0 100%);
+    color: #fff;
+    border: 3px solid #000;
+    border-radius: 10px;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #4a1f8e;
+    transition: transform 0.08s;
+  }
+  .btn-sim:hover { transform: translateY(-2px); }
+  .btn-sim:active { transform: translateY(2px); }
+
+  .sim-area {
+    display: none;
+    margin-top: 14px;
+  }
+  .sim-area.show { display: block; animation: slideUp 0.3s ease; }
+
+  .sim-area canvas {
+    display: block;
+    border: 3px solid #000;
+    border-radius: 10px;
+    background: linear-gradient(180deg, #cdeaff 0%, #e8f7ff 100%);
+    width: 100%;
+  }
+
+  .sim-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    font-size: 12px;
+    color: #555;
+  }
+
+  .sim-controls input[type=range] { flex: 1; }
+
+  .sim-play-btn {
+    padding: 8px 18px;
+    border: 2.5px solid #000;
+    border-radius: 8px;
+    background: #ffd23f;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    cursor: pointer;
+    box-shadow: 0 3px 0 #8a5a00;
+  }
+  .sim-play-btn:hover { transform: translateY(-1px); }
+
+  .sim-legend {
+    display: flex;
+    gap: 16px;
+    margin-top: 10px;
+    font-size: 11.5px;
+    color: #555;
+    flex-wrap: wrap;
+  }
+  .leg-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; margin-right: 4px; vertical-align: middle; border: 1.5px solid #000; }
+
+  .mascot-jump.victory svg {
+    animation: heroVictory 0.5s ease-in-out 2 !important;
+  }
+  @keyframes heroVictory {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-16px); }
+  }
+  .star-rain {
+    position: fixed;
+    pointer-events: none;
+    font-size: 20px;
+    z-index: 999;
+    animation: starFall 1s ease-out forwards;
+  }
+  @keyframes starFall {
+    0% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+    100% { opacity: 0; transform: translateY(80px) scale(1.4) rotate(180deg); }
+  }
+
+  /* ── 시작 화면 ── */
+  .start-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px 28px;
+    text-align: center;
+    min-height: 340px;
+    gap: 0;
+  }
+
+  .start-mascot {
+    animation: mascotBounce 1.2s ease-in-out infinite;
+    margin-bottom: 14px;
+  }
+  @keyframes mascotBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+
+  .start-title {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 20px;
+    color: #1a1a2e;
+    text-shadow: 3px 3px 0 #ffd23f, 5px 5px 0 rgba(0,0,0,0.15);
+    margin-bottom: 16px;
+    line-height: 1.5;
+    animation: titlePulse 2.5s ease-in-out infinite;
+  }
+  @keyframes titlePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+  }
+
+  .start-text {
+    font-family: 'Jua', sans-serif;
+    font-size: 15px;
+    color: #3a3a5e;
+    line-height: 1.9;
+    background: #fff3cd;
+    border: 3px solid #ffd23f;
+    border-radius: 14px;
+    padding: 14px 20px;
+    margin-bottom: 24px;
+    max-width: 400px;
+    box-shadow: 0 3px 0 #c2a000;
+  }
+
+  .start-features {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .start-feature-chip {
+    background: #1a1a2e;
+    color: #ffd23f;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 9px;
+    padding: 7px 12px;
+    border-radius: 8px;
+    border: 2.5px solid #ffd23f;
+    box-shadow: 2px 2px 0 #000;
+  }
+
+  .btn-start {
+    padding: 16px 44px;
+    border-radius: 14px;
+    border: 4px solid #000;
+    background: linear-gradient(180deg, #ffd23f 0%, #ffb700 100%);
+    color: #1a1a2e;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #8a5a00, 0 8px 20px rgba(255,183,0,0.4);
+    transition: transform 0.1s, box-shadow 0.1s;
+    text-shadow: 1px 1px 0 rgba(255,255,255,0.3);
+    animation: btnGlow 2s ease-in-out infinite;
+    letter-spacing: 1px;
+  }
+  .btn-start:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 9px 0 #8a5a00, 0 12px 24px rgba(255,183,0,0.5);
+  }
+  .btn-start:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 #8a5a00;
+  }
+  @keyframes btnGlow {
+    0%, 100% { box-shadow: 0 6px 0 #8a5a00, 0 8px 20px rgba(255,183,0,0.4); }
+    50% { box-shadow: 0 6px 0 #8a5a00, 0 8px 30px rgba(255,183,0,0.7); }
+  }
+
+  /* ── 타이머 HUD ── */
+  .timer-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #000;
+    border: 3px solid #ff6b6b;
+    border-radius: 10px;
+    padding: 8px 14px;
+  }
+  .timer-icon { font-size: 18px; }
+  .timer-text {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 14px;
+    color: #ff6b6b;
+    min-width: 36px;
+    text-align: center;
+  }
+  .timer-text.warning { color: #ff4444; animation: timerBlink 0.5s step-end infinite; }
+  @keyframes timerBlink {
+    0%, 100% { opacity: 1; } 50% { opacity: 0.3; }
+  }
+
+  /* ── 스테이지 배지 ── */
+  .stage-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(90deg, #9c6bff, #7c3fe0);
+    color: #fff;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 9px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 2.5px solid #000;
+    margin-bottom: 14px;
+    box-shadow: 2px 2px 0 #000;
+  }
+
+  /* ── 콤보 표시 ── */
+  .combo-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Press Start 2P', cursive;
+    font-size: 26px;
+    color: #ffd23f;
+    text-shadow: 3px 3px 0 #000, 0 0 20px rgba(255,210,63,0.8);
+    z-index: 9999;
+    pointer-events: none;
+    animation: comboPop 1.2s ease-out forwards;
+  }
+  @keyframes comboPop {
+    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+    20% { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
+    60% { opacity: 1; transform: translate(-50%, -60%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -80%) scale(0.8); }
+  }
+
+  /* ── 진입 애니메이션 ── */
+  .quiz-screen {
+    animation: screenSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  @keyframes screenSlideIn {
+    from { opacity: 0; transform: translateY(30px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* ── 타임아웃 오버레이 ── */
+  .timeout-flash {
+    position: fixed;
+    inset: 0;
+    background: rgba(229, 57, 53, 0.3);
+    z-index: 9998;
+    pointer-events: none;
+    animation: flashRed 0.4s ease-out forwards;
+  }
+  @keyframes flashRed {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  /* ── 게임 오버 오버레이 ── */
+  .gameover-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.82);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: goFadeIn 0.35s ease;
+  }
+  @keyframes goFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .gameover-box {
+    background: #1a1a2e;
+    border: 6px solid #e53935;
+    border-radius: 20px;
+    box-shadow: 0 0 0 4px #000, 0 10px 40px rgba(229,57,53,0.5);
+    padding: 40px 36px 34px;
+    text-align: center;
+    max-width: 360px;
+    width: 90%;
+    animation: goBoxPop 0.45s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes goBoxPop {
+    from { transform: scale(0.6); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+
+  .gameover-title {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 22px;
+    color: #e53935;
+    text-shadow: 3px 3px 0 #000, 0 0 20px rgba(229,57,53,0.8);
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+
+  .gameover-sub {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 9px;
+    color: #ff8a80;
+    margin-bottom: 22px;
+    line-height: 1.8;
+  }
+
+  .gameover-score {
+    background: #000;
+    border: 3px solid #ffd23f;
+    border-radius: 12px;
+    padding: 14px 20px;
+    margin-bottom: 26px;
+  }
+  .gameover-score-label {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 9px;
+    color: #9fd8ff;
+    margin-bottom: 8px;
+  }
+  .gameover-score-val {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 20px;
+    color: #ffd23f;
+    text-shadow: 2px 2px 0 #000;
+  }
+
+  .btn-gameover-retry {
+    padding: 14px 36px;
+    border-radius: 12px;
+    border: 4px solid #000;
+    background: linear-gradient(180deg, #ffd23f 0%, #ffb700 100%);
+    color: #1a1a2e;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 13px;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #8a5a00;
+    transition: transform 0.1s, box-shadow 0.1s;
+    animation: btnGlow 2s ease-in-out infinite;
+  }
+  .btn-gameover-retry:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 9px 0 #8a5a00;
+  }
+  .btn-gameover-retry:active {
+    transform: translateY(3px);
+    box-shadow: 0 2px 0 #8a5a00;
+  }
+
+  /* ── 연속 정답 스트릭 ── */
+  .streak-bar {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    background: #000;
+    border: 2.5px solid #9c6bff;
+    border-radius: 10px;
+    padding: 6px 12px;
+  }
+  .streak-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid #555;
+    background: #333;
+    transition: background 0.2s, border-color 0.2s, transform 0.2s;
+  }
+  .streak-dot.lit {
+    background: #ffd23f;
+    border-color: #ffd23f;
+    box-shadow: 0 0 6px #ffd23f;
+    transform: scale(1.2);
+  }
+  .streak-label {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 8px;
+    color: #9c6bff;
+    margin-left: 4px;
+  }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>⚡ 에너지 전환 O/X 퀴즈</h1>
-        <div class="subtitle">2022 개정 교육과정 통합과학2</div>
-        
-        <div class="instruction">
-            <div class="instruction-title">📝 에너지 전환에 대한 설명으로 옳은 것은 O, 옳지 않은 것은 X로 표시하시오.</div>
-        </div>
 
-        <div id="questions-container"></div>
+<div class="cloud cloud-1"><svg viewBox="0 0 100 50" width="90"><ellipse cx="25" cy="35" rx="22" ry="14" fill="#fff"/><ellipse cx="50" cy="25" rx="26" ry="18" fill="#fff"/><ellipse cx="75" cy="35" rx="20" ry="13" fill="#fff"/></svg></div>
+<div class="cloud cloud-2"><svg viewBox="0 0 100 50" width="70"><ellipse cx="25" cy="35" rx="22" ry="14" fill="#fff"/><ellipse cx="50" cy="25" rx="26" ry="18" fill="#fff"/><ellipse cx="75" cy="35" rx="20" ry="13" fill="#fff"/></svg></div>
+<div class="cloud cloud-3"><svg viewBox="0 0 100 50" width="60"><ellipse cx="25" cy="35" rx="22" ry="14" fill="#fff"/><ellipse cx="50" cy="25" rx="26" ry="18" fill="#fff"/><ellipse cx="75" cy="35" rx="20" ry="13" fill="#fff"/></svg></div>
 
-        <div class="result-section" id="result-section">
-            <div class="result-title">📊 채점 결과</div>
-            <div class="score-display" id="score-display"></div>
-            <div id="results-container"></div>
-        </div>
+<div class="hill hill-1"></div>
+<div class="hill hill-2"></div>
 
-        <div class="button-group">
-            <button class="submit-btn" id="submit-btn" onclick="submitAnswers()">✓ 채점하기</button>
-            <button class="new-problem-btn" onclick="newProblem()">🔄 새 문제</button>
-        </div>
+<!-- 좌우 파이프 -->
+<div class="pipe-deco pipe-left">
+  <svg viewBox="0 0 60 90" width="54">
+    <rect x="6" y="14" width="48" height="76" fill="#4a9e1f" stroke="#000" stroke-width="3"/>
+    <rect x="0" y="0" width="60" height="20" rx="4" fill="#5db832" stroke="#000" stroke-width="3"/>
+  </svg>
+</div>
+<div class="pipe-deco pipe-right">
+  <svg viewBox="0 0 60 90" width="54">
+    <rect x="6" y="14" width="48" height="76" fill="#4a9e1f" stroke="#000" stroke-width="3"/>
+    <rect x="0" y="0" width="60" height="20" rx="4" fill="#5db832" stroke="#000" stroke-width="3"/>
+  </svg>
+</div>
+
+<!-- 걸어다니는 마스코트 캐릭터 (오리지널 디자인) -->
+<div class="mascot-walker">
+  <svg viewBox="0 0 56 64" width="56">
+    <!-- 모자 -->
+    <path d="M8 18 Q28 0 48 18 L48 24 L8 24 Z" fill="#e53935" stroke="#000" stroke-width="2.5"/>
+    <circle cx="40" cy="14" r="6" fill="#fff" stroke="#000" stroke-width="2"/>
+    <text x="40" y="17" text-anchor="middle" font-size="8" font-weight="900" fill="#e53935" font-family="Arial">Q</text>
+    <!-- 얼굴 -->
+    <ellipse cx="28" cy="30" rx="15" ry="11" fill="#ffd9a0" stroke="#000" stroke-width="2.5"/>
+    <!-- 코 -->
+    <ellipse cx="28" cy="33" rx="6" ry="5" fill="#ffc285" stroke="#000" stroke-width="2"/>
+    <!-- 눈 -->
+    <circle cx="20" cy="27" r="2.2" fill="#000"/>
+    <circle cx="34" cy="27" r="2.2" fill="#000"/>
+    <!-- 콧수염 -->
+    <path d="M14 34 Q28 42 42 34 Q28 39 14 34 Z" fill="#5d4037" stroke="#000" stroke-width="1.5"/>
+    <!-- 몸통 (멜빵바지) -->
+    <rect x="14" y="38" width="28" height="20" rx="4" fill="#5c94fc" stroke="#000" stroke-width="2.5"/>
+    <circle cx="20" cy="44" r="2.5" fill="#ffd23f" stroke="#000" stroke-width="1.5"/>
+    <circle cx="36" cy="44" r="2.5" fill="#ffd23f" stroke="#000" stroke-width="1.5"/>
+    <!-- 셔츠 소매 -->
+    <rect x="6" y="38" width="10" height="14" rx="4" fill="#e53935" stroke="#000" stroke-width="2.5"/>
+    <rect x="40" y="38" width="10" height="14" rx="4" fill="#e53935" stroke="#000" stroke-width="2.5"/>
+    <!-- 신발 -->
+    <ellipse cx="20" cy="60" rx="8" ry="4.5" fill="#5d4037" stroke="#000" stroke-width="2.5"/>
+    <ellipse cx="36" cy="60" rx="8" ry="4.5" fill="#5d4037" stroke="#000" stroke-width="2.5"/>
+  </svg>
+</div>
+
+<div class="ground-strip"></div>
+
+
+<div class="container">
+
+  <!-- HUD 헤더 -->
+  <div class="hud">
+    <div>
+      <div class="hud-title">⚡ 전기장 모험 ⚡</div>
+      <div class="hud-sub">2022 개정 교육과정 · 고등학교 물리학 퀘스트</div>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+      <div class="timer-wrap" id="timerWrap" style="display:none;">
+        <span class="timer-icon">⏱</span>
+        <span class="timer-text" id="timerText">30</span>
+      </div>
+      <div class="streak-bar">
+        <span class="streak-dot" id="sd0"></span>
+        <span class="streak-dot" id="sd1"></span>
+        <span class="streak-dot" id="sd2"></span>
+        <span class="streak-label">COMBO</span>
+      </div>
+      <div class="hud-score">
+        <span class="coin-icon">🪙</span>
+        <span class="hud-score-text">
+          <span id="scoreCorrect">0</span> / <span id="scoreTotal">0</span>
+          <span class="pct" id="scorePct">대기중</span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 게임 카드 -->
+  <div class="game-card">
+    <div class="brick-strip"></div>
+
+    <!-- 시작 화면 (환영 메시지) -->
+    <div class="start-screen" id="startScreen">
+      <div class="start-mascot">
+        <svg viewBox="0 0 56 64" width="80">
+          <path d="M8 18 Q28 0 48 18 L48 24 L8 24 Z" fill="#e53935" stroke="#000" stroke-width="2.5"/>
+          <circle cx="40" cy="14" r="6" fill="#fff" stroke="#000" stroke-width="2"/>
+          <text x="40" y="17" text-anchor="middle" font-size="8" font-weight="900" fill="#e53935" font-family="Arial">Q</text>
+          <ellipse cx="28" cy="30" rx="15" ry="11" fill="#ffd9a0" stroke="#000" stroke-width="2.5"/>
+          <ellipse cx="28" cy="33" rx="6" ry="5" fill="#ffc285" stroke="#000" stroke-width="2"/>
+          <circle cx="20" cy="27" r="2.2" fill="#000"/>
+          <circle cx="34" cy="27" r="2.2" fill="#000"/>
+          <path d="M14 34 Q28 42 42 34 Q28 39 14 34 Z" fill="#5d4037" stroke="#000" stroke-width="1.5"/>
+          <rect x="14" y="38" width="28" height="20" rx="4" fill="#5c94fc" stroke="#000" stroke-width="2.5"/>
+          <circle cx="20" cy="44" r="2.5" fill="#ffd23f" stroke="#000" stroke-width="1.5"/>
+          <circle cx="36" cy="44" r="2.5" fill="#ffd23f" stroke="#000" stroke-width="1.5"/>
+          <rect x="6" y="38" width="10" height="14" rx="4" fill="#e53935" stroke="#000" stroke-width="2.5"/>
+          <rect x="40" y="38" width="10" height="14" rx="4" fill="#e53935" stroke="#000" stroke-width="2.5"/>
+          <ellipse cx="20" cy="60" rx="8" ry="4.5" fill="#5d4037" stroke="#000" stroke-width="2.5"/>
+          <ellipse cx="36" cy="60" rx="8" ry="4.5" fill="#5d4037" stroke="#000" stroke-width="2.5"/>
+        </svg>
+      </div>
+      <div class="start-title">⚡ 전기장 모험 ⚡</div>
+      <div class="start-text">물리 왕국에 오신 것을 환영합니다!<br>균일한 전기장 스테이지에서<br>전위와 위치 에너지 퀴즈에 도전해보세요.</div>
+      <div class="start-features">
+        <span class="start-feature-chip">⏱ 30초 타이머</span>
+        <span class="start-feature-chip">🔥 콤보 시스템</span>
+        <span class="start-feature-chip">🌟 해설 제공</span>
+      </div>
+      <button class="btn-start" onclick="startGame()">▶ 게임 참여하기</button>
     </div>
 
-    <script>
-        // 모든 가능한 문제들 (정답 포함)
-        const allProblems = [
-            {
-                question: "한 형태의 에너지는 다른 형태의 에너지로 전환될 수 있다.",
-                answer: true,
-                explanation: "에너지는 한 형태에서 다른 형태로 전환될 수 있습니다. 예: 전기 에너지 → 빛에너지(전구), 화학 에너지 → 운동 에너지(자동차)"
-            },
-            {
-                question: "노트북을 사용할 때 발생하는 열에너지는 다시 사용할 수 있다.",
-                answer: false,
-                explanation: "노트북 사용 시 발생하는 열에너지는 주변으로 흩어져 다시 사용하기 어렵습니다. 이는 에너지 전환 시 유용한 에너지가 감소하는 예입니다."
-            },
-            {
-                question: "에너지가 전환될 때 일부가 항상 열에너지로 전환되어 버려진다.",
-                answer: true,
-                explanation: "에너지 전환 과정에서 일부는 항상 열에너지로 전환되어 주변으로 흩어지므로, 에너지 전환 효율은 100%가 될 수 없습니다."
-            },
-            {
-                question: "태양 전지는 빛에너지를 직접 전기 에너지로 전환한다.",
-                answer: true,
-                explanation: "태양 전지는 광전 효과를 이용하여 빛에너지를 중간 단계 없이 직접 전기 에너지로 전환합니다."
-            },
-            {
-                question: "화력 발전소에서는 화석 연료의 화학 에너지가 직접 전기 에너지로 전환된다.",
-                answer: false,
-                explanation: "화력 발전은 화학 에너지 → 열에너지 → 운동 에너지 → 전기 에너지 순서로 여러 단계를 거쳐 에너지가 전환됩니다."
-            },
-            {
-                question: "발전기에서 전기 에너지를 생산할 때는 전자기 유도 현상이 이용된다.",
-                answer: true,
-                explanation: "발전기는 코일 주위의 자기장 변화로 전류가 유도되는 전자기 유도 현상을 이용하여 운동 에너지를 전기 에너지로 전환합니다."
-            },
-            {
-                question: "식물은 광합성을 통해 빛에너지를 화학 에너지로 전환한다.",
-                answer: true,
-                explanation: "식물은 엽록체에서 광합성을 통해 태양의 빛에너지를 포도당 같은 화학 에너지로 전환하여 저장합니다."
-            },
-            {
-                question: "에너지 전환 과정에서 에너지의 총량은 항상 감소한다.",
-                answer: false,
-                explanation: "에너지 보존 법칙에 따라 에너지의 총량은 일정하게 보존됩니다. 다만 사용 가능한 에너지는 감소할 수 있습니다."
-            },
-            {
-                question: "수력 발전에서는 물의 위치 에너지가 전기 에너지로 전환된다.",
-                answer: true,
-                explanation: "수력 발전은 높은 곳의 물이 가진 위치 에너지 → 운동 에너지 → 전기 에너지 순서로 에너지를 전환합니다."
-            },
-            {
-                question: "원자력 발전에서는 핵분열 시 발생하는 열에너지를 이용한다.",
-                answer: true,
-                explanation: "원자력 발전소는 우라늄의 핵분열 반응에서 발생하는 열에너지로 물을 끓여 증기를 만들고, 터빈을 돌려 전기를 생산합니다."
-            },
-            {
-                question: "풍력 발전에서는 바람의 열에너지가 전기 에너지로 전환된다.",
-                answer: false,
-                explanation: "풍력 발전은 바람의 운동 에너지를 이용합니다. 바람의 운동 에너지 → 날개의 회전 운동 에너지 → 전기 에너지로 전환됩니다."
-            },
-            {
-                question: "전기 난로는 전기 에너지를 열에너지로 전환한다.",
-                answer: true,
-                explanation: "전기 난로는 전열선에 전류가 흐를 때 전기 저항에 의해 전기 에너지가 열에너지로 전환되는 원리를 이용합니다."
-            },
-            {
-                question: "태양 에너지는 태양 내부의 핵융합 반응으로 생성된다.",
-                answer: true,
-                explanation: "태양 내부에서는 수소 원자핵이 융합하여 헬륨을 만드는 핵융합 반응이 일어나며, 이 과정에서 막대한 에너지가 방출됩니다."
-            },
-            {
-                question: "배터리는 전기 에너지를 화학 에너지로 저장한다.",
-                answer: true,
-                explanation: "충전식 배터리는 충전 시 전기 에너지를 화학 에너지로 저장하고, 사용 시 화학 에너지를 다시 전기 에너지로 전환합니다."
-            },
-            {
-                question: "마찰에 의해 발생하는 열은 모두 유용한 일로 전환될 수 있다.",
-                answer: false,
-                explanation: "마찰에 의해 발생한 열에너지는 주변으로 흩어져 다시 유용한 일로 전환하기 매우 어렵습니다. 이것이 에너지 효율이 100%가 될 수 없는 이유입니다."
-            },
-            {
-                question: "지열 발전은 지구 내부의 열에너지를 전기 에너지로 전환한다.",
-                answer: true,
-                explanation: "지열 발전은 지구 내부의 열에너지로 물을 끓여 증기를 만들고, 이 증기로 터빈을 돌려 전기를 생산합니다."
-            },
-            {
-                question: "전기 모터는 전기 에너지를 운동 에너지로 전환한다.",
-                answer: true,
-                explanation: "전기 모터는 전자기력을 이용하여 전기 에너지를 회전 운동 에너지로 전환하는 장치입니다."
-            },
-            {
-                question: "에너지 효율이 높다는 것은 전환 과정에서 손실되는 에너지가 많다는 의미이다.",
-                answer: false,
-                explanation: "에너지 효율이 높다는 것은 원하는 형태의 에너지로 더 많이 전환되고 손실이 적다는 의미입니다."
-            },
-            {
-                question: "음식물을 소화하는 과정은 화학 에너지를 다른 형태로 전환하는 것이다.",
-                answer: true,
-                explanation: "음식물의 화학 에너지는 소화 과정을 거쳐 우리 몸에서 사용할 수 있는 ATP 형태의 화학 에너지, 열에너지, 운동 에너지 등으로 전환됩니다."
-            },
-            {
-                question: "조력 발전은 달의 인력에 의한 바닷물의 운동 에너지를 이용한다.",
-                answer: true,
-                explanation: "조력 발전은 달과 태양의 인력으로 인한 밀물과 썰물 때 바닷물의 위치 에너지와 운동 에너지를 전기 에너지로 전환합니다."
-            }
-        ];
+    <!-- 실제 퀴즈 화면 -->
+    <div class="quiz-screen" id="quizScreen" style="display:none;">
 
-        let currentProblems = [];
-        let userAnswers = {};
-        let submitted = false;
+    <!-- ? 코인 블록 -->
+    <div class="coin-block">?</div>
 
-        function shuffleArray(array) {
-            const newArray = [...array];
-            for (let i = newArray.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
-            }
-            return newArray;
-        }
+    <!-- 점프하는 작은 마스코트 -->
+    <div class="mascot-jump">
+      <svg viewBox="0 0 56 64" width="52">
+        <path d="M8 18 Q28 0 48 18 L48 24 L8 24 Z" fill="#7c3fe0" stroke="#000" stroke-width="2.5"/>
+        <circle cx="40" cy="14" r="6" fill="#fff" stroke="#000" stroke-width="2"/>
+        <text x="40" y="17" text-anchor="middle" font-size="8" font-weight="900" fill="#7c3fe0" font-family="Arial">E</text>
+        <ellipse cx="28" cy="30" rx="15" ry="11" fill="#ffd9a0" stroke="#000" stroke-width="2.5"/>
+        <ellipse cx="28" cy="33" rx="6" ry="5" fill="#ffc285" stroke="#000" stroke-width="2"/>
+        <circle cx="20" cy="27" r="2.2" fill="#000"/>
+        <circle cx="34" cy="27" r="2.2" fill="#000"/>
+        <path d="M14 34 Q28 42 42 34 Q28 39 14 34 Z" fill="#5d4037" stroke="#000" stroke-width="1.5"/>
+        <rect x="14" y="38" width="28" height="20" rx="4" fill="#ffd23f" stroke="#000" stroke-width="2.5"/>
+        <circle cx="20" cy="44" r="2.5" fill="#7c3fe0" stroke="#000" stroke-width="1.5"/>
+        <circle cx="36" cy="44" r="2.5" fill="#7c3fe0" stroke="#000" stroke-width="1.5"/>
+        <rect x="6" y="38" width="10" height="14" rx="4" fill="#7c3fe0" stroke="#000" stroke-width="2.5"/>
+        <rect x="40" y="38" width="10" height="14" rx="4" fill="#7c3fe0" stroke="#000" stroke-width="2.5"/>
+        <ellipse cx="20" cy="60" rx="8" ry="4.5" fill="#5d4037" stroke="#000" stroke-width="2.5"/>
+        <ellipse cx="36" cy="60" rx="8" ry="4.5" fill="#5d4037" stroke="#000" stroke-width="2.5"/>
+      </svg>
+    </div>
 
-        function selectRandomProblems() {
-            // 전체 문제 중 랜덤으로 3개 선택
-            const shuffled = shuffleArray(allProblems);
-            return shuffled.slice(0, 3);
-        }
+    <div class="stage-badge" id="stageBadge">🍄 STAGE 1-1: 균일한 전기장</div>
 
-        function loadProblems() {
-            currentProblems = selectRandomProblems();
-            const container = document.getElementById('questions-container');
-            container.innerHTML = '';
-            
-            currentProblems.forEach((problem, index) => {
-                const questionDiv = document.createElement('div');
-                questionDiv.className = 'question-item';
-                questionDiv.innerHTML = `
-                    <div class="question-header">
-                        <span class="question-number">(${index + 1})</span>
-                        <span class="question-text">${problem.question}</span>
-                    </div>
-                    <div class="answer-boxes">
-                        <div class="answer-box o" onclick="selectAnswer(${index}, true)">O</div>
-                        <div class="answer-box x" onclick="selectAnswer(${index}, false)">X</div>
-                    </div>
-                `;
-                container.appendChild(questionDiv);
-            });
-        }
+    <div class="problem-text" id="problemText"></div>
 
-        function selectAnswer(questionIndex, answer) {
-            if (submitted) return;
-            
-            userAnswers[questionIndex] = answer;
-            
-            const questionItem = document.getElementsByClassName('question-item')[questionIndex];
-            const boxes = questionItem.getElementsByClassName('answer-box');
-            
-            Array.from(boxes).forEach(box => box.classList.remove('selected'));
-            
-            if (answer) {
-                boxes[0].classList.add('selected');
-            } else {
-                boxes[1].classList.add('selected');
-            }
-            
-            updateSubmitButton();
-        }
+    <div class="field-viz">
+      <svg id="vizSvg" width="300" height="250" viewBox="0 0 300 250"></svg>
+    </div>
 
-        function updateSubmitButton() {
-            const submitBtn = document.getElementById('submit-btn');
-            submitBtn.disabled = Object.keys(userAnswers).length !== currentProblems.length;
-        }
+    <div class="options" id="optionList"></div>
 
-        function submitAnswers() {
-            if (submitted) return;
-            
-            let correctCount = 0;
-            
-            currentProblems.forEach((problem, index) => {
-                const questionItem = document.getElementsByClassName('question-item')[index];
-                const boxes = questionItem.getElementsByClassName('answer-box');
-                const userAnswer = userAnswers[index];
-                const isCorrect = userAnswer === problem.answer;
-                
-                if (isCorrect) {
-                    correctCount++;
-                    if (userAnswer) {
-                        boxes[0].classList.add('correct');
-                    } else {
-                        boxes[1].classList.add('correct');
-                    }
-                } else {
-                    if (userAnswer) {
-                        boxes[0].classList.add('incorrect');
-                    } else {
-                        boxes[1].classList.add('incorrect');
-                    }
-                }
-            });
-            
-            showResults(correctCount);
-            submitted = true;
-            document.getElementById('submit-btn').disabled = true;
-        }
+    <!-- 정답 선택 영역 -->
+    <div class="answer-input-row">
+      <label>🎮 정답 선택</label>
+      <div class="num-choice-row" id="numChoiceRow"></div>
+      <button class="btn-submit" id="submitBtn" onclick="submitAnswer()">제출! 🚀</button>
+    </div>
+    <div class="answer-hint" style="padding: 6px 4px 0;">선지 번호를 클릭한 후 제출 버튼을 눌러보세요!</div>
 
-        function showResults(correctCount) {
-            const resultSection = document.getElementById('result-section');
-            const scoreDisplay = document.getElementById('score-display');
-            const resultsContainer = document.getElementById('results-container');
-            
-            scoreDisplay.textContent = `${correctCount} / ${currentProblems.length} 정답`;
-            
-            resultsContainer.innerHTML = '';
-            currentProblems.forEach((problem, index) => {
-                const userAnswer = userAnswers[index];
-                const isCorrect = userAnswer === problem.answer;
-                
-                const resultItem = document.createElement('div');
-                resultItem.className = 'result-item';
-                resultItem.innerHTML = `
-                    <div class="result-question">(${index + 1}) ${problem.question}</div>
-                    <div class="result-answer ${isCorrect ? 'correct' : 'incorrect'}">
-                        ${isCorrect ? '✓ 정답' : '✗ 오답'} (정답: ${problem.answer ? 'O' : 'X'})
-                    </div>
-                    <div class="result-answer">${problem.explanation}</div>
-                `;
-                resultsContainer.appendChild(resultItem);
-            });
-            
-            resultSection.classList.add('show');
-            resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
+    <!-- 피드백 -->
+    <div class="feedback" id="feedback"></div>
 
-        function newProblem() {
-            userAnswers = {};
-            submitted = false;
-            
-            document.getElementById('result-section').classList.remove('show');
-            document.getElementById('submit-btn').disabled = true;
-            
-            loadProblems();
-            
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+    <div class="btn-row">
+      <button class="btn-new" onclick="newQuestion()">🟢 다음 스테이지 →</button>
+    </div>
+  </div>
 
-        // 초기 문제 로드
-        loadProblems();
-    </script>
+</div>
+
+<script>
+let E, q, d;
+let answered = false;
+let pickedIdx = -1;
+let scoreCorrect = 0;
+let scoreTotal = 0;
+let simRunning = false;
+let simRaf = null;
+let simT = 0;
+
+// 타이머
+let timerInterval = null;
+let timeLeft = 20;
+const TIMER_DURATION = 20;
+
+// 콤보/스트릭
+let streak = 0;
+let stageNum = 1;
+
+const EVALS = [1, 2, 3, 4, 5];
+const QVALS = [1, 2, 3];
+const DVALS = [2, 3, 4, 5];
+
+/* ─── 효과음 (Web Audio API) ─── */
+let audioCtx = null;
+function getAudio() {
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+  }
+  return audioCtx;
+}
+
+function playSound(type) {
+  const ctx = getAudio();
+  if (!ctx) return;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  if (type === 'correct') {
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(523, ctx.currentTime);
+    osc.frequency.setValueAtTime(659, ctx.currentTime + 0.1);
+    osc.frequency.setValueAtTime(784, ctx.currentTime + 0.2);
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.4);
+  } else if (type === 'wrong') {
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(200, ctx.currentTime);
+    osc.frequency.setValueAtTime(150, ctx.currentTime + 0.15);
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.35);
+  } else if (type === 'click') {
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(440, ctx.currentTime);
+    gain.gain.setValueAtTime(0.08, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.08);
+  } else if (type === 'timeout') {
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(180, ctx.currentTime);
+    osc.frequency.setValueAtTime(100, ctx.currentTime + 0.3);
+    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.5);
+  } else if (type === 'start') {
+    const notes = [262, 330, 392, 523];
+    notes.forEach((freq, i) => {
+      const o2 = ctx.createOscillator();
+      const g2 = ctx.createGain();
+      o2.connect(g2); g2.connect(ctx.destination);
+      o2.type = 'square';
+      o2.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.1);
+      g2.gain.setValueAtTime(0.12, ctx.currentTime + i * 0.1);
+      g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.1 + 0.18);
+      o2.start(ctx.currentTime + i * 0.1);
+      o2.stop(ctx.currentTime + i * 0.1 + 0.18);
+    });
+  }
+}
+
+/* ─── 게임 시작 ─── */
+function startGame() {
+  playSound('start');
+  // 마스코트 점프 연출
+  const startScreen = document.getElementById('startScreen');
+  startScreen.style.transition = 'opacity 0.3s, transform 0.3s';
+  startScreen.style.opacity = '0';
+  startScreen.style.transform = 'scale(0.9)';
+
+  setTimeout(() => {
+    startScreen.style.display = 'none';
+    document.getElementById('quizScreen').style.display = 'block';
+    document.getElementById('timerWrap').style.display = 'flex';
+    newQuestion();
+  }, 300);
+}
+
+/* ─── 타이머 ─── */
+function startTimer() {
+  clearInterval(timerInterval);
+  timeLeft = TIMER_DURATION;
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      if (!answered) onTimeout();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById('timerText');
+  if (!el) return;
+  el.textContent = timeLeft;
+  el.className = 'timer-text' + (timeLeft <= 7 ? ' warning' : '');
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+function onTimeout() {
+  stopTimer();
+  playSound('timeout');
+
+  // 빨간 화면 플래시
+  const flash = document.createElement('div');
+  flash.className = 'timeout-flash';
+  document.body.appendChild(flash);
+  setTimeout(() => flash.remove(), 500);
+
+  // 잠깐 후 게임 오버 화면 표시
+  setTimeout(() => showGameOver(), 600);
+}
+
+function showGameOver() {
+  const pct = scoreTotal > 0 ? Math.round(scoreCorrect / scoreTotal * 100) : 0;
+
+  // 게임 오버 효과음 (하강 음계)
+  const ctx = getAudio();
+  if (ctx) {
+    [392, 330, 262, 196].forEach((freq, i) => {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type = 'square';
+      o.frequency.setValueAtTime(freq, ctx.currentTime + i * 0.18);
+      g.gain.setValueAtTime(0.15, ctx.currentTime + i * 0.18);
+      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.18 + 0.25);
+      o.start(ctx.currentTime + i * 0.18);
+      o.stop(ctx.currentTime + i * 0.18 + 0.25);
+    });
+  }
+
+  const overlay = document.createElement('div');
+  overlay.className = 'gameover-overlay';
+  overlay.id = 'gameoverOverlay';
+  overlay.innerHTML = `
+    <div class="gameover-box">
+      <div style="font-size:52px;margin-bottom:10px;">💀</div>
+      <div class="gameover-title">GAME<br>OVER</div>
+      <div class="gameover-sub">⏰ 시간 초과!<br>20초 안에 풀어야 합니다</div>
+      <div class="gameover-score">
+        <div class="gameover-score-label">이번 기록</div>
+        <div class="gameover-score-val">🪙 ${scoreCorrect} / ${scoreTotal}</div>
+        <div style="font-family:'Jua',sans-serif;color:#76c442;font-size:13px;margin-top:6px;">${pct}% 클리어</div>
+      </div>
+      <button class="btn-gameover-retry" onclick="resetGame()">▶ 다시 도전!</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+}
+
+function resetGame() {
+  // 상태 초기화
+  stopTimer();
+  stopSim();
+  answered = false;
+  pickedIdx = -1;
+  scoreCorrect = 0;
+  scoreTotal = 0;
+  streak = 0;
+  stageNum = 1;
+  updateScore();
+  updateStreak();
+
+  // 게임 오버 오버레이 제거
+  const overlay = document.getElementById('gameoverOverlay');
+  if (overlay) {
+    overlay.style.animation = 'goFadeIn 0.25s ease reverse';
+    setTimeout(() => overlay.remove(), 240);
+  }
+
+  // 퀴즈 화면 → 시작 화면으로
+  const quizScreen = document.getElementById('quizScreen');
+  const startScreen = document.getElementById('startScreen');
+  const timerWrap = document.getElementById('timerWrap');
+
+  quizScreen.style.display = 'none';
+  timerWrap.style.display = 'none';
+
+  // 피드백/옵션 초기화
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('feedback').innerHTML = '';
+
+  // 시작 화면 복원
+  startScreen.style.display = 'flex';
+  startScreen.style.opacity = '0';
+  startScreen.style.transform = 'scale(0.9)';
+  requestAnimationFrame(() => {
+    startScreen.style.transition = 'opacity 0.35s, transform 0.35s';
+    startScreen.style.opacity = '1';
+    startScreen.style.transform = 'scale(1)';
+  });
+}
+
+/* ─── 콤보/스트릭 ─── */
+function updateStreak() {
+  for (let i = 0; i < 3; i++) {
+    const dot = document.getElementById('sd' + i);
+    if (dot) dot.className = 'streak-dot' + (i < streak ? ' lit' : '');
+  }
+}
+
+function showCombo(count) {
+  const msgs = ['', '', '🔥 NICE!', '⚡ GREAT!!', '🌟 PERFECT!!!'];
+  const msg = msgs[Math.min(count, 4)] || '🌟 PERFECT!!!';
+  const el = document.createElement('div');
+  el.className = 'combo-popup';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1200);
+}
+
+/* ─── 스테이지 배지 업데이트 ─── */
+function updateStageBadge() {
+  const badge = document.getElementById('stageBadge');
+  if (badge) badge.textContent = `🍄 STAGE ${stageNum}-1: 균일한 전기장`;
+}
+
+pick = function(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+/* ─── 새 문제 ─── */
+function newQuestion() {
+  E = pick(EVALS);
+  q = pick(QVALS);
+  d = pick(DVALS);
+  answered = false;
+  pickedIdx = -1;
+  stopSim();
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('feedback').innerHTML = '';
+  document.getElementById('submitBtn').disabled = false;
+  buildProblem();
+  renderNumChoices();
+  updateStageBadge();
+  startTimer();
+}
+
+function renderNumChoices() {
+  const row = document.getElementById('numChoiceRow');
+  row.innerHTML = '';
+  ['①','②','③','④','⑤'].forEach((label, i) => {
+    const b = document.createElement('button');
+    b.className = 'num-btn';
+    b.textContent = label;
+    b.dataset.idx = i;
+    b.onclick = () => pickChoice(i);
+    row.appendChild(b);
+  });
+}
+
+function pickChoice(i) {
+  if (answered) return;
+  playSound('click');
+  pickedIdx = i;
+  document.querySelectorAll('.num-btn').forEach((b, j) => {
+    b.classList.toggle('picked', j === i);
+  });
+  // 선지 하이라이트
+  document.querySelectorAll('.option').forEach((el, j) => {
+    el.style.outline = j === i ? '3px solid #5c94fc' : '';
+    el.style.transform = j === i ? 'scale(1.01)' : '';
+  });
+}
+
+function buildProblem() {
+  /* ── 물리량 정의 ──
+     전하: +2q,  전기장: E (위→아래 방향),  P-Q 거리: 4d
+     전하 이동방향: 전기장과 반대 (아래→위), Q가 P보다 위쪽
+     전기장 방향(아래)이 전위가 낮아지는 방향 → 위쪽(Q)이 고전위
+     V_Q - V_P = E × 4d  (P 기준 Q의 전위 = +4Ed)
+     전기력 F = (2q) × E = 2qE  (전하량 × 전기장, 항상 일정)
+     위치에너지 U = qV → U_Q - U_P = (2q)(4Ed) = 8qEd  → U_Q > U_P
+  */
+  const Vdiff   = E * 4 * d;
+  const Fcoef   = 2 * q;
+  const Udiff   = 2 * q * 4 * d;
+
+  const statementPool = [
+    {
+      key: 'Vdiff',
+      trueText: `P와 Q 사이의 전위차는 <span class="math">${Vdiff}Ed</span>이다.`,
+      falseText: `P와 Q 사이의 전위차는 <span class="math">${Vdiff + 2}Ed</span>이다.`,
+      explainTrue: `전위차 = 전기장 × 거리 = E × ${4*d}d = <b>${Vdiff}Ed</b>. (균일한 전기장에서 ΔV = E·d)`,
+      explainFalse: `실제로는 전위차 = E × ${4*d}d = <b>${Vdiff}Ed</b>이므로, 제시된 값은 옳지 않습니다.`
+    },
+    {
+      key: 'Vq',
+      trueText: `P를 기준점으로 할 때 Q에서의 전위는 <span class="math">${Vdiff}Ed</span>이다.`,
+      falseText: `P를 기준점으로 할 때 Q에서의 전위는 <span class="math">-${Vdiff}Ed</span>이다.`,
+      explainTrue: `전기장은 위→아래 방향이고 Q는 전기장의 반대 방향(위쪽)에 있어 전위가 더 높습니다. 따라서 V_Q = <b>+${Vdiff}Ed</b>.`,
+      explainFalse: `Q는 전기장 반대 방향(위쪽)에 있어 전위가 P보다 <b>높습니다</b>(+${Vdiff}Ed). 음수(낮음)로 제시된 것은 옳지 않습니다.`
+    },
+    {
+      key: 'F',
+      trueText: `전하에는 크기가 <span class="math">${Fcoef}qE</span>인 일정한 전기력이 작용한다.`,
+      falseText: `전하에는 크기가 <span class="math">${Fcoef}qE</span>이지만 점점 변하는 전기력이 작용한다.`,
+      explainTrue: `균일한 전기장에서 전기력 F = 전하량 × E = ${2*q}q × E = <b>${Fcoef}qE</b>이며, 전기장이 균일하므로 크기가 일정합니다.`,
+      explainFalse: `전기장이 균일(세기 E로 일정)하므로 전기력의 크기도 <b>항상 일정(${Fcoef}qE)</b>합니다. "변한다"는 설명은 옳지 않습니다.`
+    },
+    {
+      key: 'Ucompare',
+      trueText: `전기력에 의한 위치 에너지는 Q에서가 P에서보다 크다.`,
+      falseText: `전기력에 의한 위치 에너지는 P에서가 Q에서보다 크다.`,
+      explainTrue: `U = qV이고 V_Q &gt; V_P이므로 U_Q &gt; U_P, 즉 <b>Q에서의 위치 에너지가 더 큽니다</b>.`,
+      explainFalse: `(+${2*q}q) 전하는 전기장(위→아래) 방향으로 힘을 받아 아래쪽(P)이 낮은 전위에너지를 가집니다. 즉 U_P &lt; U_Q이므로, "P에서가 더 크다"는 설명은 <b>옳지 않습니다</b>.`
+    },
+    {
+      key: 'Udiff',
+      trueText: `P와 Q에서 전기력에 의한 위치 에너지의 차이는 <span class="math">${Udiff}qEd</span>이다.`,
+      falseText: `P와 Q에서 전기력에 의한 위치 에너지의 차이는 <span class="math">${Udiff/2}qEd</span>이다.`,
+      explainTrue: `ΔU = 전하량 × 전위차 = ${2*q}q × ${Vdiff}Ed = <b>${Udiff}qEd</b>.`,
+      explainFalse: `실제로는 ΔU = ${2*q}q × ${Vdiff}Ed = <b>${Udiff}qEd</b>이므로, 제시된 값은 옳지 않습니다.`
+    }
+  ];
+
+  const falseIdx = Math.floor(Math.random() * 5);
+
+  const statements = statementPool.map((s, i) => {
+    if (i === falseIdx) {
+      return { text: s.falseText, correct: false, expl: s.explainFalse, key: s.key };
+    }
+    return { text: s.trueText, correct: true, expl: s.explainTrue, key: s.key };
+  });
+
+  window._stmts = statements;
+  window._correctIdx = falseIdx;
+
+  document.getElementById('problemText').innerHTML =
+    `🌟 그림은 세기가 <span class="var">E</span>로 균일한 전기장 영역 속에 놓인 전하량 
+    <span class="var">+${2*q}q</span>인 전하를 전기장과 반대 방향으로 일정한 속력으로 옮기는 모습을 나타낸 것이다.
+    점 P와 Q는 전하를 옮기는 경로상의 점으로, 거리가 <span class="var">${4*d}d</span>만큼 떨어져 있다.<br>
+    <br><b>🍄 이에 대한 설명으로 옳지 않은 것은?</b>`;
+
+  drawViz();
+
+  const list = document.getElementById('optionList');
+  list.innerHTML = '';
+  statements.forEach((s, i) => {
+    const row = document.createElement('div');
+    row.className = 'option';
+    row.dataset.idx = i;
+    row.innerHTML = `<span class="opt-num">${['①','②','③','④','⑤'][i]}</span><span class="opt-text">${s.text}</span>`;
+    row.onclick = () => pickChoice(i);
+    row.style.cursor = 'pointer';
+    list.appendChild(row);
+  });
+}
+
+/* ─── SVG 그리기 ─── */
+function drawViz() {
+  const svg = document.getElementById('vizSvg');
+  const gap = Math.min(110, 40 + d * 14);
+  const midY = 125;
+  const qY = midY - gap / 2;
+  const pY = midY + gap / 2;
+
+  svg.innerHTML = `
+    <defs>
+      <marker id="aD" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+        <path d="M1,1 L7,4 L1,7 Z" fill="#5c94fc"/>
+      </marker>
+      <marker id="aB" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+        <path d="M1,1 L7,4 L1,7 Z" fill="#c8410c"/>
+      </marker>
+      <marker id="aG" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+        <path d="M1,1 L7,4 L1,7 Z" fill="#444"/>
+      </marker>
+      <marker id="aGU" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto-start-reverse">
+        <path d="M1,1 L7,4 L1,7 Z" fill="#444"/>
+      </marker>
+    </defs>
+
+    <!-- 전기장선 -->
+    <line x1="50" y1="10" x2="50" y2="240" stroke="#9ec8f5" stroke-width="2" stroke-dasharray="6,4"/>
+    <line x1="150" y1="10" x2="150" y2="240" stroke="#9ec8f5" stroke-width="2" stroke-dasharray="6,4"/>
+    <line x1="250" y1="10" x2="250" y2="240" stroke="#9ec8f5" stroke-width="2" stroke-dasharray="6,4"/>
+
+    <line x1="50" y1="30" x2="50" y2="80" stroke="#5c94fc" stroke-width="2.5" marker-end="url(#aD)"/>
+    <line x1="250" y1="30" x2="250" y2="80" stroke="#5c94fc" stroke-width="2.5" marker-end="url(#aD)"/>
+
+    <text x="20" y="73" font-size="17" font-weight="800" fill="#1a1a2e" font-family="'Jua',sans-serif">E</text>
+
+    <line x1="150" y1="40" x2="150" y2="220" stroke="#c2b280" stroke-width="1.5" stroke-dasharray="4,4"/>
+
+    <line x1="214" y1="${qY}" x2="214" y2="${pY}" stroke="#444" stroke-width="2" marker-start="url(#aGU)" marker-end="url(#aG)"/>
+    <text x="220" y="${midY + 5}" font-size="13" fill="#1a1a2e" font-weight="800" font-family="'Jua',sans-serif">${4*d}d</text>
+
+    <line x1="130" y1="${qY}" x2="148" y2="${qY}" stroke="#c2b280" stroke-width="1.5" stroke-dasharray="3,2"/>
+    <text x="115" y="${qY + 5}" font-size="15" fill="#1a1a2e" font-weight="800" font-family="'Jua',sans-serif">Q</text>
+
+    <line x1="130" y1="${pY}" x2="148" y2="${pY}" stroke="#c2b280" stroke-width="1.5" stroke-dasharray="3,2"/>
+    <text x="115" y="${pY + 5}" font-size="15" fill="#1a1a2e" font-weight="800" font-family="'Jua',sans-serif">P</text>
+
+    <line x1="150" y1="${pY + 28}" x2="150" y2="${pY + 8}" stroke="#c8410c" stroke-width="3" marker-end="url(#aB)"/>
+    <line x1="150" y1="${qY + 28}" x2="150" y2="${qY + 8}" stroke="#c8410c" stroke-width="3" marker-end="url(#aB)"/>
+
+    <!-- 전하 (귀여운 버섯 캐릭터) -->
+    <g transform="translate(150, ${qY})">
+      <rect x="-9" y="2" width="18" height="16" rx="6" fill="#fff3d6" stroke="#000" stroke-width="2.2"/>
+      <path d="M -20 2 Q -20 -20 0 -20 Q 20 -20 20 2 Z" fill="#e53935" stroke="#000" stroke-width="2.2"/>
+      <circle cx="-9" cy="-9" r="3.4" fill="#fff" stroke="#000" stroke-width="1.3"/>
+      <circle cx="9" cy="-7" r="2.6" fill="#fff" stroke="#000" stroke-width="1.3"/>
+      <circle cx="1" cy="-15" r="2.2" fill="#fff" stroke="#000" stroke-width="1.3"/>
+      <circle cx="-6" cy="6" r="2" fill="#000"/>
+      <circle cx="6" cy="6" r="2" fill="#000"/>
+      <path d="M -5 10 Q 0 14 5 10" stroke="#000" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    </g>
+    <text x="150" y="${qY - 26}" text-anchor="middle" font-size="11" fill="#1a1a2e" font-weight="800" font-family="'Jua',sans-serif">+${2*q}q</text>
+
+    <circle cx="150" cy="${pY}" r="6" fill="#ff8a80" stroke="#000" stroke-width="2"/>
+  `;
+}
+
+/* ─── 정답 제출 ─── */
+function submitAnswer() {
+  if (answered) return;
+  if (pickedIdx === -1) {
+    // 버튼 흔들기 효과
+    const btn = document.getElementById('submitBtn');
+    btn.style.animation = 'shake 0.4s ease';
+    setTimeout(() => btn.style.animation = '', 400);
+    alert('🍄 선지 번호를 먼저 클릭해 주세요!');
+    return;
+  }
+
+  stopTimer();
+  answered = true;
+  scoreTotal++;
+  const isCorrect = pickedIdx === window._correctIdx;
+  if (isCorrect) {
+    scoreCorrect++;
+    streak = Math.min(streak + 1, 3);
+    playSound('correct');
+    if (streak >= 2) showCombo(streak);
+  } else {
+    streak = 0;
+    playSound('wrong');
+  }
+  stageNum++;
+  updateStreak();
+  updateScore();
+
+  document.querySelectorAll('.num-btn').forEach(b => b.disabled = true);
+  document.getElementById('submitBtn').disabled = true;
+
+  document.querySelectorAll('.option').forEach((el, i) => {
+    el.style.outline = '';
+    el.style.transform = '';
+    if (i === window._correctIdx) el.className = 'option correct';
+    else if (i === pickedIdx && !isCorrect) el.className = 'option wrong';
+    else el.className = 'option neutral-reveal';
+  });
+
+  if (isCorrect) {
+    spawnStars();
+    const mj = document.querySelector('.mascot-jump');
+    if (mj) {
+      mj.classList.add('victory');
+      setTimeout(() => mj.classList.remove('victory'), 1300);
+    }
+  }
+
+  showFeedback(isCorrect, pickedIdx);
+}
+
+function spawnStars() {
+  const stars = ['⭐','✨','🌟'];
+  for (let i = 0; i < 10; i++) {
+    const s = document.createElement('div');
+    s.className = 'star-rain';
+    s.textContent = stars[Math.floor(Math.random()*stars.length)];
+    s.style.left = (window.innerWidth/2 + (Math.random()*300 - 150)) + 'px';
+    s.style.top = (120 + Math.random()*60) + 'px';
+    s.style.animationDelay = (Math.random()*0.3) + 's';
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 1300);
+  }
+}
+
+/* ─── 피드백 렌더링 ─── */
+function showFeedback(isCorrect, chosenIdx) {
+  const stmts = window._stmts;
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback show';
+
+  const Vdiff = E * 4 * d;
+  const Fcoef = 2 * q;
+  const Udiff = 2 * q * 4 * d;
+  const correctIdx = window._correctIdx;
+
+  const steps = [
+    { n: '01', t: '전위차 계산', c: `균일한 전기장에서 전위차는 <span class="eq">ΔV = E × 거리</span>로 구합니다. P, Q 사이 거리가 ${4*d}d이므로 <span class="eq">ΔV = E × ${4*d}d = ${Vdiff}Ed</span>` },
+    { n: '02', t: '전위의 방향 비교', c: `전기장은 위에서 아래로 향하고, 전위는 전기장 반대 방향(위쪽)으로 갈수록 높아집니다. Q가 P보다 위쪽에 있으므로 <span class="eq">V_Q &gt; V_P</span>, P를 기준으로 한 Q의 전위는 <span class="eq">+${Vdiff}Ed</span>` },
+    { n: '03', t: '전기력의 크기', c: `전기장이 균일(세기 E로 일정)하므로, 전하량 +${2*q}q에 작용하는 전기력의 크기도 항상 일정합니다: <span class="eq">F = ${2*q}q × E = ${Fcoef}qE</span>` },
+    { n: '04', t: '위치 에너지 비교', c: `전기력에 의한 위치 에너지는 <span class="eq">U = qV</span>로 정의됩니다. 전위가 더 높은 Q에서 위치 에너지도 더 크므로 <span class="eq">U_P &lt; U_Q</span>입니다.` },
+    { n: '05', t: '위치 에너지 차이', c: `<span class="eq">ΔU = 전하량 × 전위차 = ${2*q}q × ${Vdiff}Ed = ${Udiff}qEd</span>` },
+  ];
+
+  let stepsHTML = steps.map(s =>
+    `<div class="step"><div class="step-num">${s.n}</div><div class="step-content"><b>${s.t}</b> — ${s.c}</div></div>`
+  ).join('');
+
+  let analysisHTML = stmts.map((s, i) => {
+    const cls  = s.correct ? 'ok' : 'ng';
+    const icon = s.correct ? '⭕ 옳음' : '❌ 옳지 않음 (정답)';
+    const chosenTag = (i === chosenIdx) ? ' <b>← 선택한 답</b>' : '';
+    return `<div class="opt-row ${cls}"><span class="opt-tag">${['①','②','③','④','⑤'][i]}</span> <span>${icon}: ${s.expl}${chosenTag}</span></div>`;
+  }).join('');
+
+  fb.innerHTML = `
+    <div class="feedback-header ${isCorrect ? 'pass' : 'fail'}">
+      ${isCorrect ? '🏆 정답입니다! 코인 획득!' : `💥 오답입니다 — 정답은 ${['①','②','③','④','⑤'][correctIdx]}번`}
+      <span class="chosen-info">선택: ${chosenIdx >= 0 ? ['①','②','③','④','⑤'][chosenIdx] + '번' : '-'}</span>
+    </div>
+    <div class="feedback-body">
+      <h3>📘 개념 풀이</h3>
+      <div class="solution-steps">${stepsHTML}</div>
+      <h3>🔍 선지별 분석</h3>
+      <div class="opt-analysis">${analysisHTML}</div>
+      <div class="sim-btn-wrap">
+        <button class="btn-sim" onclick="toggleSim()">▶ 전하 운동 시뮬레이션 보기</button>
+        <div class="sim-area" id="simArea">
+          <canvas id="simCanvas" height="200"></canvas>
+          <div class="sim-controls">
+            <button class="sim-play-btn" id="simPlayBtn" onclick="togglePlay()">일시정지</button>
+            <span>속도</span>
+            <input type="range" id="simSpeed" min="0.5" max="3" step="0.1" value="1">
+            <span id="simSpeedVal">×1.0</span>
+          </div>
+          <div class="sim-legend">
+            <span><span class="leg-dot" style="background:#ffd23f"></span>전하 (+${2*q}q)</span>
+            <span><span class="leg-dot" style="background:#9ec8f5"></span>전기장선 (E, 아래 방향)</span>
+            <span>↑ 이동방향 (전기장 반대)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('simSpeed').addEventListener('input', function() {
+    document.getElementById('simSpeedVal').textContent = '×' + parseFloat(this.value).toFixed(1);
+  });
+}
+
+/* ─── 시뮬레이션 ─── */
+function toggleSim() {
+  const area = document.getElementById('simArea');
+  if (!area) return;
+  if (area.classList.contains('show')) {
+    area.classList.remove('show');
+    stopSim();
+    document.querySelector('.btn-sim').textContent = '▶ 전하 운동 시뮬레이션 보기';
+  } else {
+    area.classList.add('show');
+    document.querySelector('.btn-sim').textContent = '▲ 시뮬레이션 닫기';
+    startSim();
+  }
+}
+
+function stopSim() {
+  simRunning = false;
+  if (simRaf) { cancelAnimationFrame(simRaf); simRaf = null; }
+}
+
+function startSim() {
+  simT = 0;
+  simRunning = true;
+  const canvas = document.getElementById('simCanvas');
+  if (!canvas) return;
+  canvas.width = canvas.offsetWidth || 680;
+  renderSim();
+}
+
+function togglePlay() {
+  if (!document.getElementById('simCanvas')) return;
+  simRunning = !simRunning;
+  document.getElementById('simPlayBtn').textContent = simRunning ? '일시정지' : '재생';
+  if (simRunning) renderSim();
+}
+
+function renderSim() {
+  const canvas = document.getElementById('simCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  ctx.clearRect(0, 0, W, H);
+  ctx.fillStyle = '#e8f7ff';
+  ctx.fillRect(0, 0, W, H);
+
+  const cols = 6;
+  for (let i = 0; i <= cols; i++) {
+    const x = (W / cols) * i;
+    ctx.beginPath();
+    ctx.strokeStyle = '#cdeaff';
+    ctx.setLineDash([5, 5]);
+    ctx.lineWidth = 1.5;
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, H);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    if (i > 0 && i < cols) {
+      ctx.beginPath();
+      ctx.strokeStyle = '#5c94fc';
+      ctx.lineWidth = 2;
+      ctx.moveTo(x, 20);
+      ctx.lineTo(x, 60);
+      ctx.stroke();
+      drawArrow(ctx, x, 60, '#5c94fc', 'down');
+    }
+  }
+
+  const speed = parseFloat((document.getElementById('simSpeed') || {value:1}).value) || 1;
+  if (simRunning) simT += 0.012 * speed;
+  if (simT > 1) simT = 0;
+
+  const chargeX = W / 2;
+  const topY = 25;
+  const botY = H - 25;
+  const chargeY = botY - simT * (botY - topY);
+
+  const pY = botY - 10;
+  const qY = botY - 10 - Math.min(110, 40 + d * 14) * (H / 250);
+
+  ctx.beginPath();
+  ctx.strokeStyle = '#c2b280';
+  ctx.setLineDash([3, 3]);
+  ctx.lineWidth = 1;
+  ctx.moveTo(0, pY);
+  ctx.lineTo(W, pY);
+  ctx.stroke();
+  ctx.moveTo(0, qY);
+  ctx.lineTo(W, qY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.fillStyle = '#1a1a2e';
+  ctx.font = 'bold 14px sans-serif';
+  ctx.fillText('P', 12, pY + 4);
+  ctx.fillText('Q', 12, qY + 4);
+
+  // 전하 (귀여운 버섯 캐릭터)
+  ctx.save();
+  ctx.translate(chargeX, chargeY);
+
+  roundRectPath(ctx, -9, 2, 18, 16, 6);
+  ctx.fillStyle = '#fff3d6';
+  ctx.fill();
+  ctx.strokeStyle = '#000';
+  ctx.lineWidth = 2.2;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(-20, 2);
+  ctx.quadraticCurveTo(-20, -20, 0, -20);
+  ctx.quadraticCurveTo(20, -20, 20, 2);
+  ctx.closePath();
+  ctx.fillStyle = '#e53935';
+  ctx.fill();
+  ctx.stroke();
+
+  ctx.fillStyle = '#fff';
+  ctx.lineWidth = 1.3;
+  [[-9,-9,3.4],[9,-7,2.6],[1,-15,2.2]].forEach(([dx,dy,r]) => {
+    ctx.beginPath();
+    ctx.arc(dx, dy, r, 0, Math.PI*2);
+    ctx.fill();
+    ctx.stroke();
+  });
+
+  ctx.fillStyle = '#000';
+  ctx.beginPath(); ctx.arc(-6, 6, 2, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(6, 6, 2, 0, Math.PI*2); ctx.fill();
+
+  ctx.beginPath();
+  ctx.strokeStyle = '#000';
+  ctx.lineWidth = 1.5;
+  ctx.moveTo(-5, 10);
+  ctx.quadraticCurveTo(0, 14, 5, 10);
+  ctx.stroke();
+
+  ctx.restore();
+
+  ctx.fillStyle = '#1a1a2e';
+  ctx.font = 'bold 10px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(`+${2*q}q`, chargeX, chargeY - 26);
+  ctx.textAlign = 'left';
+
+  drawArrow(ctx, chargeX, chargeY + 30, '#c8410c', 'up');
+
+  ctx.beginPath();
+  ctx.strokeStyle = '#444';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([3,2]);
+  ctx.moveTo(chargeX + 24, chargeY);
+  ctx.lineTo(chargeX + 24, chargeY + 28);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  drawArrow(ctx, chargeX + 24, chargeY + 28, '#444', 'down');
+
+  ctx.fillStyle = '#444';
+  ctx.font = '10px sans-serif';
+  ctx.fillText('F=' + (2*q) + 'qE', chargeX + 28, chargeY + 20);
+
+  if (simRunning) simRaf = requestAnimationFrame(renderSim);
+}
+
+function roundRectPath(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function drawArrow(ctx, x, y, color, dir) {
+  ctx.beginPath();
+  ctx.fillStyle = color;
+  if (dir === 'down') {
+    ctx.moveTo(x - 5, y - 8);
+    ctx.lineTo(x + 5, y - 8);
+    ctx.lineTo(x, y);
+  } else {
+    ctx.moveTo(x - 5, y + 8);
+    ctx.lineTo(x + 5, y + 8);
+    ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+  ctx.fill();
+}
+
+/* ─── 점수 ─── */
+function updateScore() {
+  document.getElementById('scoreCorrect').textContent = scoreCorrect;
+  document.getElementById('scoreTotal').textContent = scoreTotal;
+  const pct = scoreTotal > 0 ? Math.round(scoreCorrect / scoreTotal * 100) : 0;
+  document.getElementById('scorePct').textContent = scoreTotal > 0 ? pct + '% 클리어' : '대기중';
+}
+
+// shake 애니메이션 추가
+const shakeStyle = document.createElement('style');
+shakeStyle.textContent = `@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-6px)} 40%{transform:translateX(6px)} 60%{transform:translateX(-4px)} 80%{transform:translateX(4px)} }`;
+document.head.appendChild(shakeStyle);
+</script>
+
 </body>
 </html>

@@ -2,728 +2,342 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>에너지효율 시뮬레이션</title>
+    <title>물리학 시뮬레이션 문항 연습</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
         body {
             font-family: 'Malgun Gothic', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
+            background-color: #f5f5f5;
+            color: #333;
+            margin: 0;
             padding: 20px;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
         }
-        
         .container {
-            max-width: 500px;
             width: 100%;
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            margin: 20px 0;
-        }
-        
-        h1 {
-            color: #667eea;
-            text-align: center;
-            margin-bottom: 10px;
-            font-size: 24px;
-        }
-        
-        .subtitle {
-            text-align: center;
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-        
-        .problem-box {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .problem-number {
-            background: #667eea;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            display: inline-block;
-            font-weight: bold;
-            margin-bottom: 15px;
-            font-size: 14px;
-        }
-        
-        .problem-text {
-            line-height: 1.6;
-            margin-bottom: 15px;
-            color: #333;
-        }
-        
-        .device-grid {
-            display: grid;
-            gap: 15px;
-            margin: 15px 0;
-        }
-        
-        .device-card {
-            background: white;
-            border-radius: 12px;
-            padding: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        .device-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #f0f0f0;
-        }
-        
-        .device-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            margin-right: 12px;
-        }
-        
-        .device-icon.A { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .device-icon.B { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-        .device-icon.C { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-        
-        .device-info {
-            flex: 1;
-        }
-        
-        .device-name {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 3px;
-        }
-        
-        .device-desc {
-            font-size: 12px;
-            color: #666;
-        }
-        
-        .energy-flow {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 15px;
-            margin: 12px 0;
-        }
-        
-        .flow-diagram {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-        }
-        
-        .flow-box {
-            flex: 1;
-            text-align: center;
-        }
-        
-        .flow-label {
-            font-size: 11px;
-            color: #666;
-            margin-bottom: 5px;
-        }
-        
-        .flow-value {
-            background: white;
-            padding: 8px;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 15px;
-            color: #333;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        
-        .flow-arrow {
-            font-size: 24px;
-            color: #999;
-            margin: 0 5px;
-        }
-        
-        .device-box {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            max-width: 650px;
+            background-color: #fff;
             border: 2px solid #333;
-            border-radius: 10px;
-            padding: 15px 10px;
-            color: white;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header {
+            border-bottom: 2px dashed #333;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            font-size: 18px;
+            margin: 0;
             font-weight: bold;
+        }
+        .header .subject {
             font-size: 14px;
-            text-align: center;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-            min-width: 80px;
-        }
-        
-        .loss-display {
-            text-align: center;
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px dashed #ddd;
-        }
-        
-        .loss-label {
-            font-size: 11px;
             color: #666;
         }
-        
-        .loss-value {
-            font-size: 13px;
-            font-weight: bold;
-            color: #e74c3c;
-        }
-        
-        .formula-box {
-            background: #fff3cd;
-            border: 2px dashed #ffc107;
-            border-radius: 8px;
-            padding: 10px;
-            margin-bottom: 12px;
-            text-align: center;
-        }
-        
-        .formula {
-            font-size: 13px;
-            font-weight: bold;
-            color: #856404;
-        }
-        
-        .input-group {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        
-        .input-group label {
-            font-weight: bold;
-            color: #333;
-            font-size: 14px;
-        }
-        
-        .input-group input {
-            width: 80px;
-            padding: 8px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
+        .problem-box {
             font-size: 15px;
-            text-align: center;
+            line-height: 1.6;
+            margin-bottom: 20px;
         }
-        
-        .input-group input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        .check-icon {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            margin-left: 5px;
-        }
-        
-        .check-icon.correct {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .check-icon.incorrect {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        
-        .question-section {
-            background: #e3f2fd;
-            border-left: 4px solid #2196F3;
-            padding: 15px;
-            margin: 15px 0;
-            border-radius: 5px;
-        }
-        
-        .question-text {
+        .problem-text {
             font-weight: bold;
-            margin-bottom: 10px;
-            color: #1565c0;
+            margin-bottom: 15px;
         }
-        
-
-        
         .options {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin: 15px 0;
-        }
-        
-        .option-btn {
-            padding: 15px 10px;
-            border: 3px solid #ddd;
-            background: white;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-        
-        .option-btn:hover {
-            background: #f0f0f0;
-        }
-        
-        .option-btn.selected {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-        
-        .option-btn.A { border-color: #667eea; }
-        .option-btn.B { border-color: #f5576c; }
-        .option-btn.C { border-color: #00f2fe; }
-        
-        .comparison-display {
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            color: #667eea;
-            padding: 15px;
-            background: white;
-            border-radius: 10px;
-            margin: 15px 0;
-            min-height: 60px;
             display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            flex-direction: column;
             gap: 10px;
-            margin-top: 15px;
+            margin-bottom: 20px;
         }
-        
-        button {
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
+        .option-btn {
+            background-color: #fff;
+            border: 1px solid #777;
+            padding: 12px 15px;
+            text-align: left;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 4px;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .option-btn:hover {
+            background-color: #eee;
+        }
+        /* 정답 피드백 스타일에 동그라미 반영 */
+        .option-btn.correct {
+            background-color: #e0e0e0;
+            border-color: #000;
+            font-weight: bold;
+        }
+        .option-btn.correct::after {
+            content: " ◯";
             font-size: 16px;
             font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
         }
-        
-        .new-problem-btn {
-            background: #667eea;
-            color: white;
-            grid-column: 1 / -1;
+        /* 사용자가 고른 오답 피드백 스타일에 X 표시 반영 */
+        .option-btn.wrong-selected {
+            background-color: #f5f5f5;
+            border-color: #333;
+            color: #666;
+            text-decoration: line-through;
         }
-        
-        .new-problem-btn:hover {
-            background: #5568d3;
-        }
-        
-        .submit-btn {
-            background: #4CAF50;
-            color: white;
-        }
-        
-        .submit-btn:hover {
-            background: #45a049;
-        }
-        
-        .submit-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        
-        .check-all-btn {
-            background: #2196F3;
-            color: white;
-            grid-column: 1 / -1;
-        }
-        
-        .check-all-btn:hover {
-            background: #1976D2;
-        }
-        
-        .reset-btn {
-            background: #ff9800;
-            color: white;
-        }
-        
-        .reset-btn:hover {
-            background: #e68900;
-        }
-        
-        .result {
-            margin-top: 15px;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
+        .option-btn.wrong-selected::after {
+            content: " ❌ (내가 고른 답)";
+            font-size: 12px;
             font-weight: bold;
+            text-decoration: none;
+            display: inline-block;
+        }
+        /* 선택하지 않은 나머지 오답 처리 */
+        .option-btn.wrong-unselected {
+            background-color: #fafafa;
+            border-color: #ccc;
+            color: #aaa;
+        }
+        .btn-ctrl {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+            font-weight: bold;
+            border-radius: 4px;
+        }
+        .btn-ctrl:hover {
+            background-color: #555;
+        }
+        .feedback-box {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #333;
+            background-color: #fafafa;
             display: none;
         }
-        
-        .result.correct {
-            background: #d4edda;
-            color: #155724;
-            border: 2px solid #c3e6cb;
+        .feedback-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 15px;
         }
-        
-        .result.incorrect {
-            background: #f8d7da;
-            color: #721c24;
-            border: 2px solid #f5c6cb;
+        .feedback-text {
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 15px;
         }
-        
-        .divider {
-            height: 2px;
-            background: linear-gradient(to right, transparent, #ddd, transparent);
-            margin: 30px 0;
+        .sim-container {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        canvas {
+            border: 1px solid #333;
+            background-color: #fff;
+        }
+        .footer-buttons {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>⚡ 에너지효율 시뮬레이션</h1>
-        <div class="subtitle">통합과학 - 에너지 전환과 효율</div>
-        
-        <!-- 문제 1: 에너지 효율 계산 -->
-        <div class="problem-box">
-            <div class="problem-number">문제 1. 에너지 효율 계산</div>
-            <div class="problem-text">
-                다음은 세 가지 장치의 에너지 변환 과정이다. 각 장치의 에너지 효율을 계산하시오.
-            </div>
-            
-            <div class="device-grid" id="deviceGrid"></div>
-            
-            <button class="check-all-btn" onclick="checkAllEfficiencies()">✓ 전체 정답 확인</button>
-        </div>
-        
-        <div class="divider"></div>
-        
-        <!-- 문제 2: 효율 비교 -->
-        <div class="problem-box">
-            <div class="problem-number">문제 2. 에너지 효율 비교</div>
-            <div class="problem-text">
-                위에서 계산한 세 장치의 에너지 효율을 크기순으로 비교하시오.
-            </div>
-            
-            <div class="question-section">
-                <div class="question-text">
-                    세 장치의 에너지 효율을 크기순으로 나열하시오.
-                </div>
-                
-                <div style="font-size: 13px; color: #1565c0; margin-bottom: 10px;">
-                    버튼을 클릭한 순서대로 크기 비교가 입력됩니다.
-                </div>
-                
-                <div class="options" id="options"></div>
-                
-                <div class="comparison-display" id="comparisonDisplay">
-                    선택해주세요
-                </div>
-                
-                <div class="buttons">
-                    <button class="submit-btn" id="submitBtn2" onclick="checkComparison()" disabled>✓ 정답 확인</button>
-                    <button class="reset-btn" onclick="resetSelection()">↺ 선택 초기화</button>
-                </div>
-                
-                <div class="result" id="result2"></div>
-            </div>
-        </div>
-        
-        <button class="new-problem-btn" onclick="generateNewProblem()">🔄 새 문제</button>
+
+<div class="container">
+    <div class="header">
+        <h1>[2022 개정 교육과정] 물리학 Ⅰ</h1>
+        <span class="subject">단원: II-1. 전기장과 전기에너지</span>
     </div>
 
-    <script>
-        let selectedOptions = [];
-        let devices = {};
+    <div class="problem-box">
+        <div class="problem-text" id="problemText">문제를 생성 중입니다...</div>
+    </div>
+
+    <div class="options" id="optionsContainer">
+        </div>
+
+    <div class="footer-buttons">
+        <button class="btn-ctrl" onclick="generateProblem()">새문제 생성</button>
+    </div>
+
+    <div class="feedback-box" id="feedbackBox">
+        <div class="feedback-title" id="feedbackResult"></div>
+        <div class="feedback-text" id="feedbackExplanation"></div>
         
-        const deviceTypes = [
-            { 
-                id: 'A', 
-                name: '화력 발전기', 
-                icon: '⚡',
-                desc: '열에너지 → 전기에너지',
-                inputLabel: '투입 열',
-                outputLabel: '전기 생산',
-                deviceLabel: '발전기'
-            },
-            { 
-                id: 'B', 
-                name: '전기 난방기', 
-                icon: '🔥',
-                desc: '전기에너지 → 열에너지',
-                inputLabel: '전기 소비',
-                outputLabel: '열 방출',
-                deviceLabel: '난방기'
-            },
-            { 
-                id: 'C', 
-                name: '자동차 엔진', 
-                icon: '🚗',
-                desc: '화학에너지 → 운동에너지',
-                inputLabel: '연료 투입',
-                outputLabel: '운동 생산',
-                deviceLabel: '엔진'
-            }
-        ];
+        <div class="sim-container">
+            <button class="btn-ctrl" id="simToggleBtn" onclick="toggleSimulation()">움직임 확인</button>
+            <canvas id="simCanvas" width="550" height="150"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentData = {};
+    let selected = false;
+    let canvas, ctx;
+    let animationId = null;
+    let chargeX = 450;
+    let chargeV = 0;
+    let chargeA = -0.2; // 오른쪽에서 왼쪽으로 가속
+    let isAnimating = false;
+
+    function generateProblem() {
+        selected = false;
+        isAnimating = false;
+        if(animationId) cancelAnimationFrame(animationId);
+        document.getElementById('feedbackBox').style.display = 'none';
         
-        function generateNewProblem() {
-            devices = {};
-            
-            deviceTypes.forEach(type => {
-                // 투입 에너지 (1000~5000J, 100 단위)
-                const input = (Math.floor(Math.random() * 41) + 10) * 100;
-                
-                // 효율 (15~85%, 5% 단위) - 다양한 범위로 설정
-                let efficiency;
-                if (type.id === 'A') {
-                    efficiency = (Math.floor(Math.random() * 9) + 6) * 5; // 30-70%
-                } else if (type.id === 'B') {
-                    efficiency = (Math.floor(Math.random() * 6) + 13) * 5; // 65-90%
-                } else {
-                    efficiency = (Math.floor(Math.random() * 7) + 3) * 5; // 15-45%
-                }
-                
-                // 출력 에너지 계산
-                const output = Math.round(input * efficiency / 100);
-                
-                // 손실 에너지
-                const loss = input - output;
-                
-                devices[type.id] = {
-                    ...type,
-                    input,
-                    output,
-                    loss,
-                    efficiency,
-                    userAnswer: null,
-                    isCorrect: null
-                };
-            });
-            
-            renderDevices();
-            resetSelection();
-        }
+        const p1 = Math.floor(Math.random() * 8 + 3) * 100; // 300W ~ 1000W
+        const p2 = Math.floor(Math.random() * 8 + 11) * 100; // 1100W ~ 1800W
         
-        function renderDevices() {
-            const grid = document.getElementById('deviceGrid');
-            
-            // 기존 입력값 저장
-            const savedValues = {};
-            deviceTypes.forEach(type => {
-                const existingInput = document.getElementById('input' + type.id);
-                if (existingInput) {
-                    savedValues[type.id] = existingInput.value;
-                }
-            });
-            
-            grid.innerHTML = '';
-            
-            deviceTypes.forEach(type => {
-                const device = devices[type.id];
-                
-                const card = document.createElement('div');
-                card.className = 'device-card';
-                card.innerHTML = `
-                    <div class="device-header">
-                        <div class="device-icon ${type.id}">${type.icon}</div>
-                        <div class="device-info">
-                            <div class="device-name">장치 ${type.id}: ${type.name}</div>
-                            <div class="device-desc">${type.desc}</div>
-                        </div>
-                    </div>
-                    
-                    <div class="energy-flow">
-                        <div class="flow-diagram">
-                            <div class="flow-box">
-                                <div class="flow-label">${type.inputLabel}</div>
-                                <div class="flow-value">${device.input}J</div>
-                            </div>
-                            <div class="flow-arrow">→</div>
-                            <div class="device-box">${type.deviceLabel}</div>
-                            <div class="flow-arrow">→</div>
-                            <div class="flow-box">
-                                <div class="flow-label">${type.outputLabel}</div>
-                                <div class="flow-value">${device.output}J</div>
-                            </div>
-                        </div>
-                        <div class="loss-display">
-                            <span class="loss-label">손실 에너지: </span>
-                            <span class="loss-value">${device.loss}J ↓</span>
-                        </div>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label>효율:</label>
-                        <input type="number" id="input${type.id}" placeholder="?" min="0" max="100" value="${savedValues[type.id] || device.userAnswer || ''}">
-                        <span>%</span>
-                        <div class="check-icon" id="check${type.id}" style="display:${device.isCorrect !== null ? 'flex' : 'none'};" class="${device.isCorrect ? 'check-icon correct' : 'check-icon incorrect'}">${device.isCorrect ? '✓' : '✗'}</div>
-                    </div>
-                `;
-                
-                grid.appendChild(card);
-            });
-            
-            updateOptions();
-        }
+        currentData = {
+            p1: p1,
+            p2: p2,
+            correctAnswer: 2, 
+            explanation: `소비전력은 단위 시간 동안 소비하는 전기 에너지를 의미합니다. 열선의 최대 온도가 동일하므로, 소비전력이 더 큰 <b>${p2}W 기기</b>가 더 많은 전기 에너지를 동력(모터의 바람 세기 등 역학적 운동에너지)으로 변환할 수 있어 바람이 가장 강합니다.<br><br><b>[전하 가속 원리]</b> 아래 시뮬레이션에서 전위는 오른쪽이 높고 왼쪽이 낮으므로 전기장 방향은 <b>오른쪽에서 왼쪽</b>입니다. 양전하(+)는 전기장과 같은 방향으로 힘을 받아 왼쪽으로 갈수록 속도가 가속되며, 이는 전기 퍼텐셜 에너지가 운동 에너지로 보존·전환되는 과정을 보여줍니다.`
+        };
+
+        document.getElementById('problemText').innerHTML = `Q. 소비전력이 각각 ${p1}W와 ${p2}W인 두 헤어드라이어가 있다. 두 드라이어의 최대 온도가 서로 같을 때, 전기 에너지를 역학적 에너지로 전환하는 능력이 더 우수하여 최대 바람 세기가 더 강한 기기는 무엇인가?`;
+
+        const htmlOptions = `
+            <button class="option-btn" onclick="checkAnswer(1, this)">① ${p1}W 드라이어</button>
+            <button class="option-btn" onclick="checkAnswer(2, this)">② ${p2}W 드라이어</button>
+            <button class="option-btn" onclick="checkAnswer(3, this)">③ 두 드라이어의 최대 바람 세기는 같다</button>
+        `;
+        document.getElementById('optionsContainer').innerHTML = htmlOptions;
         
-        function checkAllEfficiencies() {
-            deviceTypes.forEach(type => {
-                const input = document.getElementById('input' + type.id);
-                const checkIcon = document.getElementById('check' + type.id);
-                const userAnswer = parseFloat(input.value);
-                const device = devices[type.id];
-                
-                if (isNaN(userAnswer)) {
-                    checkIcon.style.display = 'none';
-                    device.userAnswer = null;
-                    device.isCorrect = null;
-                    return;
-                }
-                
-                const isCorrect = Math.abs(userAnswer - device.efficiency) <= 0.5;
-                device.userAnswer = userAnswer;
-                device.isCorrect = isCorrect;
-                
-                checkIcon.style.display = 'flex';
-                if (isCorrect) {
-                    checkIcon.className = 'check-icon correct';
-                    checkIcon.textContent = '✓';
-                } else {
-                    checkIcon.className = 'check-icon incorrect';
-                    checkIcon.textContent = '✗';
-                }
-            });
-        }
-        
-        function updateOptions() {
-            const options = document.getElementById('options');
-            options.innerHTML = '';
+        initCanvas();
+    }
+
+    function checkAnswer(ans, element) {
+        if (selected) return;
+        selected = true;
+
+        const buttons = document.querySelectorAll('.option-btn');
+        buttons.forEach((btn, index) => {
+            const currentOptionNum = index + 1;
             
-            deviceTypes.forEach(type => {
-                const btn = document.createElement('button');
-                btn.className = `option-btn ${type.id}`;
-                btn.innerHTML = `장치 ${type.id}<br><small style="font-size: 13px;">${type.name}</small>`;
-                btn.onclick = () => selectOption(type.id, btn);
-                options.appendChild(btn);
-            });
-        }
-        
-        function selectOption(option, btnElement) {
-            if (selectedOptions.includes(option)) return;
-            
-            selectedOptions.push(option);
-            btnElement.classList.add('selected');
-            
-            updateSelectionDisplay();
-            
-            if (selectedOptions.length === 3) {
-                document.getElementById('submitBtn2').disabled = false;
-            }
-        }
-        
-        function updateSelectionDisplay() {
-            const display = document.getElementById('comparisonDisplay');
-            if (selectedOptions.length === 0) {
-                display.textContent = '선택해주세요';
+            if (currentOptionNum === currentData.correctAnswer) {
+                // 정답 선지 처리 -> 동그라미(◯) 스타일 부여
+                btn.classList.add('correct');
+            } else if (currentOptionNum === ans) {
+                // 사용자가 클릭한 틀린 선지 처리 -> ❌ 표시 스타일 부여
+                btn.classList.add('wrong-selected');
             } else {
-                display.textContent = selectedOptions.join(' > ');
+                // 선택되지 않은 나머지 오답 선지 처리
+                btn.classList.add('wrong-unselected');
             }
-        }
+        });
+
+        const resultBox = document.getElementById('feedbackResult');
+        const expBox = document.getElementById('feedbackExplanation');
         
-        function resetSelection() {
-            selectedOptions = [];
-            document.querySelectorAll('.option-btn').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-            updateSelectionDisplay();
-            document.getElementById('submitBtn2').disabled = true;
-            document.getElementById('result2').style.display = 'none';
+        if (ans === currentData.correctAnswer) {
+            resultBox.innerHTML = "정답입니다! ✔";
+            resultBox.style.color = "#000";
+        } else {
+            resultBox.innerHTML = "오답입니다. 다시 한번 개념을 확인해 보세요.";
+            resultBox.style.color = "#666";
         }
+
+        expBox.innerHTML = currentData.explanation;
+        document.getElementById('feedbackBox').style.display = 'block';
+        initCanvas();
+    }
+
+    function initCanvas() {
+        canvas = document.getElementById('simCanvas');
+        ctx = canvas.getContext('2d');
+        chargeX = 450;
+        chargeV = 0;
+        draw();
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        function checkComparison() {
-            const result = document.getElementById('result2');
+        // 전기장선 (오른쪽 -> 왼쪽 수평)
+        ctx.strokeStyle = '#999';
+        ctx.lineWidth = 1;
+        for (let y = 30; y <= 120; y += 30) {
+            ctx.beginPath();
+            ctx.moveTo(500, y);
+            ctx.lineTo(50, y);
+            ctx.stroke();
             
-            // 실제 효율값으로 정답 확인
-            const values = selectedOptions.map(id => devices[id].efficiency);
-            
-            const isCorrect = values[0] > values[1] && values[1] > values[2];
-            
-            if (isCorrect) {
-                result.className = 'result correct';
-                result.innerHTML = `
-                    ✓ 정답입니다!<br>
-                    <small style="font-size: 14px;">
-                        ${selectedOptions.map((id, idx) => 
-                            `장치 ${id}: ${values[idx]}%`
-                        ).join(' > ')}
-                    </small>
-                `;
-            } else {
-                result.className = 'result incorrect';
-                
-                // 정답 계산
-                const sorted = [...deviceTypes].sort((a, b) => 
-                    devices[b.id].efficiency - devices[a.id].efficiency
-                );
-                
-                // 해설 생성
-                let explanation = `정답: ${sorted.map(t => 
-                    `장치 ${t.id}(${devices[t.id].efficiency}%)`
-                ).join(' > ')}<br><br>`;
-                
-                explanation += '<div style="text-align: left; font-size: 13px; line-height: 1.6;">';
-                explanation += '<strong>【해설】</strong><br>';
-                
-                sorted.forEach((type, index) => {
-                    const device = devices[type.id];
-                    explanation += `${index + 1}. 장치 ${type.id} (${type.name})<br>`;
-                    explanation += `&nbsp;&nbsp;&nbsp;효율 = (출력/투입) × 100<br>`;
-                    explanation += `&nbsp;&nbsp;&nbsp;효율 = (${device.output}J / ${device.input}J) × 100<br>`;
-                    explanation += `&nbsp;&nbsp;&nbsp;효율 = ${device.efficiency}%<br><br>`;
-                });
-                
-                explanation += '에너지 효율이 높을수록 투입 에너지를 유용한 에너지로 더 많이 전환한 것입니다.';
-                explanation += '</div>';
-                
-                result.innerHTML = `
-                    ✗ 틀렸습니다.<br>
-                    <small>${explanation}</small>
-                `;
+            ctx.beginPath();
+            ctx.moveTo(50, y);
+            ctx.lineTo(60, y - 4);
+            ctx.lineTo(60, y + 4);
+            ctx.fillStyle = '#999';
+            ctx.fill();
+        }
+
+        ctx.fillStyle = '#333';
+        ctx.font = '12px sans-serif';
+        ctx.fillText('고전위 (+)', 470, 20);
+        ctx.fillText('저전위 (-)', 20, 20);
+        
+        ctx.textAlign = 'center';
+        ctx.fillText('전기장(E) 방향 ◀ 수평 형성', canvas.width / 2, 20);
+
+        // 양전하 (+)
+        ctx.beginPath();
+        ctx.arc(chargeX, 75, 13, 0, Math.PI * 2);
+        ctx.fillStyle = '#333';
+        ctx.fill();
+        
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 15px sans-serif';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('+', chargeX, 75);
+        ctx.textAlign = 'left'; 
+    }
+
+    function updateSim() {
+        if (!isAnimating) return;
+        
+        chargeV += chargeA;
+        chargeX += chargeV;
+
+        if (chargeX <= 60) {
+            chargeX = 60;
+            isAnimating = false;
+            document.getElementById('simToggleBtn').innerText = "움직임 확인 (재생)";
+        }
+
+        draw();
+        if (isAnimating) {
+            animationId = requestAnimationFrame(updateSim);
+        }
+    }
+
+    function toggleSimulation() {
+        if (isAnimating) {
+            isAnimating = false;
+            document.getElementById('simToggleBtn').innerText = "움직임 확인";
+            if(animationId) cancelAnimationFrame(animationId);
+        } else {
+            if (chargeX <= 60) {
+                chargeX = 450;
+                chargeV = 0;
             }
-            
-            result.style.display = 'block';
+            isAnimating = true;
+            document.getElementById('simToggleBtn').innerText = "정지";
+            updateSim();
         }
-        
-        // 초기 문제 생성
-        generateNewProblem();
-    </script>
+    }
+
+    window.onload = generateProblem;
+</script>
+
 </body>
 </html>

@@ -1,515 +1,822 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>발전소 에너지 효율 비교</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Malgun Gothic', sans-serif;
-            background: #f5f5f5;
-            padding: 15px;
-            line-height: 1.6;
-        }
-        
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        h1 {
-            font-size: 20px;
-            margin-bottom: 20px;
-            color: #333;
-            text-align: center;
-            border-bottom: 2px solid #666;
-            padding-bottom: 10px;
-        }
-        
-        .problem-box {
-            background: #f9f9f9;
-            border: 2px solid #999;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .problem-title {
-            font-weight: bold;
-            margin-bottom: 15px;
-            font-size: 16px;
-            color: #222;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-            font-size: 14px;
-        }
-        
-        th, td {
-            border: 1px solid #999;
-            padding: 10px 8px;
-            text-align: center;
-        }
-        
-        th {
-            background: #ddd;
-            font-weight: bold;
-            color: #222;
-        }
-        
-        td {
-            background: white;
-        }
-        
-        .unit {
-            font-size: 12px;
-            color: #555;
-        }
-        
-        .question {
-            margin-top: 15px;
-            padding: 12px;
-            background: #eee;
-            border-radius: 5px;
-            font-weight: bold;
-            color: #222;
-        }
-        
-        .selection-area {
-            margin: 20px 0;
-            padding: 15px;
-            background: #f5f5f5;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-        }
-        
-        .selection-title {
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #333;
-        }
-        
-        .options {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-        }
-        
-        .option-btn {
-            width: 70px;
-            height: 70px;
-            border: 3px solid #666;
-            border-radius: 10px;
-            background: #87CEEB;
-            font-size: 24px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: white;
-        }
-        
-        .option-btn:nth-child(2) {
-            background: #FFD700;
-        }
-        
-        .option-btn:nth-child(3) {
-            background: #FF6B6B;
-        }
-        
-        .option-btn:active {
-            transform: scale(0.95);
-        }
-        
-        .option-btn.selected {
-            border-color: #000;
-            border-width: 4px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
-        }
-        
-        .selected-order {
-            text-align: center;
-            font-size: 18px;
-            margin: 20px 0;
-            padding: 15px;
-            background: white;
-            border: 2px solid #999;
-            border-radius: 8px;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .order-display {
-            font-weight: bold;
-            color: #222;
-        }
-        
-        .order-symbol {
-            margin: 0 8px;
-            color: #666;
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin: 20px 0;
-        }
-        
-        .btn {
-            flex: 1;
-            padding: 15px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .btn-new {
-            background: #888;
-            color: white;
-        }
-        
-        .btn-new:active {
-            background: #666;
-        }
-        
-        .btn-submit {
-            background: #555;
-            color: white;
-        }
-        
-        .btn-submit:active {
-            background: #333;
-        }
-        
-        .btn-submit:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        
-        .feedback {
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 8px;
-            display: none;
-        }
-        
-        .feedback.show {
-            display: block;
-        }
-        
-        .feedback.correct {
-            background: #e8e8e8;
-            border: 2px solid #666;
-        }
-        
-        .feedback.incorrect {
-            background: #f0f0f0;
-            border: 2px solid #888;
-        }
-        
-        .feedback-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #222;
-        }
-        
-        .feedback-content {
-            font-size: 14px;
-            line-height: 1.8;
-            color: #333;
-        }
-        
-        .feedback-content strong {
-            color: #000;
-        }
-        
-        .theory-section {
-            margin-top: 15px;
-            padding: 15px;
-            background: white;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-        
-        .theory-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #222;
-            font-size: 15px;
-        }
-        
-        .calculation {
-            background: #f9f9f9;
-            padding: 10px;
-            margin: 10px 0;
-            border-left: 3px solid #666;
-            font-family: 'Courier New', monospace;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>물리학 회로 시뮬레이션</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root {
+    --bg: #f0f0f0;
+    --surface: #ffffff;
+    --surface2: #f5f5f5;
+    --border: #c8c8c8;
+    --border-dark: #999999;
+    --accent: #2a2a2a;
+    --text: #1a1a1a;
+    --text-dim: #555555;
+    --text-light: #888888;
+    --green: #2d7a3e;
+    --green-bg: #e8f5eb;
+    --red: #b02020;
+    --red-bg: #faeaea;
+    --blue: #1a4a8a;
+    --blue-bg: #e8eef8;
+    --wire-color: #1a1a1a;
+    --selected-bg: #e8eef8;
+    --selected-border: #1a4a8a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px 16px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--accent);
+  }
+
+  .header h1 {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .header h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+  }
+
+  .card-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--text-dim);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .problem-text {
+    font-size: 0.93rem;
+    line-height: 1.8;
+    color: var(--text);
+    margin-bottom: 18px;
+  }
+
+  .highlight {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    color: var(--text);
+    background: #e8e8e8;
+    padding: 1px 5px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+  }
+
+  .circuit-wrapper {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .circuit-svg-wrap {
+    flex: 1;
+    min-width: 260px;
+  }
+
+  svg#circuit {
+    width: 100%;
+    max-width: 380px;
+    height: auto;
+    display: block;
+  }
+
+  .data-table-wrap { flex: 0 0 auto; }
+
+  table.data-table {
+    border-collapse: collapse;
+    font-size: 0.88rem;
+    min-width: 170px;
+  }
+
+  table.data-table th, table.data-table td {
+    border: 1px solid var(--border-dark);
+    padding: 8px 16px;
+    text-align: center;
+  }
+
+  table.data-table th {
+    background: #e8e8e8;
+    color: var(--text);
+    font-weight: 700;
+    font-size: 0.8rem;
+  }
+
+  table.data-table td:first-child {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    background: #f5f5f5;
+  }
+
+  table.data-table td:last-child {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+
+  /* Answer section */
+  .answer-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .answer-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .answer-label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+    min-width: 210px;
+  }
+
+  .input-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface2);
+    border: 1.5px solid var(--border-dark);
+    border-radius: 5px;
+    padding: 6px 12px;
+    transition: border-color 0.15s;
+  }
+
+  .input-group:focus-within {
+    border-color: var(--blue);
+    background: var(--blue-bg);
+  }
+
+  .input-group input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    width: 68px;
+    text-align: right;
+  }
+
+  .input-group .unit {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .radio-group {
+    display: flex;
+    gap: 8px;
+  }
+
+  .radio-btn {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    background: var(--surface2);
+    border: 1.5px solid var(--border-dark);
+    border-radius: 5px;
+    padding: 6px 18px;
+    transition: border-color 0.15s, background 0.15s;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text);
+    user-select: none;
+  }
+
+  .radio-btn input[type=radio] { display: none; }
+
+  .radio-btn.selected {
+    border-color: var(--selected-border);
+    background: var(--selected-bg);
+    color: var(--blue);
+  }
+
+  /* Buttons */
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 10px 24px;
+    border-radius: 5px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: opacity 0.15s, transform 0.1s;
+    flex: 1;
+    min-width: 110px;
+  }
+
+  .btn:active { transform: scale(0.98); }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #ffffff;
+  }
+
+  .btn-primary:hover { opacity: 0.85; }
+
+  .btn-secondary {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1.5px solid var(--border-dark);
+  }
+
+  .btn-secondary:hover { background: #e8e8e8; }
+
+  /* Feedback */
+  .feedback {
+    display: none;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+  }
+
+  .feedback.show { display: block; }
+
+  .feedback h3 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .badge-correct { background: var(--green-bg); color: var(--green); border: 1px solid #a0cfa8; }
+  .badge-wrong   { background: var(--red-bg);   color: var(--red);   border: 1px solid #e0a0a0; }
+
+  .feedback-item {
+    margin-bottom: 10px;
+    padding: 10px 14px;
+    border-radius: 5px;
+    background: var(--surface2);
+    border-left: 3px solid transparent;
+  }
+
+  .feedback-item.correct { border-left-color: var(--green); }
+  .feedback-item.wrong   { border-left-color: var(--red); }
+
+  .feedback-item .fi-label {
+    font-weight: 700;
+    margin-bottom: 4px;
+    font-size: 0.83rem;
+    color: var(--text-dim);
+  }
+
+  .feedback-item .fi-result {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.88rem;
+  }
+
+  .fi-correct-val { color: var(--green); font-weight: 700; }
+  .fi-wrong-val   { color: var(--red);   font-weight: 700; }
+
+  .solution-box {
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: var(--blue-bg);
+    border: 1px solid #b8c8e0;
+    border-radius: 5px;
+  }
+
+  .solution-box h4 {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--blue);
+    margin-bottom: 10px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .solution-step {
+    margin-bottom: 14px;
+    font-size: 0.875rem;
+    color: var(--text);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    line-height: 1.7;
+  }
+
+  .solution-step .formula {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--blue);
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    margin-top: 2px;
+    background: var(--blue);
+    color: #fff;
+    border-radius: 50%;
+    font-size: 0.68rem;
+    font-weight: 700;
+  }
+
+  .concept-box {
+    background: #fffaf0;
+    border: 1px solid #e0c896;
+    border-radius: 5px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+  }
+
+  .concept-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #8a6420;
+    margin-bottom: 8px;
+  }
+
+  .concept-line {
+    font-size: 0.85rem;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .concept-line .formula {
+    font-family: 'JetBrains Mono', monospace;
+    color: #8a6420;
+    font-weight: 700;
+  }
+
+  /* Input state */
+  .input-group.is-correct { border-color: var(--green); background: var(--green-bg); }
+  .input-group.is-wrong   { border-color: var(--red);   background: var(--red-bg); }
+  .radio-btn.is-correct   { border-color: var(--green); background: var(--green-bg); color: var(--green); }
+  .radio-btn.is-wrong     { border-color: var(--red);   background: var(--red-bg);   color: var(--red); }
+
+  @media (max-width: 580px) {
+    .answer-label { min-width: 100%; }
+    .circuit-wrapper { flex-direction: column; }
+  }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>발전소 에너지 효율 비교 시뮬레이션</h1>
-        
-        <div class="problem-box">
-            <div class="problem-title">
-                다음 표는 전기 에너지를 생산하는 발전소 A, B, C에 대한 자료이다.
-            </div>
-            
-            <table id="dataTable">
-                <tr>
-                    <th>발전소</th>
-                    <th>발전 방식</th>
-                    <th>특징</th>
-                </tr>
-                <tr>
-                    <td><strong>A</strong></td>
-                    <td>수력 발전</td>
-                    <td id="dataA">-</td>
-                </tr>
-                <tr>
-                    <td><strong>B</strong></td>
-                    <td>태양광 발전</td>
-                    <td id="dataB">-</td>
-                </tr>
-                <tr>
-                    <td><strong>C</strong></td>
-                    <td>화력 발전</td>
-                    <td id="dataC">-</td>
-                </tr>
-            </table>
-            
-            <div class="question">
-                공급된 에너지의 양이 같을 때, A, B, C에서 생산하는 전기 에너지의 양을 옳게 비교한 것은?
-            </div>
-        </div>
-        
-        <div class="selection-area">
-            <div class="selection-title">발전소를 클릭하여 순서를 정하세요 (큰 것부터)</div>
-            <div class="options">
-                <button class="option-btn" onclick="selectOption('A')">A</button>
-                <button class="option-btn" onclick="selectOption('B')">B</button>
-                <button class="option-btn" onclick="selectOption('C')">C</button>
-            </div>
-            <div class="selected-order">
-                <span class="order-display" id="orderDisplay">선택한 순서가 여기에 표시됩니다</span>
-            </div>
-        </div>
-        
-        <div class="button-group">
-            <button class="btn btn-new" onclick="generateNewProblem()">새 문제</button>
-            <button class="btn btn-submit" id="submitBtn" onclick="checkAnswer()" disabled>정답 확인</button>
-        </div>
-        
-        <div class="feedback" id="feedback">
-            <div class="feedback-title" id="feedbackTitle"></div>
-            <div class="feedback-content" id="feedbackContent"></div>
-        </div>
+
+<div class="header">
+  <h1>고등학교 물리학 · 전기회로</h1>
+  <h2>저항의 연결과 전류·전력 분석</h2>
+</div>
+
+<!-- Problem -->
+<div class="card">
+  <div class="card-title">문제</div>
+  <p class="problem-text" id="problem-text"></p>
+
+  <div class="circuit-wrapper">
+    <div class="circuit-svg-wrap">
+      <svg id="circuit" viewBox="0 0 370 210" xmlns="http://www.w3.org/2000/svg"></svg>
     </div>
-    
-    <script>
-        let currentData = {};
-        let selectedOrder = [];
-        let correctAnswer = '';
-        
-        function generateNewProblem() {
-            // 10~100 사이 10단위 랜덤 값 생성
-            const values = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
-            
-            let efficiencyA, efficiencyB, efficiencyC;
-            let inputA, outputA, inputB_kJ, outputB_J, energyPerG, fuelKg, outputC;
-            
-            // 정답이 매번 달라지도록 효율을 다르게 생성
-            do {
-                // A: 수력 발전 - 효율 범위: 0.1 ~ 1.0
-                inputA = values[Math.floor(Math.random() * values.length)];
-                outputA = values[Math.floor(Math.random() * values.length)];
-                efficiencyA = outputA / inputA;
-                
-                // B: 태양광 발전 - 효율 범위: 0.001 ~ 0.1
-                inputB_kJ = values[Math.floor(Math.random() * values.length)];
-                outputB_J = values[Math.floor(Math.random() * values.length)];
-                efficiencyB = outputB_J / (inputB_kJ * 1000);
-                
-                // C: 화력 발전 - 효율 범위: 0.01 ~ 1.0
-                energyPerG = values[Math.floor(Math.random() * values.length)];
-                fuelKg = values[Math.floor(Math.random() * values.length)];
-                outputC = values[Math.floor(Math.random() * values.length)];
-                efficiencyC = outputC / (energyPerG * fuelKg);
-                
-                // 세 효율이 모두 다른지 확인 (소수점 6자리에서 비교)
-            } while (
-                Math.abs(efficiencyA - efficiencyB) < 0.000001 || 
-                Math.abs(efficiencyB - efficiencyC) < 0.000001 || 
-                Math.abs(efficiencyA - efficiencyC) < 0.000001
-            );
-            
-            currentData = {
-                A: { input: inputA, output: outputA, efficiency: efficiencyA },
-                B: { inputKJ: inputB_kJ, outputJ: outputB_J, efficiency: efficiencyB },
-                C: { energyPerG: energyPerG, fuelKg: fuelKg, output: outputC, efficiency: efficiencyC }
-            };
-            
-            // 표에 데이터 표시
-            document.getElementById('dataA').innerHTML = 
-                `높은 곳에서 떨어지는 물의 역학적 에너지 ${inputA} MJ당<br>${outputA} MJ의 전기 에너지를 생산한다.`;
-            
-            document.getElementById('dataB').innerHTML = 
-                `태양 전지를 비추는 빛의 에너지가 ${inputB_kJ} kJ일 때,<br>${outputB_J} J의 전기 에너지를 생산한다.`;
-            
-            document.getElementById('dataC').innerHTML = 
-                `1 g당 ${energyPerG} kJ의 화학 에너지를 가진 화석 연료<br>${fuelKg} kg을 사용하여 ${outputC} MJ의 전기 에너지를 생산한다.`;
-            
-            // 정답 계산
-            const efficiencies = [
-                { name: 'A', value: efficiencyA },
-                { name: 'B', value: efficiencyB },
-                { name: 'C', value: efficiencyC }
-            ];
-            efficiencies.sort((a, b) => b.value - a.value);
-            correctAnswer = efficiencies.map(e => e.name).join(' > ');
-            
-            // 초기화
-            resetSelection();
-            document.getElementById('feedback').classList.remove('show');
-        }
-        
-        function selectOption(option) {
-            const btn = event.target;
-            
-            // 이미 선택된 경우 선택 취소
-            if (btn.classList.contains('selected')) {
-                btn.classList.remove('selected');
-                const index = selectedOrder.indexOf(option);
-                if (index > -1) {
-                    selectedOrder.splice(index, 1);
-                }
-            } else {
-                // 최대 3개까지만 선택 가능
-                if (selectedOrder.length < 3) {
-                    btn.classList.add('selected');
-                    selectedOrder.push(option);
-                }
-            }
-            
-            updateOrderDisplay();
-        }
-        
-        function updateOrderDisplay() {
-            const display = document.getElementById('orderDisplay');
-            const submitBtn = document.getElementById('submitBtn');
-            
-            if (selectedOrder.length === 0) {
-                display.innerHTML = '선택한 순서가 여기에 표시됩니다';
-                submitBtn.disabled = true;
-            } else if (selectedOrder.length === 3) {
-                display.innerHTML = selectedOrder.map(o => `<span style="font-size: 24px; font-weight: bold;">${o}</span>`).join('<span class="order-symbol"> &gt; </span>');
-                submitBtn.disabled = false;
-            } else {
-                display.innerHTML = selectedOrder.map(o => `<span style="font-size: 24px; font-weight: bold;">${o}</span>`).join('<span class="order-symbol"> &gt; </span>') + '<span style="color: #999;"> (계속 선택하세요)</span>';
-                submitBtn.disabled = true;
-            }
-        }
-        
-        function resetSelection() {
-            selectedOrder = [];
-            document.querySelectorAll('.option-btn').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-            updateOrderDisplay();
-        }
-        
-        function checkAnswer() {
-            const userAnswer = selectedOrder.join(' > ');
-            const feedback = document.getElementById('feedback');
-            const feedbackTitle = document.getElementById('feedbackTitle');
-            const feedbackContent = document.getElementById('feedbackContent');
-            
-            const isCorrect = userAnswer === correctAnswer;
-            
-            feedback.className = 'feedback show ' + (isCorrect ? 'correct' : 'incorrect');
-            feedbackTitle.textContent = isCorrect ? '✓ 정답입니다!' : '✗ 오답입니다';
-            
-            // 풀이 생성
-            let solution = '<div class="theory-section">';
-            solution += '<div class="theory-title">【 에너지 효율의 이해 】</div>';
-            solution += '<p>에너지 효율은 공급된 에너지 대비 유용하게 사용된 에너지의 비율입니다.</p>';
-            solution += '<p><strong>효율 = (생산된 전기 에너지 / 공급된 에너지) × 100%</strong></p>';
-            solution += '</div>';
-            
-            solution += '<div class="theory-section">';
-            solution += '<div class="theory-title">【 각 발전소의 효율 계산 】</div>';
-            
-            // A 계산
-            solution += '<div class="calculation">';
-            solution += `<strong>A (수력 발전)</strong><br>`;
-            solution += `공급 에너지: ${currentData.A.input} MJ<br>`;
-            solution += `생산 에너지: ${currentData.A.output} MJ<br>`;
-            solution += `효율 = ${currentData.A.output} ÷ ${currentData.A.input} = ${currentData.A.efficiency.toFixed(4)}<br>`;
-            solution += `효율: ${(currentData.A.efficiency * 100).toFixed(2)}%`;
-            solution += '</div>';
-            
-            // B 계산
-            solution += '<div class="calculation">';
-            solution += `<strong>B (태양광 발전)</strong><br>`;
-            solution += `공급 에너지: ${currentData.B.inputKJ} kJ = ${currentData.B.inputKJ * 1000} J<br>`;
-            solution += `생산 에너지: ${currentData.B.outputJ} J<br>`;
-            solution += `효율 = ${currentData.B.outputJ} ÷ ${currentData.B.inputKJ * 1000} = ${currentData.B.efficiency.toFixed(4)}<br>`;
-            solution += `효율: ${(currentData.B.efficiency * 100).toFixed(2)}%`;
-            solution += '</div>';
-            
-            // C 계산
-            solution += '<div class="calculation">';
-            solution += `<strong>C (화력 발전)</strong><br>`;
-            solution += `연료의 화학 에너지: ${currentData.C.energyPerG} kJ/g × ${currentData.C.fuelKg} kg<br>`;
-            solution += `= ${currentData.C.energyPerG} kJ/g × ${currentData.C.fuelKg * 1000} g<br>`;
-            solution += `= ${currentData.C.energyPerG * currentData.C.fuelKg * 1000} kJ = ${currentData.C.energyPerG * currentData.C.fuelKg} MJ<br>`;
-            solution += `생산 에너지: ${currentData.C.output} MJ<br>`;
-            solution += `효율 = ${currentData.C.output} ÷ ${currentData.C.energyPerG * currentData.C.fuelKg} = ${currentData.C.efficiency.toFixed(4)}<br>`;
-            solution += `효율: ${(currentData.C.efficiency * 100).toFixed(2)}%`;
-            solution += '</div>';
-            solution += '</div>';
-            
-            solution += '<div class="theory-section">';
-            solution += '<div class="theory-title">【 효율 비교 및 결론 】</div>';
-            solution += `<p><strong>A의 효율: ${(currentData.A.efficiency * 100).toFixed(2)}%</strong></p>`;
-            solution += `<p><strong>B의 효율: ${(currentData.B.efficiency * 100).toFixed(2)}%</strong></p>`;
-            solution += `<p><strong>C의 효율: ${(currentData.C.efficiency * 100).toFixed(2)}%</strong></p>`;
-            solution += `<p style="margin-top: 15px; padding: 10px; background: #e8e8e8; border-radius: 5px;">`;
-            solution += `<strong>따라서 정답은: ${correctAnswer}</strong></p>`;
-            solution += '<p style="margin-top: 10px; color: #555;">※ 공급된 에너지의 양이 같을 때, 효율이 높을수록 더 많은 전기 에너지를 생산합니다.</p>';
-            solution += '</div>';
-            
-            if (!isCorrect) {
-                solution = `<p style="color: #d00; font-weight: bold;">입력한 답: ${userAnswer}</p>` + solution;
-            }
-            
-            feedbackContent.innerHTML = solution;
-            
-            // 피드백 위치로 스크롤
-            feedback.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-        
-        // 초기 문제 생성
-        generateNewProblem();
-    </script>
+    <div class="data-table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr><th>구분</th><th>전류의 세기 (A)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>I₁</td><td id="td-i1">—</td></tr>
+          <tr><td>I₂</td><td id="td-i2">—</td></tr>
+          <tr><td>I₃</td><td id="td-i3">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Answers -->
+<div class="card">
+  <div class="card-title">정답 입력</div>
+  <div class="answer-section">
+
+    <div class="answer-row">
+      <div class="answer-label">(1) R₁에 걸리는 전압</div>
+      <div class="input-group" id="ig1">
+        <input type="number" id="ans1" placeholder="0" min="0" step="any">
+        <span class="unit">V</span>
+      </div>
+    </div>
+
+    <div class="answer-row">
+      <div class="answer-label">(2) R₂의 저항값</div>
+      <div class="input-group" id="ig2">
+        <input type="number" id="ans2" placeholder="0" min="0" step="any">
+        <span class="unit">Ω</span>
+      </div>
+    </div>
+
+    <div class="answer-row">
+      <div class="answer-label">(3) 소비 전력이 가장 작은 저항</div>
+      <div class="radio-group">
+        <label class="radio-btn" id="rb1" onclick="selectR('R1')">
+          <input type="radio" name="rsel" value="R1"><span>R₁</span>
+        </label>
+        <label class="radio-btn" id="rb2" onclick="selectR('R2')">
+          <input type="radio" name="rsel" value="R2"><span>R₂</span>
+        </label>
+        <label class="radio-btn" id="rb3" onclick="selectR('R3')">
+          <input type="radio" name="rsel" value="R3"><span>R₃</span>
+        </label>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Buttons -->
+<div class="card">
+  <div class="btn-row">
+    <button class="btn btn-secondary" onclick="newQuestion()">🔀 새 문제</button>
+    <button class="btn btn-primary"   onclick="checkAnswers()">✓ 확인</button>
+  </div>
+</div>
+
+<!-- Feedback -->
+<div class="feedback" id="feedback">
+  <h3 id="fb-title"></h3>
+  <div id="fb-items"></div>
+  <div class="solution-box">
+    <h4>풀이</h4>
+    <div id="fb-solution"></div>
+  </div>
+</div>
+
+<script>
+let problem = {};
+let selectedR = null;
+
+function randInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function generateProblem() {
+  let tries = 0;
+  while (tries++ < 1000) {
+    const V  = randInt(2, 6) * 10;
+    const r1 = randInt(1, 8) * 2;
+    const I3 = randInt(1, 4);
+    const I2 = randInt(I3, 6);
+    const I1 = I2 + I3;
+    const V_R1 = I1 * r1;
+    if (V_R1 >= V) continue;
+    const V_p = V - V_R1;
+    if (V_p <= 0) continue;
+    if (V_p % I2 !== 0) continue;
+    if (V_p % I3 !== 0) continue;
+    const R2 = V_p / I2;
+    const R3 = V_p / I3;
+    const P1 = V_R1 * I1;
+    const P2 = V_p  * I2;
+    const P3 = V_p  * I3;
+    const minP = Math.min(P1, P2, P3);
+    if ([P1,P2,P3].filter(p => p === minP).length > 1) continue;
+    return { V, r1, I1, I2, I3, V_R1, V_p, R2, R3, P1, P2, P3 };
+  }
+  return { V:30, r1:6, I1:3, I2:2, I3:1, V_R1:18, V_p:12, R2:6, R3:12, P1:54, P2:24, P3:12 };
+}
+
+function minPowerResistor(p) {
+  const m = Math.min(p.P1, p.P2, p.P3);
+  return m === p.P1 ? 'R1' : m === p.P2 ? 'R2' : 'R3';
+}
+
+// ── SVG Circuit (battery horizontal: left=+, right=−) ──────────────────────
+function drawCircuit(p) {
+  const svg = document.getElementById('circuit');
+
+  // Layout:
+  //   Outer rect: left=20, top=20, right=350, bottom=180
+  //   R1 on top-left segment (x: 20→120, y=20)
+  //   Ammeter I1 on left side (x=20, y: 20→180) — vertical wire
+  //   Parallel junction at x=160, y=20 splits into two branches:
+  //     Upper: R2 branch y=20
+  //     Lower: R3 branch y=70
+  //   Both branches rejoin at x=350, y=45 (midpoint), then down to x=350,y=180
+  //   Battery on bottom wire (y=180): horizontal, left=+ right=−
+
+  svg.innerHTML = `
+    <!-- ── Outer frame wires ── -->
+    <!-- Top: left corner → R1 start -->
+    <line x1="20"  y1="20"  x2="60"  y2="20"  stroke="#1a1a1a" stroke-width="2" fill="none"/>
+    <!-- Top: R1 end → parallel split -->
+    <line x1="120" y1="20"  x2="155" y2="20"  stroke="#1a1a1a" stroke-width="2" fill="none"/>
+    <!-- Left: top-left corner down to ammeter top -->
+    <line x1="20"  y1="20"  x2="20"  y2="100" stroke="#1a1a1a" stroke-width="2" fill="none"/>
+    <!-- Left: ammeter bottom → bottom-left corner -->
+    <line x1="20"  y1="128" x2="20"  y2="180" stroke="#1a1a1a" stroke-width="2" fill="none"/>
+    <!-- Bottom wire is drawn inside the battery block below -->
+    <!-- Right: bottom-right corner → parallel rejoin -->
+    <line x1="350" y1="180" x2="350" y2="45"  stroke="#1a1a1a" stroke-width="2" fill="none"/>
+
+    <!-- ── Parallel split from x=155 ── -->
+    <!-- Junction dot -->
+    <circle cx="155" cy="20" r="3" fill="#1a1a1a"/>
+    <!-- Upper branch: goes straight right at y=20 -->
+    <line x1="155" y1="20"  x2="210" y2="20"  stroke="#1a1a1a" stroke-width="2" fill="none"/>
+    <!-- Upper branch: R2 end → ammeter I2 -->
+    <line x1="268" y1="20"  x2="310" y2="20"  stroke="#1a1a1a" stroke-width="2" fill="none"/>
+    <!-- Upper branch: ammeter I2 → right rail -->
+    <line x1="336" y1="20"  x2="350" y2="20"  stroke="#1a1a1a" stroke-width="2" fill="none"/>
+    <line x1="350" y1="20"  x2="350" y2="45"  stroke="#1a1a1a" stroke-width="2" fill="none"/>
+
+    <!-- Lower branch: drop from junction -->
+    <line x1="155" y1="20"  x2="155" y2="70"  stroke="#1a1a1a" stroke-width="2" fill="none"/>
+    <line x1="155" y1="70"  x2="210" y2="70"  stroke="#1a1a1a" stroke-width="2" fill="none"/>
+    <!-- Lower branch: R3 end → ammeter I3 -->
+    <line x1="268" y1="70"  x2="310" y2="70"  stroke="#1a1a1a" stroke-width="2" fill="none"/>
+    <!-- Lower branch: ammeter I3 → right rail -->
+    <line x1="336" y1="70"  x2="350" y2="70"  stroke="#1a1a1a" stroke-width="2" fill="none"/>
+    <line x1="350" y1="70"  x2="350" y2="45"  stroke="#1a1a1a" stroke-width="2" fill="none"/>
+    <!-- Junction dot right -->
+    <circle cx="350" cy="45" r="3" fill="#1a1a1a"/>
+
+    <!-- ── R1 resistor (zigzag, top wire) ── -->
+    <polyline points="60,20 65,11 73,29 81,11 89,29 97,11 105,29 113,11 120,20"
+      fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linejoin="round"/>
+    <text x="90" y="9" text-anchor="middle" font-family="Noto Sans KR,sans-serif" font-size="11" fill="#1a1a1a" font-weight="700">R₁</text>
+    <text x="90" y="38" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="9" fill="#555">${p.r1} Ω</text>
+
+    <!-- ── R2 resistor (upper branch) ── -->
+    <polyline points="210,20 215,11 221,29 227,11 233,29 239,11 245,29 251,11 257,20 263,20 268,20"
+      fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linejoin="round"/>
+    <text x="239" y="9" text-anchor="middle" font-family="Noto Sans KR,sans-serif" font-size="11" fill="#1a1a1a" font-weight="700">R₂</text>
+
+    <!-- ── R3 resistor (lower branch) ── -->
+    <polyline points="210,70 215,61 221,79 227,61 233,79 239,61 245,79 251,61 257,70 263,70 268,70"
+      fill="none" stroke="#1a1a1a" stroke-width="2" stroke-linejoin="round"/>
+    <text x="239" y="59" text-anchor="middle" font-family="Noto Sans KR,sans-serif" font-size="11" fill="#1a1a1a" font-weight="700">R₃</text>
+
+    <!-- ── Ammeter I1 (left side, vertical) ── -->
+    <circle cx="20" cy="114" r="14" fill="#fff" stroke="#1a1a1a" stroke-width="1.8"/>
+    <text x="20" y="118" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#1a1a1a" font-weight="700">A</text>
+
+    <!-- ── Ammeter I2 (upper branch) ── -->
+    <circle cx="323" cy="20" r="13" fill="#fff" stroke="#1a1a1a" stroke-width="1.8"/>
+    <text x="323" y="24" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#1a1a1a" font-weight="700">A</text>
+
+    <!-- ── Ammeter I3 (lower branch) ── -->
+    <circle cx="323" cy="70" r="13" fill="#fff" stroke="#1a1a1a" stroke-width="1.8"/>
+    <text x="323" y="74" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="10" fill="#1a1a1a" font-weight="700">A</text>
+
+    <!-- ── Battery (vertical plates on bottom wire, matching original problem) ── -->
+    <!-- Wire left side → first cell + plate -->
+    <line x1="20"  y1="180" x2="148" y2="180" stroke="#1a1a1a" stroke-width="2" fill="none"/>
+    <!-- Cell 1: long plate (+ left) -->
+    <line x1="155" y1="170" x2="155" y2="190" stroke="#1a1a1a" stroke-width="3.5"/>
+    <!-- Cell 1: short plate -->
+    <line x1="163" y1="174" x2="163" y2="186" stroke="#1a1a1a" stroke-width="2"/>
+    <!-- gap between cells (wire segment) -->
+    <line x1="163" y1="180" x2="172" y2="180" stroke="#1a1a1a" stroke-width="2" fill="none"/>
+    <!-- Cell 2: long plate -->
+    <line x1="172" y1="170" x2="172" y2="190" stroke="#1a1a1a" stroke-width="3.5"/>
+    <!-- Cell 2: short plate (− right) -->
+    <line x1="180" y1="174" x2="180" y2="186" stroke="#1a1a1a" stroke-width="2"/>
+    <!-- Wire right side -->
+    <line x1="180" y1="180" x2="350" y2="180" stroke="#1a1a1a" stroke-width="2" fill="none"/>
+    <!-- Voltage label below battery -->
+    <text x="167" y="203" text-anchor="middle" font-family="JetBrains Mono,monospace" font-size="11" fill="#333" font-weight="600">${p.V} V</text>
+
+    <!-- ── Current labels ── -->
+    <text x="6"   y="90"  font-family="JetBrains Mono,monospace" font-size="10" fill="#444" font-weight="600">I₁</text>
+    <text x="190" y="14"  font-family="JetBrains Mono,monospace" font-size="10" fill="#444" font-weight="600">I₂</text>
+    <text x="190" y="64"  font-family="JetBrains Mono,monospace" font-size="10" fill="#444" font-weight="600">I₃</text>
+
+    <!-- ── Arrow heads for current direction ── -->
+    <!-- I2 arrow (rightward on upper branch) -->
+    <polygon points="207,20 200,16 200,24" fill="#444"/>
+    <!-- I3 arrow (rightward on lower branch) -->
+    <polygon points="207,70 200,66 200,74" fill="#444"/>
+    <!-- I1 arrow (upward on left wire) -->
+    <polygon points="20,88 15,96 25,96" fill="#444"/>
+  `;
+}
+
+// ── New question ───────────────────────────────────────────────────────────
+function newQuestion() {
+  problem = generateProblem();
+  selectedR = null;
+
+  document.getElementById('ans1').value = '';
+  document.getElementById('ans2').value = '';
+  ['rb1','rb2','rb3'].forEach(id =>
+    document.getElementById(id).className = 'radio-btn'
+  );
+  ['ig1','ig2'].forEach(id =>
+    document.getElementById(id).className = 'input-group'
+  );
+
+  document.getElementById('problem-text').innerHTML =
+    `그림은 저항 R₁, R₂, R₃이 전압이 <span class="highlight">${problem.V} V</span>로 일정한 전원에 연결된 모습을 나타낸 것이다. R₁의 저항값이 <span class="highlight">${problem.r1} Ω</span>일 때 각 전류계에 흐르는 전류의 세기 I₁, I₂, I₃을 나타낸 것이다.`;
+
+  document.getElementById('td-i1').textContent = problem.I1;
+  document.getElementById('td-i2').textContent = problem.I2;
+  document.getElementById('td-i3').textContent = problem.I3;
+
+  drawCircuit(problem);
+  document.getElementById('feedback').classList.remove('show');
+}
+
+// ── Radio select ───────────────────────────────────────────────────────────
+function selectR(val) {
+  selectedR = val;
+  ['rb1','rb2','rb3'].forEach(id =>
+    document.getElementById(id).className = 'radio-btn'
+  );
+  document.getElementById({ R1:'rb1', R2:'rb2', R3:'rb3' }[val]).classList.add('selected');
+}
+
+// ── Check ──────────────────────────────────────────────────────────────────
+function checkAnswers() {
+  const a1 = parseFloat(document.getElementById('ans1').value);
+  const a2 = parseFloat(document.getElementById('ans2').value);
+  const a3 = selectedR;
+
+  const c1 = problem.V_R1, c2 = problem.R2, c3 = minPowerResistor(problem);
+  const ok1 = !isNaN(a1) && Math.abs(a1 - c1) < 0.01;
+  const ok2 = !isNaN(a2) && Math.abs(a2 - c2) < 0.01;
+  const ok3 = a3 === c3;
+
+  document.getElementById('ig1').className = 'input-group' + (isNaN(a1) ? '' : ok1 ? ' is-correct' : ' is-wrong');
+  document.getElementById('ig2').className = 'input-group' + (isNaN(a2) ? '' : ok2 ? ' is-correct' : ' is-wrong');
+
+  const m3 = { R1:'rb1', R2:'rb2', R3:'rb3' };
+  if (a3) {
+    document.getElementById(m3[a3]).className = 'radio-btn ' + (ok3 ? 'is-correct' : 'is-wrong');
+    if (!ok3) document.getElementById(m3[c3]).classList.add('is-correct');
+  }
+
+  const score = [ok1, ok2, ok3].filter(Boolean).length;
+  const fb = document.getElementById('feedback');
+  fb.classList.add('show');
+
+  document.getElementById('fb-title').innerHTML =
+    `채점 결과&nbsp;<span class="badge ${score === 3 ? 'badge-correct' : 'badge-wrong'}">${score} / 3 정답</span>`;
+
+  const rL = r => ({ R1:'R₁', R2:'R₂', R3:'R₃' }[r] || '미선택');
+
+  document.getElementById('fb-items').innerHTML = `
+    <div class="feedback-item ${ok1 ? 'correct' : 'wrong'}">
+      <div class="fi-label">(1) R₁에 걸리는 전압</div>
+      <div class="fi-result">
+        ${ok1
+          ? `<span class="fi-correct-val">✓ ${c1} V — 정답</span>`
+          : `<span class="fi-wrong-val">✗ 입력: ${isNaN(a1) ? '없음' : a1+' V'}</span> → <span class="fi-correct-val">정답: ${c1} V</span>`}
+      </div>
+    </div>
+    <div class="feedback-item ${ok2 ? 'correct' : 'wrong'}">
+      <div class="fi-label">(2) R₂의 저항값</div>
+      <div class="fi-result">
+        ${ok2
+          ? `<span class="fi-correct-val">✓ ${c2} Ω — 정답</span>`
+          : `<span class="fi-wrong-val">✗ 입력: ${isNaN(a2) ? '없음' : a2+' Ω'}</span> → <span class="fi-correct-val">정답: ${c2} Ω</span>`}
+      </div>
+    </div>
+    <div class="feedback-item ${ok3 ? 'correct' : 'wrong'}">
+      <div class="fi-label">(3) 소비 전력이 가장 작은 저항</div>
+      <div class="fi-result">
+        ${ok3
+          ? `<span class="fi-correct-val">✓ ${rL(c3)} — 정답</span>`
+          : `<span class="fi-wrong-val">✗ 입력: ${rL(a3)}</span> → <span class="fi-correct-val">정답: ${rL(c3)}</span>`}
+      </div>
+    </div>`;
+
+  document.getElementById('fb-solution').innerHTML = `
+    <div class="concept-box">
+      <div class="concept-title">📌 핵심 개념</div>
+      <div class="concept-line"><b>옴의 법칙:</b> <span class="formula">V = I × R</span> &nbsp;(전압 = 전류 × 저항)</div>
+      <div class="concept-line"><b>직렬 연결</b> (R₁과 전원 사이): 모든 저항에 흐르는 <b>전류가 같다</b>. 전체 전압은 각 저항의 전압의 <b>합</b>으로 나뉜다.</div>
+      <div class="concept-line"><b>병렬 연결</b> (R₂와 R₃ 사이): 모든 저항에 걸리는 <b>전압이 같다</b>. 전체 전류는 각 가지의 전류로 <b>나뉘어 흐른다</b>.</div>
+    </div>
+
+    <div class="solution-step">
+      <span class="step-num">1</span>
+      <span><b>회로 구조 파악</b><br>
+      R₁은 전원과 직렬로 연결되어 있고, R₂와 R₃는 서로 병렬로 연결되어 있다. 즉, 전원에서 나온 전류가 R₁을 모두 통과한 뒤, R₂ 쪽과 R₃ 쪽으로 나누어져 흐른다.</span>
+    </div>
+
+    <div class="solution-step">
+      <span class="step-num">2</span>
+      <span><b>전류 관계 (병렬 연결의 특징)</b><br>
+      병렬 연결에서는 전체 전류가 각 가지의 전류로 나뉘므로, R₁에 흐르는 전류 I₁은 두 가지 전류의 합과 같다.<br>
+      <span class="formula">I₁ = I₂ + I₃ = ${problem.I2} + ${problem.I3} = ${problem.I1} A</span></span>
+    </div>
+
+    <div class="solution-step">
+      <span class="step-num">3</span>
+      <span><b>R₁에 걸리는 전압 — 옴의 법칙 적용</b><br>
+      R₁에는 회로 전체 전류인 I₁이 그대로 흐르므로, 옴의 법칙 V = I × R을 이용하면:<br>
+      <span class="formula">V₁ = I₁ × R₁ = ${problem.I1} × ${problem.r1} = <b>${problem.V_R1} V</b></span></span>
+    </div>
+
+    <div class="solution-step">
+      <span class="step-num">4</span>
+      <span><b>병렬 부분에 걸리는 전압 (직렬 연결의 특징)</b><br>
+      직렬 연결에서는 전원의 전체 전압이 각 부분의 전압으로 나뉘어 그 합이 전체 전압과 같다. 따라서 R₂‧R₃ 병렬 부분에 걸리는 전압 V_p는 전체 전압에서 R₁의 전압을 뺀 값이다.<br>
+      <span class="formula">V_p = V − V₁ = ${problem.V} − ${problem.V_R1} = ${problem.V_p} V</span></span>
+    </div>
+
+    <div class="solution-step">
+      <span class="step-num">5</span>
+      <span><b>R₂의 저항값 — 옴의 법칙 적용</b><br>
+      병렬 연결에서는 R₂와 R₃에 같은 전압 V_p가 걸린다. R₂에는 I₂가 흐르므로 V = IR을 R에 대해 풀면:<br>
+      <span class="formula">R₂ = V_p ÷ I₂ = ${problem.V_p} ÷ ${problem.I2} = <b>${problem.R2} Ω</b></span></span>
+    </div>
+
+    <div class="solution-step">
+      <span class="step-num">6</span>
+      <span><b>R₃의 저항값 (같은 방법)</b><br>
+      <span class="formula">R₃ = V_p ÷ I₃ = ${problem.V_p} ÷ ${problem.I3} = ${problem.R3} Ω</span></span>
+    </div>
+
+    <div class="solution-step">
+      <span class="step-num">7</span>
+      <span><b>각 저항의 소비 전력 계산</b><br>
+      소비 전력은 P = V × I로 구한다. 각 저항에 걸리는 전압과 흐르는 전류를 곱하면:<br>
+      <span class="formula">P₁ = V₁ × I₁ = ${problem.V_R1} × ${problem.I1} = <b>${problem.P1} W</b></span><br>
+      <span class="formula">P₂ = V_p × I₂ = ${problem.V_p} × ${problem.I2} = <b>${problem.P2} W</b></span><br>
+      <span class="formula">P₃ = V_p × I₃ = ${problem.V_p} × ${problem.I3} = <b>${problem.P3} W</b></span></span>
+    </div>
+
+    <div class="solution-step">
+      <span class="step-num">8</span>
+      <span><b>결론</b><br>
+      세 값 중 가장 작은 소비 전력은 <span class="formula"><b>${rL(c3)}</b> = ${Math.min(problem.P1,problem.P2,problem.P3)} W</span>이다.</span>
+    </div>`;
+
+  fb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+newQuestion();
+</script>
 </body>
 </html>

@@ -1,646 +1,692 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>에너지 효율 문제</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Malgun Gothic', sans-serif;
-            padding: 15px;
-            background-color: #f5f5f5;
-            line-height: 1.6;
-        }
-        
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        h2 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 20px;
-            font-size: 1.3em;
-        }
-        
-        .cars-container {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-            margin: 20px 0;
-        }
-        
-        .car-section {
-            background-color: #f9f9f9;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            padding: 15px;
-        }
-        
-        .car-title {
-            text-align: center;
-            font-size: 1.2em;
-            font-weight: bold;
-            margin-bottom: 15px;
-            color: #333;
-        }
-        
-        .car-diagram {
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-            margin: 20px 0;
-            gap: 10px;
-        }
-        
-        .car {
-            width: 100px;
-            height: 60px;
-            background: linear-gradient(to bottom, #4CAF50 0%, #45a049 100%);
-            border-radius: 15px 50px 10px 10px;
-            position: relative;
-            animation: drive 2s ease-in-out infinite;
-            flex-shrink: 0;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        }
-        
-        .car-a {
-            background: linear-gradient(to bottom, #2196F3 0%, #1976D2 100%);
-        }
-        
-        .car-b {
-            background: linear-gradient(to bottom, #FF9800 0%, #F57C00 100%);
-        }
-        
-        .car-window {
-            width: 30px;
-            height: 20px;
-            background-color: #87CEEB;
-            position: absolute;
-            top: 8px;
-            right: 15px;
-            border-radius: 5px 5px 0 0;
-            border: 2px solid #333;
-        }
-        
-        .car-front {
-            width: 15px;
-            height: 25px;
-            background-color: rgba(255, 255, 255, 0.3);
-            position: absolute;
-            right: -5px;
-            top: 20px;
-            border-radius: 0 8px 8px 0;
-        }
-        
-        .car-headlight {
-            width: 8px;
-            height: 8px;
-            background-color: #FFD700;
-            position: absolute;
-            right: -3px;
-            top: 25px;
-            border-radius: 50%;
-            box-shadow: 0 0 5px #FFD700;
-        }
-        
-        .car-wheel {
-            width: 18px;
-            height: 18px;
-            background-color: #222;
-            border: 3px solid #555;
-            border-radius: 50%;
-            position: absolute;
-            bottom: -8px;
-            animation: rotate 1s linear infinite;
-        }
-        
-        .wheel-left {
-            left: 15px;
-        }
-        
-        .wheel-right {
-            right: 15px;
-        }
-        
-        @keyframes drive {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-3px); }
-        }
-        
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        
-        .energy-arrows {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            flex: 1;
-        }
-        
-        .energy-input {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .energy-output {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .arrow-box {
-            background-color: white;
-            border: 2px solid #4CAF50;
-            border-radius: 8px;
-            padding: 10px;
-            position: relative;
-            text-align: center;
-            min-width: 120px;
-        }
-        
-        .arrow-box.input {
-            border-color: #f44336;
-        }
-        
-        .arrow-box.output {
-            border-color: #4CAF50;
-        }
-        
-        .arrow-box::after {
-            content: '→';
-            position: absolute;
-            right: -25px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.8em;
-            color: #666;
-        }
-        
-        .arrow-box.output::after {
-            content: '→';
-            position: absolute;
-            left: -25px;
-            right: auto;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.8em;
-            color: #4CAF50;
-        }
-        
-        .arrow-label {
-            font-size: 0.75em;
-            color: #666;
-            margin-bottom: 3px;
-        }
-        
-        .arrow-value {
-            font-size: 1.1em;
-            font-weight: bold;
-            color: #333;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 0.95em;
-        }
-        
-        th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: center;
-        }
-        
-        th {
-            background-color: #e8e8e8;
-            font-weight: bold;
-        }
-        
-        .options-box {
-            border: 2px solid #333;
-            padding: 15px;
-            margin: 20px 0;
-            background-color: #fafafa;
-        }
-        
-        .options-box p {
-            margin: 8px 0;
-            font-size: 0.95em;
-        }
-        
-        .choices {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin: 20px 0;
-        }
-        
-        .choice-btn {
-            padding: 15px;
-            font-size: 1em;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .choice-btn:hover {
-            background-color: #45a049;
-        }
-        
-        .choice-btn:active {
-            transform: scale(0.98);
-        }
-        
-        .new-problem-btn {
-            width: 100%;
-            padding: 15px;
-            font-size: 1.1em;
-            background-color: #2196F3;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: background-color 0.3s;
-        }
-        
-        .new-problem-btn:hover {
-            background-color: #0b7dda;
-        }
-        
-        .result {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 5px;
-            font-size: 1em;
-            display: none;
-        }
-        
-        .result.correct {
-            background-color: #d4edda;
-            border: 2px solid #28a745;
-            color: #155724;
-        }
-        
-        .result.incorrect {
-            background-color: #f8d7da;
-            border: 2px solid #dc3545;
-            color: #721c24;
-        }
-        
-        .explanation {
-            margin-top: 15px;
-            padding: 15px;
-            background-color: #e7f3ff;
-            border-left: 4px solid #2196F3;
-            border-radius: 3px;
-            font-size: 0.9em;
-        }
-        
-        .explanation h4 {
-            margin-bottom: 10px;
-            color: #1976D2;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>전기력이 한 일 - 왕실 물리학 학당</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #F0D080;
+    --gold-dark: #8B6914;
+    --crimson: #8B1A1A;
+    --crimson-light: #C0392B;
+    --ink: #1A1008;
+    --parchment: #F5EDD6;
+    --parchment-dark: #E8D9B0;
+    --jade-light: #3D9970;
+    --shadow: rgba(0,0,0,0.35);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--ink);
+    background-image:
+      radial-gradient(ellipse at 20% 10%, #2A1A00 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 90%, #1A0A00 0%, transparent 50%);
+    min-height: 100vh;
+    color: var(--parchment);
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  .royal-header {
+    text-align: center;
+    padding: 1.8rem 1rem 1.4rem;
+    border-bottom: 2px solid var(--gold-dark);
+    background: linear-gradient(180deg,#0D0500 0%,transparent 100%);
+    position: relative;
+  }
+  .royal-header::before, .royal-header::after {
+    content:'◈'; color:var(--gold); font-size:1.2rem;
+    position:absolute; top:50%; transform:translateY(-50%);
+  }
+  .royal-header::before { left:2rem; }
+  .royal-header::after  { right:2rem; }
+
+  .crown-icon {
+    font-size:2.4rem; display:block; margin-bottom:0.3rem;
+    animation: glow 3s ease-in-out infinite;
+  }
+  @keyframes glow {
+    0%,100%{ filter:drop-shadow(0 0 8px var(--gold)); }
+    50%    { filter:drop-shadow(0 0 22px var(--gold-light)); }
+  }
+  .royal-title {
+    font-family:'Noto Serif KR',serif; font-size:1.7rem;
+    font-weight:900; color:var(--gold); letter-spacing:0.1em;
+    text-shadow:0 2px 8px var(--gold-dark);
+  }
+  .royal-subtitle {
+    font-size:0.83rem; color:var(--parchment-dark);
+    margin-top:0.3rem; opacity:0.8;
+  }
+
+  /* CONCEPT */
+  .concept-intro {
+    max-width:760px; margin:1.4rem auto 0;
+    background:linear-gradient(135deg,#1A0D00,#0D0700);
+    border:1px solid var(--gold-dark); border-radius:4px;
+    padding:1.1rem 1.4rem; font-size:0.86rem; line-height:1.85;
+    color:var(--parchment-dark);
+  }
+  .concept-intro h3 { font-family:'Noto Serif KR',serif; color:var(--gold); font-size:0.95rem; margin-bottom:0.6rem; }
+  .concept-intro .law {
+    background:rgba(201,168,76,0.12); border:1px solid var(--gold-dark);
+    border-radius:3px; padding:0.45rem 1rem; margin:0.5rem 0;
+    font-family:'Noto Serif KR',serif; font-weight:700;
+    color:var(--gold-light); text-align:center; font-size:0.95rem;
+  }
+
+  /* STAGE BAR */
+  .stage-bar {
+    max-width:760px; margin:1.2rem auto 0;
+    display:flex; align-items:center; justify-content:space-between;
+    gap:0.5rem; padding:0 0.5rem;
+  }
+  .stage-dots { display:flex; gap:0.5rem; }
+  .stage-dot {
+    width:11px; height:11px; border-radius:50%;
+    border:2px solid var(--gold-dark); background:transparent; transition:background 0.3s;
+  }
+  .stage-dot.active { background:var(--gold); border-color:var(--gold); }
+  .stage-label { font-family:'Noto Serif KR',serif; font-size:0.85rem; color:var(--gold); letter-spacing:0.05em; }
+
+  .btn-next-q {
+    font-family:'Noto Serif KR',serif; font-size:0.9rem; font-weight:700;
+    padding:0.5rem 1.3rem; border:2px solid var(--gold-dark); border-radius:3px;
+    cursor:pointer; background:linear-gradient(135deg,#2A1800,#1A0D00);
+    color:var(--gold); box-shadow:0 2px 8px rgba(0,0,0,0.3); transition:all 0.18s;
+  }
+  .btn-next-q:hover { transform:translateY(-1px); border-color:var(--gold); }
+
+  /* CARD */
+  .quiz-container { max-width:760px; margin:1rem auto 4rem; padding:0 1rem; }
+
+  .problem-card {
+    background:var(--parchment); color:var(--ink);
+    border-radius:4px; border:2px solid var(--gold-dark);
+    box-shadow:0 4px 24px var(--shadow),inset 0 1px 0 rgba(255,255,255,0.3);
+    overflow:hidden; position:relative;
+    animation:cardIn 0.35s cubic-bezier(.25,.8,.25,1);
+  }
+  @keyframes cardIn {
+    from{opacity:0;transform:translateY(14px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+  .problem-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:4px;
+    background:linear-gradient(90deg,var(--gold-dark),var(--gold-light),var(--gold-dark));
+  }
+
+  .problem-header {
+    background:linear-gradient(135deg,#2A1800,#1A0D00);
+    padding:0.85rem 1.4rem;
+    display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:0.5rem;
+  }
+  .problem-number { font-family:'Noto Serif KR',serif; font-size:0.92rem; color:var(--gold); font-weight:700; letter-spacing:0.08em; }
+  .problem-topic  { font-size:0.76rem; color:var(--parchment-dark); background:rgba(201,168,76,0.15); padding:0.18rem 0.65rem; border-radius:2px; border:1px solid var(--gold-dark); }
+
+  .problem-body { padding:1.4rem 1.4rem 0.8rem; }
+  .problem-text { font-family:'Noto Serif KR',serif; font-size:1rem; line-height:1.9; color:#1A1008; margin-bottom:1.1rem; }
+  .problem-text strong { color:var(--crimson); font-weight:700; }
+
+  .diagram-wrap {
+    background:white; border:1.5px solid #C9A84C44; border-radius:3px;
+    padding:0.9rem; margin-bottom:1.1rem; display:flex; justify-content:center; overflow-x:auto;
+  }
+
+  /* CONTROLS */
+  .controls-row { display:flex; flex-wrap:wrap; gap:0.7rem; margin-bottom:0.9rem; align-items:center; }
+  .control-group {
+    display:flex; align-items:center; gap:0.45rem;
+    background:var(--parchment-dark); border:1px solid var(--gold-dark);
+    border-radius:3px; padding:0.38rem 0.7rem;
+  }
+  .control-group label { font-size:0.8rem; font-weight:700; color:var(--crimson); white-space:nowrap; }
+  .control-group input[type=range] { width:80px; accent-color:var(--crimson); }
+  .control-val { font-family:'Noto Serif KR',serif; font-size:0.88rem; font-weight:700; color:var(--ink); min-width:40px; text-align:right; }
+
+  /* CHOICES */
+  .choices-grid {
+    display:grid; grid-template-columns:1fr 1fr; gap:0.6rem;
+    padding:1rem 1.4rem 1.2rem;
+    border-top:1px solid var(--gold-dark);
+    background:var(--parchment-dark);
+  }
+  .choice-btn {
+    font-family:'Noto Serif KR',serif; font-size:0.97rem; font-weight:700;
+    padding:0.7rem 0.5rem; border-radius:3px; cursor:pointer;
+    border:2px solid var(--gold-dark);
+    background:white; color:var(--ink);
+    transition:all 0.15s; text-align:center;
+    position:relative; overflow:hidden;
+  }
+  .choice-btn:hover:not(:disabled) {
+    background:var(--gold-dark); color:var(--parchment); border-color:var(--gold);
+    transform:translateY(-1px);
+  }
+  .choice-btn.selected-correct {
+    background:linear-gradient(135deg,#1a4a2e,#0f3020);
+    color:#7FFFA0; border-color:var(--jade-light);
+  }
+  .choice-btn.selected-wrong {
+    background:linear-gradient(135deg,#4a1a1a,#2e0f0f);
+    color:#FFB0B0; border-color:var(--crimson-light);
+  }
+  .choice-btn.reveal-correct {
+    background:linear-gradient(135deg,#1a4a2e,#0f3020);
+    color:#7FFFA0; border-color:var(--jade-light);
+  }
+  .choice-btn:disabled { cursor:default; }
+  .choice-num {
+    display:inline-block; width:22px; height:22px; line-height:22px;
+    border-radius:50%; background:var(--gold-dark); color:var(--parchment);
+    font-size:0.8rem; text-align:center; margin-right:0.4rem;
+  }
+  .choice-btn.selected-correct .choice-num { background:var(--jade-light); }
+  .choice-btn.selected-wrong   .choice-num { background:var(--crimson-light); }
+  .choice-btn.reveal-correct   .choice-num { background:var(--jade-light); }
+
+  /* FEEDBACK */
+  .royal-feedback {
+    display:none; padding:1rem 1.4rem; border-top:2px solid;
+    animation:fadeSlide 0.3s ease;
+  }
+  @keyframes fadeSlide {
+    from{opacity:0;transform:translateY(-6px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+  .royal-feedback.correct { background:linear-gradient(135deg,#0D2E1A,#0A2015); border-color:var(--jade-light); }
+  .royal-feedback.wrong   { background:linear-gradient(135deg,#2E0D0D,#1A0808); border-color:var(--crimson-light); }
+
+  .feedback-decree {
+    font-family:'Noto Serif KR',serif; font-size:1.05rem; font-weight:900;
+    margin-bottom:0.7rem; display:flex; align-items:center; gap:0.5rem;
+  }
+  .correct .feedback-decree { color:var(--gold-light); }
+  .wrong   .feedback-decree { color:#FF8080; }
+
+  .feedback-solution {
+    background:rgba(0,0,0,0.25); border-left:3px solid;
+    padding:0.9rem 1.1rem; border-radius:2px;
+    font-size:0.88rem; line-height:1.85; color:var(--parchment);
+  }
+  .correct .feedback-solution { border-color:var(--jade-light); }
+  .wrong   .feedback-solution { border-color:var(--crimson-light); }
+  .feedback-solution .formula { font-family:'Noto Serif KR',serif; font-weight:700; color:var(--gold-light); font-size:0.97rem; }
+  .feedback-solution .step { margin:0.28rem 0; padding-left:0.4rem; }
+  .feedback-solution .hl { color:var(--gold-light); font-weight:700; }
+  .feedback-concept {
+    margin-top:0.7rem; padding:0.65rem 0.9rem;
+    background:rgba(201,168,76,0.1); border:1px solid var(--gold-dark);
+    border-radius:2px; font-size:0.8rem; color:var(--parchment-dark); line-height:1.7;
+  }
+  .feedback-concept strong { color:var(--gold); }
+
+  svg text { font-family:'Noto Sans KR',sans-serif; }
+
+  /* OVERLAY */
+  #king-overlay {
+    display:none; position:fixed; inset:0; z-index:9999;
+    background:rgba(0,0,0,0.78); backdrop-filter:blur(4px);
+    align-items:center; justify-content:center; padding:1rem;
+  }
+  .overlay-box {
+    background:linear-gradient(135deg,#1A0D00,#0D0700);
+    border:2px solid var(--gold); border-radius:6px;
+    max-width:460px; width:100%; padding:2rem; text-align:center;
+    box-shadow:0 8px 40px rgba(0,0,0,0.8);
+    animation:popIn 0.3s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes popIn { from{transform:scale(0.7);opacity:0;} to{transform:scale(1);opacity:1;} }
+
+  @media(max-width:520px){
+    .choices-grid { grid-template-columns:1fr; }
+    .royal-title { font-size:1.3rem; }
+  }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h2>에너지 효율 문제</h2>
-        
-        <div class="cars-container">
-            <div class="car-section">
-                <div class="car-title">자동차 A</div>
-                <div class="car-diagram">
-                    <div class="energy-input">
-                        <div class="arrow-box input">
-                            <div class="arrow-label">공급한 전기 에너지</div>
-                            <div class="arrow-value"><span id="energyA-diagram">600</span> J</div>
-                        </div>
-                    </div>
-                    <div class="car car-a">
-                        <div class="car-window"></div>
-                        <div class="car-front"></div>
-                        <div class="car-headlight"></div>
-                        <div class="car-wheel wheel-left"></div>
-                        <div class="car-wheel wheel-right"></div>
-                    </div>
-                    <div class="energy-output">
-                        <div class="arrow-box output">
-                            <div class="arrow-label">바퀴를 움직이는 데<br>사용한 에너지</div>
-                            <div class="arrow-value"><span id="usedA-diagram">300</span> J</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="car-section">
-                <div class="car-title">자동차 B</div>
-                <div class="car-diagram">
-                    <div class="energy-input">
-                        <div class="arrow-box input">
-                            <div class="arrow-label">공급한 전기 에너지</div>
-                            <div class="arrow-value"><span id="energyB-diagram">500</span> J</div>
-                        </div>
-                    </div>
-                    <div class="car car-b">
-                        <div class="car-window"></div>
-                        <div class="car-front"></div>
-                        <div class="car-headlight"></div>
-                        <div class="car-wheel wheel-left"></div>
-                        <div class="car-wheel wheel-right"></div>
-                    </div>
-                    <div class="energy-output">
-                        <div class="arrow-box output">
-                            <div class="arrow-label">바퀴를 움직이는 데<br>사용한 에너지</div>
-                            <div class="arrow-value"><span id="usedB-diagram">400</span> J</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <table id="dataTable">
-            <tr>
-                <th>자동차</th>
-                <th>A</th>
-                <th>B</th>
-            </tr>
-            <tr>
-                <td>공급한 전기 에너지(J)</td>
-                <td id="energyA">600</td>
-                <td id="energyB">500</td>
-            </tr>
-            <tr>
-                <td>바퀴를 움직이는 데 사용한 에너지(J)</td>
-                <td id="usedA">300</td>
-                <td id="usedB">400</td>
-            </tr>
-        </table>
-        
-        <div class="options-box">
-            <p><strong>&lt; 보기 &gt;</strong></p>
-            <p><strong>ㄱ.</strong> <span id="option1"></span></p>
-            <p><strong>ㄴ.</strong> <span id="option2"></span></p>
-            <p><strong>ㄷ.</strong> <span id="option3"></span></p>
-            <p><strong>ㄹ.</strong> <span id="option4"></span></p>
-        </div>
-        
-        <div class="choices">
-            <button class="choice-btn" onclick="checkAnswer(1)">① ㄱ</button>
-            <button class="choice-btn" onclick="checkAnswer(2)">② ㄴ</button>
-            <button class="choice-btn" onclick="checkAnswer(3)">③ ㄷ</button>
-            <button class="choice-btn" onclick="checkAnswer(4)">④ ㄱ, ㄴ</button>
-            <button class="choice-btn" onclick="checkAnswer(5)">⑤ ㄴ, ㄷ</button>
-        </div>
-        
-        <div id="result" class="result"></div>
-        
-        <button class="new-problem-btn" onclick="generateNewProblem()">새 문제</button>
-    </div>
 
-    <script>
-        let currentAnswer = 0;
-        let problemData = {};
-        let currentOptions = {};
-        
-        // 보기 텍스트 템플릿 모음
-        const optionTemplates = {
-            efficiency: [
-                { text: '에너지 효율은 {higher}가 {lower}보다 크다.', key: 'efficiencyHigher' },
-                { text: '에너지 변환 효율은 {lower}가 {higher}보다 낮다.', key: 'efficiencyHigher' },
-                { text: '{higher}의 에너지 효율이 {lower}보다 높다.', key: 'efficiencyHigher' }
-            ],
-            waste: [
-                { text: '공급한 전기 에너지가 같을 때 버려지는 열에너지는 {more}가 {less}보다 많다.', key: 'wasteMore' },
-                { text: '손실되는 에너지는 {more}가 {less}보다 크다.', key: 'wasteMore' },
-                { text: '{more}에서 열로 전환되는 에너지가 {less}보다 많다.', key: 'wasteMore' }
-            ],
-            sameWork: [
-                { text: '바퀴를 움직이는 에너지가 같을 때 공급한 전기 에너지의 양은 {efficient}가 {inefficient}보다 적다.', key: 'moreEfficient' },
-                { text: '같은 일을 하는 데 필요한 전기 에너지는 {efficient}가 {inefficient}보다 적다.', key: 'moreEfficient' },
-                { text: '동일한 작업을 수행하는 데 {efficient}가 {inefficient}보다 적은 에너지를 사용한다.', key: 'moreEfficient' }
-            ],
-            conservation: [
-                { text: 'A와 B 모두 에너지 보존 법칙이 성립한다.', key: 'always' },
-                { text: '공급된 에너지는 A와 B 모두 다른 형태로 전환된다.', key: 'always' },
-                { text: 'A와 B에서 에너지의 총량은 변하지 않는다.', key: 'always' }
-            ],
-            totalEnergy: [
-                { text: '공급한 전기 에너지의 총량은 {more}가 {less}보다 크다.', key: 'energyMore' },
-                { text: '{more}에 공급된 에너지가 {less}보다 많다.', key: 'energyMore' }
-            ],
-            usedEnergy: [
-                { text: '바퀴를 움직이는 데 사용한 에너지는 {more}가 {less}보다 크다.', key: 'usedMore' },
-                { text: '유용하게 사용된 에너지의 양은 {more}가 {less}보다 많다.', key: 'usedMore' }
-            ]
-        };
-        
-        function generateNewProblem() {
-            // 랜덤 데이터 생성
-            const energyA = (Math.floor(Math.random() * 4) + 4) * 100; // 400-700
-            const energyB = (Math.floor(Math.random() * 4) + 4) * 100; // 400-700
-            const usedA = Math.floor(energyA * (0.4 + Math.random() * 0.3)); // 40-70%
-            const usedB = Math.floor(energyB * (0.4 + Math.random() * 0.3)); // 40-70%
-            
-            problemData = {
-                energyA: energyA,
-                energyB: energyB,
-                usedA: usedA,
-                usedB: usedB,
-                efficiencyA: (usedA / energyA * 100).toFixed(1),
-                efficiencyB: (usedB / energyB * 100).toFixed(1),
-                wasteA: energyA - usedA,
-                wasteB: energyB - usedB
-            };
-            
-            // 표 업데이트
-            document.getElementById('energyA').textContent = energyA;
-            document.getElementById('energyB').textContent = energyB;
-            document.getElementById('usedA').textContent = usedA;
-            document.getElementById('usedB').textContent = usedB;
-            
-            // 다이어그램 업데이트
-            document.getElementById('energyA-diagram').textContent = energyA;
-            document.getElementById('energyB-diagram').textContent = energyB;
-            document.getElementById('usedA-diagram').textContent = usedA;
-            document.getElementById('usedB-diagram').textContent = usedB;
-            
-            // 비교 결과 계산
-            const efficiencyHigher = problemData.efficiencyB > problemData.efficiencyA ? 'B' : 'A';
-            const efficiencyLower = efficiencyHigher === 'B' ? 'A' : 'B';
-            const wasteMore = problemData.wasteA > problemData.wasteB ? 'A' : 'B';
-            const wasteLess = wasteMore === 'A' ? 'B' : 'A';
-            const moreEfficient = efficiencyHigher;
-            const lessEfficient = efficiencyLower;
-            const energyMore = energyA > energyB ? 'A' : 'B';
-            const energyLess = energyMore === 'A' ? 'B' : 'A';
-            const usedMore = usedA > usedB ? 'A' : 'B';
-            const usedLess = usedMore === 'A' ? 'B' : 'A';
-            
-            // 6가지 카테고리에서 랜덤하게 3개 선택 (efficiency는 필수)
-            const categories = ['waste', 'sameWork', 'conservation', 'totalEnergy', 'usedEnergy'];
-            const selectedCategories = ['efficiency']; // 에너지 효율은 필수
-            
-            // 나머지 3개를 랜덤 선택
-            while (selectedCategories.length < 4) {
-                const randomCat = categories[Math.floor(Math.random() * categories.length)];
-                if (!selectedCategories.includes(randomCat)) {
-                    selectedCategories.push(randomCat);
-                }
-            }
-            
-            // 선택된 카테고리 섞기
-            for (let i = selectedCategories.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [selectedCategories[i], selectedCategories[j]] = [selectedCategories[j], selectedCategories[i]];
-            }
-            
-            // 선택된 카테고리에서 보기 생성
-            currentOptions = {};
-            for (let i = 0; i < 4; i++) {
-                const category = selectedCategories[i];
-                const templates = optionTemplates[category];
-                const template = templates[Math.floor(Math.random() * templates.length)];
-                
-                let text = template.text
-                    .replace('{higher}', efficiencyHigher)
-                    .replace('{lower}', efficiencyLower)
-                    .replace('{more}', wasteMore)
-                    .replace('{less}', wasteLess)
-                    .replace('{efficient}', moreEfficient)
-                    .replace('{inefficient}', lessEfficient)
-                    .replace('{more}', energyMore)
-                    .replace('{less}', energyLess)
-                    .replace('{more}', usedMore)
-                    .replace('{less}', usedLess);
-                
-                currentOptions[String.fromCharCode(97 + i)] = {
-                    text: text,
-                    key: template.key,
-                    isTrue: evaluateOption(template.key, efficiencyHigher, wasteMore, moreEfficient, energyMore, usedMore)
-                };
-                
-                document.getElementById(`option${i + 1}`).textContent = text;
-            }
-            
-            // 정답 결정 (참인 보기들의 조합)
-            const trueOptions = [];
-            if (currentOptions.a.isTrue) trueOptions.push('a');
-            if (currentOptions.b.isTrue) trueOptions.push('b');
-            if (currentOptions.c.isTrue) trueOptions.push('c');
-            if (currentOptions.d.isTrue) trueOptions.push('d');
-            
-            // 참인 보기의 개수에 따라 정답 결정
-            if (trueOptions.length === 0) {
-                currentAnswer = 1; // 모두 거짓인 경우는 없어야 하지만 기본값
-            } else if (trueOptions.length === 1) {
-                // 1개만 참인 경우
-                if (trueOptions[0] === 'a') currentAnswer = 1;
-                else if (trueOptions[0] === 'b') currentAnswer = 2;
-                else if (trueOptions[0] === 'c') currentAnswer = 3;
-                else currentAnswer = 1;
-            } else if (trueOptions.length === 2) {
-                // 2개가 참인 경우
-                const combo = trueOptions.sort().join('');
-                if (combo === 'ab') currentAnswer = 4; // ㄱ, ㄴ
-                else if (combo === 'bc') currentAnswer = 5; // ㄴ, ㄷ
-                else if (combo === 'ac') currentAnswer = 4; // ㄱ, ㄷ -> ㄱ, ㄴ으로 매핑
-                else if (combo === 'ad') currentAnswer = 4;
-                else if (combo === 'bd') currentAnswer = 5;
-                else if (combo === 'cd') currentAnswer = 5;
-                else currentAnswer = 4;
-            } else if (trueOptions.length === 3) {
-                // 3개가 참인 경우
-                currentAnswer = 5; // ㄴ, ㄷ
-            } else {
-                // 4개 모두 참인 경우
-                currentAnswer = 5;
-            }
-            
-            // 결과 숨기기
-            document.getElementById('result').style.display = 'none';
-        }
-        
-        function evaluateOption(key, efficiencyHigher, wasteMore, moreEfficient, energyMore, usedMore) {
-            switch(key) {
-                case 'efficiencyHigher':
-                    return problemData.efficiencyB > problemData.efficiencyA;
-                case 'wasteMore':
-                    return problemData.wasteA > problemData.wasteB;
-                case 'moreEfficient':
-                    return problemData.efficiencyA > problemData.efficiencyB ? 
-                        problemData.efficiencyA > problemData.efficiencyB : 
-                        problemData.efficiencyB > problemData.efficiencyA;
-                case 'always':
-                    return true;
-                case 'energyMore':
-                    return problemData.energyA > problemData.energyB;
-                case 'usedMore':
-                    return problemData.usedA > problemData.usedB;
-                default:
-                    return false;
-            }
-        }
-        
-        function checkAnswer(selected) {
-            const resultDiv = document.getElementById('result');
-            const isCorrect = (selected === currentAnswer);
-            
-            // 결과 표시
-            resultDiv.style.display = 'block';
-            resultDiv.className = 'result ' + (isCorrect ? 'correct' : 'incorrect');
-            
-            let resultHTML = isCorrect ? 
-                '<strong>✓ 정답입니다!</strong>' : 
-                '<strong>✗ 틀렸습니다.</strong>';
-            
-            // 풀이 과정
-            resultHTML += '<div class="explanation">';
-            resultHTML += '<h4>【 풀이 과정 】</h4>';
-            resultHTML += '<p><strong>1. 에너지 효율 계산:</strong></p>';
-            resultHTML += `<p>• A의 효율 = (${problemData.usedA} ÷ ${problemData.energyA}) × 100 = ${problemData.efficiencyA}%</p>`;
-            resultHTML += `<p>• B의 효율 = (${problemData.usedB} ÷ ${problemData.energyB}) × 100 = ${problemData.efficiencyB}%</p>`;
-            resultHTML += '<br>';
-            
-            resultHTML += '<p><strong>2. 보기 판단:</strong></p>';
-            resultHTML += `<p><strong>ㄱ.</strong> ${currentOptions.a.text} → ${currentOptions.a.isTrue ? '참' : '거짓'}</p>`;
-            resultHTML += `<p><strong>ㄴ.</strong> ${currentOptions.b.text} → ${currentOptions.b.isTrue ? '참' : '거짓'}</p>`;
-            resultHTML += `<p><strong>ㄷ.</strong> ${currentOptions.c.text} → ${currentOptions.c.isTrue ? '참' : '거짓'}</p>`;
-            resultHTML += `<p><strong>ㄹ.</strong> ${currentOptions.d.text} → ${currentOptions.d.isTrue ? '참' : '거짓'}</p>`;
-            resultHTML += '<br>';
-            
-            resultHTML += '<h4>【 핵심 이론 】</h4>';
-            resultHTML += '<p><strong>• 에너지 효율</strong> = (유용하게 사용된 에너지 ÷ 공급된 에너지) × 100(%)</p>';
-            resultHTML += '<p><strong>• 버려지는 에너지</strong> = 공급된 에너지 - 유용하게 사용된 에너지</p>';
-            resultHTML += '<p><strong>• 에너지 보존 법칙:</strong> 에너지는 생성되거나 소멸되지 않고, 형태만 변환된다.</p>';
-            resultHTML += '<p><strong>• 효율이 높을수록:</strong> 같은 일을 하는 데 필요한 에너지가 적고, 버려지는 에너지도 적다.</p>';
-            resultHTML += '</div>';
-            
-            resultDiv.innerHTML = resultHTML;
-            resultDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-        
-        // 초기 문제 생성
-        generateNewProblem();
-    </script>
+<header class="royal-header">
+  <span class="crown-icon">👑</span>
+  <h1 class="royal-title">왕실 물리학 학당</h1>
+  <p class="royal-subtitle">전기력이 한 일 — 균일한 전기장 속 하전 입자의 운동</p>
+
+  <div class="concept-intro">
+    <h3>📜 핵심 물리 법칙</h3>
+    균일한 전기장에서 전하량 <strong style="color:var(--gold)">q</strong>인 입자가 전위 <strong style="color:var(--gold)">V₁ → V₂</strong>로 이동할 때:
+    <div class="law">W = q(V₁ − V₂) &nbsp;|&nbsp; U = qV &nbsp;|&nbsp; W = ΔKE (일-에너지 정리)</div>
+    양전하 전위 강하 이동 → 양(+)의 일 → 가속 &nbsp;/&nbsp; 음전하는 반대 부호
+  </div>
+</header>
+
+<div class="stage-bar">
+  <div style="display:flex;align-items:center;gap:0.8rem;">
+    <span class="stage-label" id="stage-label">第一問</span>
+    <div class="stage-dots">
+      <div class="stage-dot active" id="dot-0"></div>
+      <div class="stage-dot" id="dot-1"></div>
+      <div class="stage-dot" id="dot-2"></div>
+    </div>
+  </div>
+  <button class="btn-next-q" onclick="nextQuestion()">🎲 새 문제</button>
+</div>
+
+<div class="quiz-container">
+  <div class="problem-card" id="problem-card"></div>
+</div>
+
+<!-- 왕 오버레이 -->
+<div id="king-overlay" onclick="dismissOverlay()">
+  <div class="overlay-box">
+    <div id="overlay-icon" style="font-size:3.5rem;margin-bottom:0.8rem;"></div>
+    <div id="overlay-text" style="font-family:'Noto Serif KR',serif;font-size:1.3rem;font-weight:900;line-height:1.6;"></div>
+    <div style="margin-top:1.2rem;font-size:0.8rem;color:#888;">(화면을 누르면 닫힙니다)</div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   공통
+============================================================ */
+const STAGE_NAMES = ['第一問','第二問','第三問'];
+const TOPICS      = ['W = qΔV (양전하)','W = qΔV (음전하, 부호 주의!)','일-에너지 정리'];
+let currentType = 0;
+let params = {};
+let answered = false;
+
+function ri(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+function round2(n){ return Math.round(n*100)/100; }
+function shuffle(arr){ return arr.sort(()=>Math.random()-0.5); }
+
+/* 오답 보기 생성 (정답과 중복 없이 4개) */
+function makeChoices(correct, pool){
+  const wrong = shuffle(pool.filter(v=>v!==correct)).slice(0,3);
+  return shuffle([correct, ...wrong]);
+}
+
+function showKingOverlay(ok){
+  document.getElementById('overlay-icon').textContent = ok ? '👑' : '😤';
+  const t = document.getElementById('overlay-text');
+  t.textContent = ok ? '알겠다... 기억하마.' : '네이놈! 감히 네가 왕족을 능멸하는가!';
+  t.style.color  = ok ? '#F0D080' : '#FF8080';
+  document.getElementById('king-overlay').style.display = 'flex';
+}
+function dismissOverlay(){ document.getElementById('king-overlay').style.display='none'; }
+
+function updateDots(type){
+  for(let i=0;i<3;i++){
+    document.getElementById('dot-'+i).className='stage-dot'+(i===type?' active':'');
+  }
+  document.getElementById('stage-label').textContent = STAGE_NAMES[type];
+}
+
+function nextQuestion(){
+  currentType = (currentType+1)%3;
+  buildQuestion(currentType);
+}
+
+function buildQuestion(type){
+  updateDots(type);
+  answered = false;
+  const card = document.getElementById('problem-card');
+  card.style.animation='none'; card.offsetHeight; card.style.animation='';
+  if(type===0) card.innerHTML = buildType0();
+  else if(type===1) card.innerHTML = buildType1();
+  else card.innerHTML = buildType2();
+}
+
+/* 선택지 클릭 공통 처리 */
+function selectChoice(btnEl, choiceVal, correctVal, decreeText, solHTML, conceptHTML){
+  if(answered) return;
+  answered = true;
+
+  // 모든 버튼 비활성화
+  document.querySelectorAll('.choice-btn').forEach(b=>{ b.disabled=true; });
+
+  const ok = (choiceVal === correctVal);
+  if(ok){
+    btnEl.classList.add('selected-correct');
+  } else {
+    btnEl.classList.add('selected-wrong');
+    // 정답 버튼 하이라이트
+    document.querySelectorAll('.choice-btn').forEach(b=>{
+      if(parseFloat(b.dataset.val)===correctVal || b.dataset.val===String(correctVal)){
+        b.classList.add('reveal-correct');
+      }
+    });
+  }
+
+  // 피드백
+  const fb  = document.getElementById('feedback');
+  fb.className = 'royal-feedback '+(ok?'correct':'wrong');
+  fb.style.display='block';
+  document.getElementById('decree').innerHTML   = (ok?'✅ ':'❌ ')+decreeText;
+  document.getElementById('solution').innerHTML = solHTML;
+  if(conceptHTML) document.getElementById('concept').innerHTML = conceptHTML;
+
+  showKingOverlay(ok);
+}
+
+/* 보기 렌더 헬퍼 */
+const NUMS = ['①','②','③','④'];
+function renderChoices(choices, correctVal, onClickFn){
+  return choices.map((c,i)=>`
+    <button class="choice-btn" data-val="${c}" onclick="${onClickFn}(this,${c},${correctVal})">
+      <span class="choice-num">${NUMS[i]}</span>${c}
+    </button>`).join('');
+}
+function renderChoicesStr(choices, correctVal, onClickFn){
+  // 문자열 값용 (속력 등)
+  return choices.map((c,i)=>`
+    <button class="choice-btn" data-val="${c}" onclick='${onClickFn}(this,"${c}","${correctVal}")'>
+      <span class="choice-num">${NUMS[i]}</span>${c} m/s
+    </button>`).join('');
+}
+
+/* ============================================================
+   TYPE 0 : 양전하, 전위 강하
+============================================================ */
+function buildType0(){
+  const q  = ri(1,5);
+  const v1 = ri(4,6);
+  const v2 = ri(1,v1-1);
+  params   = {type:0,q,v1,v2};
+
+  const correct = q*(v1-v2);
+  // 오답 풀: 비슷한 값들
+  const pool = [q*v1, q*v2, q*(v1+v2), correct+q, correct-q, correct*2, q*(v1-v2+1)].map(x=>round2(x));
+  const choices = makeChoices(correct, pool);
+
+  return buildCardHTML(0,
+    `전하량이 <strong>+${q} C</strong>인 양전하 입자가 균일한 전기장 속에서 직선 운동한다.<br>
+     전위 <strong>${v1} V</strong>인 지점에서 <strong>${v2} V</strong>인 지점으로 이동하는 동안<br>
+     <strong>전기력이 입자에 한 일</strong>은?`,
+    drawDiagram0(q,v1,v2),
+    `<div class="controls-row">
+       <div class="control-group">
+         <label>전하량 q =</label>
+         <input type="range" min="1" max="5" value="${q}" step="1" oninput="live0('q',this.value)">
+         <span class="control-val" id="cv-q">+${q} C</span>
+       </div>
+       <div class="control-group">
+         <label>출발 전위 V₁ =</label>
+         <input type="range" min="3" max="6" value="${v1}" step="1" oninput="live0('v1',this.value)">
+         <span class="control-val" id="cv-v1">${v1} V</span>
+       </div>
+       <div class="control-group">
+         <label>도착 전위 V₂ =</label>
+         <input type="range" min="1" max="3" value="${v2}" step="1" oninput="live0('v2',this.value)">
+         <span class="control-val" id="cv-v2">${v2} V</span>
+       </div>
+     </div>`,
+    choices.map((c,i)=>`
+      <button class="choice-btn" data-val="${c}" onclick="pick0(this,${c})">
+        <span class="choice-num">${NUMS[i]}</span>${c} J
+      </button>`).join(''),
+    `<div class="step"><span class="formula">W = q × (V₁ − V₂)</span></div>
+     <div class="step">• q = <span class="hl">+${q} C</span></div>
+     <div class="step">• V₁ = <span class="hl">${v1} V</span>，V₂ = <span class="hl">${v2} V</span></div>
+     <div class="step">• ΔV = ${v1} − ${v2} = <span class="hl">${v1-v2} V</span></div>
+     <div class="step">∴ W = ${q} × ${v1-v2} = <span class="hl">${correct} J</span> &nbsp;→ 양의 일, 입자 가속</div>`,
+    `<strong>⚖ 물리 작동 원리:</strong> 전기력은 <strong>보존력</strong>입니다.
+     W = −ΔU = q(V₁−V₂). 양전하가 전위 강하 방향 이동 시 <strong>양(+)의 일</strong> → 운동에너지 증가(가속).`
+  );
+}
+
+function live0(key,val){
+  if(answered) return;
+  params[key]=parseInt(val);
+  if(params.v2>=params.v1) params.v2=params.v1-1;
+  document.getElementById('cv-q').textContent  = '+'+params.q+' C';
+  document.getElementById('cv-v1').textContent = params.v1+' V';
+  document.getElementById('cv-v2').textContent = params.v2+' V';
+  // 선택지 재생성
+  const {q,v1,v2}=params;
+  const correct=q*(v1-v2);
+  const pool=[q*v1,q*v2,q*(v1+v2),correct+q,correct-q,correct*2,q*(v1-v2+1)].map(x=>round2(x));
+  const choices=makeChoices(correct,pool);
+  document.getElementById('choices-area').innerHTML = choices.map((c,i)=>`
+    <button class="choice-btn" data-val="${c}" onclick="pick0(this,${c})">
+      <span class="choice-num">${NUMS[i]}</span>${c} J
+    </button>`).join('');
+  document.getElementById('feedback').style.display='none';
+  // SVG 갱신
+  document.getElementById('diag-area').innerHTML = drawDiagram0(q,v1,v2);
+  // 문제 텍스트 갱신
+  document.getElementById('prob-text').innerHTML =
+    `전하량이 <strong>+${q} C</strong>인 양전하 입자가 균일한 전기장 속에서 직선 운동한다.<br>
+     전위 <strong>${v1} V</strong>인 지점에서 <strong>${v2} V</strong>인 지점으로 이동하는 동안<br>
+     <strong>전기력이 입자에 한 일</strong>은?`;
+}
+
+function pick0(btn, val){
+  const {q,v1,v2}=params;
+  const correct=q*(v1-v2);
+  const dv=v1-v2;
+  const solHTML=`<div class="step"><span class="formula">W = q × (V₁ − V₂)</span></div>
+    <div class="step">• q = <span class="hl">+${q} C</span></div>
+    <div class="step">• V₁ = <span class="hl">${v1} V</span>，V₂ = <span class="hl">${v2} V</span></div>
+    <div class="step">• ΔV = ${v1} − ${v2} = <span class="hl">${dv} V</span></div>
+    <div class="step">∴ W = ${q} × ${dv} = <span class="hl">${correct} J</span> → 양의 일, 가속</div>`;
+  selectChoice(btn, val, correct,
+    val===correct?`알겠다... 기억하마. 정답은 ${correct} J이로다!`
+                 :`네이놈! 감히 틀리다니! 정답은 ${correct} J이니라.`,
+    solHTML, null);
+}
+
+function drawDiagram0(q,v1,v2){
+  const xOf=v=>50+(v-1)*60;
+  const x1=xOf(v1), x2=xOf(v2);
+  return `<svg width="420" height="140" viewBox="0 0 420 140">
+    <g stroke="#999" stroke-width="1.5" stroke-dasharray="4,3">
+      ${[1,2,3,4,5,6].map(v=>`<line x1="${xOf(v)}" y1="20" x2="${xOf(v)}" y2="120"/>`).join('')}
+    </g>
+    <g fill="#555" font-size="12" text-anchor="middle">
+      ${[1,2,3,4,5,6].map(v=>`<text x="${xOf(v)}" y="135">${v}V</text>`).join('')}
+    </g>
+    <defs>
+      <marker id="ah0" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <polygon points="0 0,8 3,0 6" fill="#8B1A1A"/>
+      </marker>
+    </defs>
+    <line x1="${x1}" y1="70" x2="${x2+16}" y2="70" stroke="#8B1A1A" stroke-width="2.5" marker-end="url(#ah0)"/>
+    <circle cx="${x1}" cy="70" r="15" fill="#E8D9B0" stroke="#8B1A1A" stroke-width="2"/>
+    <text x="${x1}" y="75" text-anchor="middle" font-size="11" font-weight="bold" fill="#8B1A1A">+${q}C</text>
+    <circle cx="${x2}" cy="70" r="15" fill="#E8D9B0" stroke="#8B1A1A" stroke-width="2" stroke-dasharray="4,2" opacity="0.45"/>
+    <text x="210" y="16" text-anchor="middle" font-size="11" fill="#2E6B4F" font-weight="bold">← E (전기장 방향)</text>
+  </svg>`;
+}
+
+/* ============================================================
+   TYPE 1 : 음전하, 전위 상승
+============================================================ */
+function buildType1(){
+  const qMag = ri(1,5);
+  const v1   = ri(1,3);
+  const v2   = ri(v1+2,7);
+  params = {type:1,qMag,v1,v2};
+
+  const correct = -qMag*(v1-v2); // = qMag*(v2-v1), 음수
+  const pool = [qMag*(v2-v1), -qMag*v1, qMag*(v1+v2), correct-qMag, correct+qMag, -(correct), qMag].map(x=>round2(x));
+  const choices = makeChoices(correct, pool);
+
+  const xOf=v=>50+(v-1)*50;
+  const diag=`<svg width="420" height="140" viewBox="0 0 420 140">
+    <g stroke="#999" stroke-width="1.5" stroke-dasharray="4,3">
+      ${[1,2,3,4,5,6,7].map(v=>`<line x1="${xOf(v)}" y1="20" x2="${xOf(v)}" y2="120"/>`).join('')}
+    </g>
+    <g fill="#555" font-size="12" text-anchor="middle">
+      ${[1,2,3,4,5,6,7].map(v=>`<text x="${xOf(v)}" y="135">${v}V</text>`).join('')}
+    </g>
+    <defs>
+      <marker id="ah1" markerWidth="8" markerHeight="6" refX="0" refY="3" orient="auto">
+        <polygon points="8 0,0 3,8 6" fill="#1A5276"/>
+      </marker>
+    </defs>
+    <line x1="${xOf(v1)+16}" y1="70" x2="${xOf(v2)}" y2="70" stroke="#1A5276" stroke-width="2.5" marker-end="url(#ah1)"/>
+    <circle cx="${xOf(v1)}" cy="70" r="15" fill="#D6EAF8" stroke="#1A5276" stroke-width="2"/>
+    <text x="${xOf(v1)}" y="75" text-anchor="middle" font-size="11" font-weight="bold" fill="#1A5276">−${qMag}C</text>
+    <circle cx="${xOf(v2)}" cy="70" r="15" fill="#D6EAF8" stroke="#1A5276" stroke-width="2" stroke-dasharray="4,2" opacity="0.45"/>
+    <text x="210" y="16" text-anchor="middle" font-size="11" fill="#2E6B4F" font-weight="bold">← E (전기장 방향)</text>
+  </svg>`;
+
+  const solHTML=`<div class="step"><span class="formula">W = q × (V₁ − V₂)</span></div>
+    <div class="step">• q = <span class="hl">−${qMag} C</span> (음전하!)</div>
+    <div class="step">• V₁ = <span class="hl">${v1} V</span>，V₂ = <span class="hl">${v2} V</span></div>
+    <div class="step">• ΔV = ${v1} − ${v2} = <span class="hl">${v1-v2} V</span></div>
+    <div class="step">∴ W = (−${qMag}) × (${v1-v2}) = <span class="hl">${correct} J</span> → 음의 일, 감속</div>`;
+
+  return buildCardHTML(1,
+    `전하량이 <strong>−${qMag} C</strong>인 음전하 입자가 균일한 전기장 속에서 직선 운동한다.<br>
+     전위 <strong>${v1} V</strong>인 지점에서 <strong>${v2} V</strong>인 지점으로 이동하는 동안<br>
+     <strong>전기력이 입자에 한 일</strong>은?`,
+    diag, '',
+    choices.map((c,i)=>`
+      <button class="choice-btn" data-val="${c}" onclick="pick1(this,${c})">
+        <span class="choice-num">${NUMS[i]}</span>${c} J
+      </button>`).join(''),
+    solHTML,
+    `<strong>⚖ 물리 작동 원리:</strong> <strong>음전하</strong>는 전기장 방향과 반대 방향으로 힘을 받습니다.
+     전위가 낮은 곳 → 높은 곳으로 이동 시 전기력과 변위가 반대 → <strong>음(−)의 일</strong> → 감속.`
+  );
+}
+
+function pick1(btn,val){
+  const {qMag,v1,v2}=params;
+  const correct=-qMag*(v1-v2);
+  const dv=v1-v2;
+  const solHTML=`<div class="step"><span class="formula">W = q × (V₁ − V₂)</span></div>
+    <div class="step">• q = <span class="hl">−${qMag} C</span></div>
+    <div class="step">• ΔV = ${v1}−${v2} = <span class="hl">${dv} V</span></div>
+    <div class="step">∴ W = (−${qMag}) × (${dv}) = <span class="hl">${correct} J</span> → 음의 일, 감속</div>`;
+  selectChoice(btn,val,correct,
+    val===correct?`알겠다... 기억하마. 정답은 ${correct} J이로다!`
+                 :`네이놈! 감히 틀리다니! 정답은 ${correct} J이니라.`,
+    solHTML,null);
+}
+
+/* ============================================================
+   TYPE 2 : 나중 속력 (일-에너지 정리)
+============================================================ */
+function buildType2(){
+  let q,m,v0,ev1,ev2,W,ke0,keF,vF;
+  do {
+    q=ri(1,4); m=ri(1,3); v0=ri(2,5); ev1=ri(4,7); ev2=ri(1,3);
+    W=q*(ev1-ev2); ke0=0.5*m*v0*v0; keF=ke0+W;
+  } while(keF<=0);
+  vF=round2(Math.sqrt(2*keF/m));
+  params={type:2,q,m,v0,ev1,ev2};
+
+  // 오답 후보
+  const wrong1=round2(Math.sqrt(2*ke0/m));         // 일 무시
+  const wrong2=round2(Math.sqrt(2*(ke0+W*0.5)/m)); // 절반만 더함
+  const wrong3=round2(vF+1);
+  const pool=[wrong1,wrong2,wrong3,round2(vF-1),round2(vF*1.5)].map(x=>x>0?x:vF+2);
+  const choices=makeChoices(vF,pool);
+
+  const xOf=v=>50+(v-1)*50;
+  const diag=`<svg width="420" height="140" viewBox="0 0 420 140">
+    <g stroke="#999" stroke-width="1.5" stroke-dasharray="4,3">
+      ${[1,2,3,4,5,6,7].map(v=>`<line x1="${xOf(v)}" y1="20" x2="${xOf(v)}" y2="120"/>`).join('')}
+    </g>
+    <g fill="#555" font-size="12" text-anchor="middle">
+      ${[1,2,3,4,5,6,7].map(v=>`<text x="${xOf(v)}" y="135">${v}V</text>`).join('')}
+    </g>
+    <defs>
+      <marker id="ah2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <polygon points="0 0,8 3,0 6" fill="#7D3C98"/>
+      </marker>
+    </defs>
+    <line x1="${xOf(ev1)}" y1="70" x2="${xOf(ev2)+16}" y2="70" stroke="#7D3C98" stroke-width="2.5" marker-end="url(#ah2)"/>
+    <circle cx="${xOf(ev1)}" cy="70" r="17" fill="#EBD9F7" stroke="#7D3C98" stroke-width="2"/>
+    <text x="${xOf(ev1)}" y="67" text-anchor="middle" font-size="10" font-weight="bold" fill="#7D3C98">+${q}C</text>
+    <text x="${xOf(ev1)}" y="79" text-anchor="middle" font-size="9.5" fill="#7D3C98">v₀=${v0}</text>
+    <circle cx="${xOf(ev2)}" cy="70" r="17" fill="#EBD9F7" stroke="#7D3C98" stroke-width="2" stroke-dasharray="4,2" opacity="0.45"/>
+    <text x="${xOf(ev2)}" y="75" text-anchor="middle" font-size="11" fill="#7D3C98">v=?</text>
+    <text x="210" y="16" text-anchor="middle" font-size="11" fill="#2E6B4F" font-weight="bold">← E (전기장 방향)</text>
+  </svg>`;
+
+  const solHTML=`<div class="step"><span class="formula">일-에너지 정리: W = ΔKE = ½mv²−½mv₀²</span></div>
+    <div class="step">① W = q(V₁−V₂) = ${q}×(${ev1}−${ev2}) = <span class="hl">${W} J</span></div>
+    <div class="step">② KE₀ = ½×${m}×${v0}² = <span class="hl">${ke0} J</span></div>
+    <div class="step">③ KE = ${ke0}+${W} = <span class="hl">${round2(keF)} J</span></div>
+    <div class="step">④ v = √(2×${round2(keF)}÷${m}) = <span class="hl">${vF} m/s</span></div>`;
+
+  return buildCardHTML(2,
+    `전하량 <strong>+${q} C</strong>, 질량 <strong>${m} kg</strong>, 처음 속력 <strong>${v0} m/s</strong>인 입자가<br>
+     전위 <strong>${ev1} V</strong>인 지점에서 <strong>${ev2} V</strong>인 지점으로 이동했다.<br>
+     (전기력만 작용) <strong>나중 속력</strong>은?`,
+    diag, '',
+    choices.map((c,i)=>`
+      <button class="choice-btn" data-val="${c}" onclick="pick2(this,${c})">
+        <span class="choice-num">${NUMS[i]}</span>${c} m/s
+      </button>`).join(''),
+    solHTML,
+    `<strong>⚖ 물리 작동 원리:</strong> <strong>일-에너지 정리</strong> W = ΔKE.
+     전기력이 한 일 = 운동에너지 변화량. 전기 위치에너지 감소분이 운동에너지로 전환됩니다.`
+  );
+}
+
+function pick2(btn,val){
+  const {q,m,v0,ev1,ev2}=params;
+  const W=q*(ev1-ev2), ke0=0.5*m*v0*v0, keF=ke0+W;
+  const vF=round2(Math.sqrt(2*keF/m));
+  // 부동소수 비교
+  const ok = Math.abs(val-vF)<0.05;
+  const solHTML=`<div class="step"><span class="formula">W = ΔKE = ½mv²−½mv₀²</span></div>
+    <div class="step">① W=${q}×(${ev1}−${ev2})=<span class="hl">${W} J</span></div>
+    <div class="step">② KE₀=½×${m}×${v0}²=<span class="hl">${ke0} J</span></div>
+    <div class="step">③ KE=${round2(keF)} J → v=<span class="hl">${vF} m/s</span></div>`;
+  if(ok){
+    selectChoice(btn,val,vF,`알겠다... 기억하마. 정답은 ${vF} m/s이로다!`,solHTML,null);
+  } else {
+    // 문자열 비교 우회: vF를 직접 올바른 버튼에 적용
+    if(answered) return;
+    answered=true;
+    document.querySelectorAll('.choice-btn').forEach(b=>{ b.disabled=true; });
+    btn.classList.add('selected-wrong');
+    document.querySelectorAll('.choice-btn').forEach(b=>{
+      if(Math.abs(parseFloat(b.dataset.val)-vF)<0.05) b.classList.add('reveal-correct');
+    });
+    const fb=document.getElementById('feedback');
+    fb.className='royal-feedback wrong'; fb.style.display='block';
+    document.getElementById('decree').innerHTML='❌ 네이놈! 감히 틀리다니! 정답은 '+vF+' m/s이니라.';
+    document.getElementById('solution').innerHTML=solHTML;
+    showKingOverlay(false);
+  }
+}
+
+/* ============================================================
+   카드 HTML 조립 헬퍼
+============================================================ */
+function buildCardHTML(typeIdx, probText, diagHTML, controlsHTML, choicesHTML, solHTML, conceptHTML){
+  return `
+  <div class="problem-header">
+    <span class="problem-number">${STAGE_NAMES[typeIdx]} · ${['양전하 입자','음전하 입자','나중 속력'][typeIdx]}</span>
+    <span class="problem-topic">${TOPICS[typeIdx]}</span>
+  </div>
+  <div class="problem-body">
+    <p class="problem-text" id="prob-text">${probText}</p>
+    <div class="diagram-wrap" id="diag-area">${diagHTML}</div>
+    ${controlsHTML}
+  </div>
+  <div class="choices-grid" id="choices-area">${choicesHTML}</div>
+  <div class="royal-feedback" id="feedback">
+    <div class="feedback-decree" id="decree"></div>
+    <div class="feedback-solution" id="solution">${solHTML}</div>
+    <div class="feedback-concept" id="concept">${conceptHTML||''}</div>
+  </div>`;
+}
+
+/* 초기 로드 */
+buildQuestion(0);
+</script>
 </body>
 </html>

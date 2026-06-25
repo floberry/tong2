@@ -1,437 +1,881 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>에너지 효율 비교 시뮬레이션</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Malgun Gothic', sans-serif;
-            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
-            padding: 15px;
-            min-height: 100vh;
-        }
-        
-        .container {
-            max-width: 500px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-            padding: 20px;
-        }
-        
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            font-size: 22px;
-            margin-bottom: 15px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid #666;
-        }
-        
-        .problem-section {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 2px solid #ccc;
-        }
-        
-        .problem-text {
-            font-size: 16px;
-            line-height: 1.8;
-            color: #333;
-            margin-bottom: 15px;
-        }
-        
-        .device-grid {
-            display: grid;
-            gap: 15px;
-            margin: 20px 0;
-        }
-        
-        .device-card {
-            background: white;
-            border: 3px solid #999;
-            border-radius: 12px;
-            padding: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-        
-        .device-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        
-        .device-card.selected {
-            background: #d0d0d0;
-            border-color: #333;
-        }
-        
-        .device-name {
-            font-size: 20px;
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-        
-        .device-info {
-            font-size: 15px;
-            color: #555;
-            line-height: 1.6;
-        }
-        
-        .selection-badge {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            width: 35px;
-            height: 35px;
-            background: #333;
-            color: white;
-            border-radius: 50%;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: bold;
-            border: 3px solid white;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
-        
-        .device-card.selected .selection-badge {
-            display: flex;
-        }
-        
-        .question-section {
-            background: #e8e8e8;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
-            border: 2px solid #999;
-        }
-        
-        .question-text {
-            font-size: 17px;
-            font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-        
-        .answer-display {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 20px;
-            text-align: center;
-            color: #333;
-            border: 2px solid #999;
-            min-height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        button {
-            flex: 1;
-            padding: 15px;
-            font-size: 16px;
-            font-weight: bold;
-            border: none;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: white;
-        }
-        
-        .new-problem-btn {
-            background: linear-gradient(135deg, #666 0%, #333 100%);
-        }
-        
-        .new-problem-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-        
-        .submit-btn {
-            background: linear-gradient(135deg, #555 0%, #222 100%);
-        }
-        
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-        
-        .submit-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-        
-        .feedback {
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 10px;
-            display: none;
-        }
-        
-        .feedback.show {
-            display: block;
-        }
-        
-        .feedback.correct {
-            background: #d4edda;
-            border: 3px solid #6c757d;
-            color: #155724;
-        }
-        
-        .feedback.incorrect {
-            background: #f8d7da;
-            border: 3px solid #666;
-            color: #721c24;
-        }
-        
-        .feedback-title {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-        
-        .feedback-content {
-            font-size: 15px;
-            line-height: 1.8;
-        }
-        
-        .solution {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            border: 2px solid #999;
-        }
-        
-        .solution-title {
-            font-weight: bold;
-            font-size: 16px;
-            margin-bottom: 10px;
-            color: #2c3e50;
-        }
-        
-        .formula {
-            background: #f5f5f5;
-            padding: 10px;
-            border-radius: 5px;
-            font-family: 'Courier New', monospace;
-            margin: 10px 0;
-            border: 1px solid #999;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>운동량 보존 법칙 연습</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+
+  :root {
+    --bg: #f4f4f4;
+    --surface: #ffffff;
+    --surface2: #f0f0f0;
+    --border: #cccccc;
+    --border-dark: #888888;
+    --text: #111111;
+    --text-dim: #555555;
+    --accent: #222222;
+    --green: #1a7a3a;
+    --red: #b91c1c;
+    --yellow-bg: #fffbea;
+    --yellow-border: #d4a800;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 16px 64px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .tag {
+    display: inline-block;
+    background: #111;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 4px 14px;
+    border-radius: 2px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    color: #111;
+  }
+
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 13px;
+    margin-top: 5px;
+  }
+
+  /* ── 카드 (시험지 느낌) ── */
+  .card {
+    background: var(--surface);
+    border: 1.5px solid var(--border-dark);
+    border-radius: 4px;
+    padding: 28px;
+    width: 100%;
+    max-width: 740px;
+    margin-bottom: 18px;
+    box-shadow: 2px 2px 0 #ccc;
+  }
+
+  .card-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 8px;
+  }
+
+  /* ── 문제 번호 + 텍스트 ── */
+  .problem-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+
+  .problem-num {
+    font-size: 22px;
+    font-weight: 900;
+    line-height: 1;
+    flex-shrink: 0;
+    color: #111;
+  }
+
+  .problem-text {
+    font-size: 15px;
+    line-height: 2;
+    color: var(--text);
+  }
+
+  .val {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    color: #111;
+  }
+
+  /* ── 씬 영역 ── */
+  .scene-wrap {
+    display: flex;
+    gap: 16px;
+    margin-top: 18px;
+  }
+
+  .scene {
+    flex: 1;
+    border: 1px solid var(--border-dark);
+    border-radius: 2px;
+    padding: 10px 10px 6px;
+    background: #fafafa;
+  }
+
+  .scene-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-dim);
+    text-align: center;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+  }
+
+  canvas.scene-canvas {
+    width: 100%;
+    height: 120px;
+    display: block;
+  }
+
+  /* ── 입력 카드 ── */
+  .input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .input-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1.5px solid var(--border-dark);
+    border-radius: 3px;
+    padding: 10px 14px;
+    flex: 1;
+    min-width: 200px;
+    background: #fff;
+  }
+
+  .input-group:focus-within {
+    outline: 2px solid #333;
+    outline-offset: 1px;
+  }
+
+  .input-group label {
+    font-size: 14px;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  .input-group input {
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 16px;
+    font-weight: 700;
+    width: 80px;
+    text-align: right;
+  }
+
+  .input-group .unit {
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .input-note {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 8px;
+  }
+
+  /* ── 힌트 ── */
+  .hint-toggle {
+    background: none;
+    border: 1px solid var(--border-dark);
+    border-radius: 3px;
+    color: var(--text-dim);
+    font-size: 12px;
+    padding: 5px 12px;
+    cursor: pointer;
+    margin-top: 12px;
+    font-family: 'Noto Sans KR', sans-serif;
+    transition: background 0.15s;
+  }
+  .hint-toggle:hover { background: #f0f0f0; }
+
+  .hint-box {
+    display: none;
+    margin-top: 10px;
+    padding: 12px 14px;
+    background: var(--yellow-bg);
+    border: 1px solid var(--yellow-border);
+    border-radius: 3px;
+    font-size: 13px;
+    color: #555;
+    line-height: 1.8;
+  }
+
+  /* ── 버튼 ── */
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 13px 20px;
+    border: 1.5px solid var(--border-dark);
+    border-radius: 3px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    min-width: 120px;
+  }
+  .btn:active { transform: scale(0.98); }
+
+  .btn-new {
+    background: #fff;
+    color: #333;
+  }
+  .btn-new:hover { background: #f0f0f0; }
+
+  .btn-check {
+    background: #111;
+    color: #fff;
+    border-color: #111;
+  }
+  .btn-check:hover { background: #333; }
+
+  /* ── 피드백 ── */
+  .feedback {
+    display: none;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .feedback.correct { border-left: 5px solid var(--green); }
+  .feedback.wrong   { border-left: 5px solid var(--red); }
+
+  .feedback-header {
+    font-size: 16px;
+    font-weight: 900;
+    margin-bottom: 16px;
+  }
+
+  .feedback.correct .feedback-header { color: var(--green); }
+  .feedback.wrong   .feedback-header { color: var(--red); }
+
+  .solution-step {
+    font-size: 14px;
+    line-height: 1.9;
+    color: #333;
+    margin-bottom: 6px;
+    padding-left: 4px;
+  }
+
+  .solution-step strong {
+    font-family: 'JetBrains Mono', monospace;
+    color: #111;
+  }
+
+  .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: #111;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    margin-right: 6px;
+    flex-shrink: 0;
+  }
+
+  .answer-box {
+    background: #111;
+    color: #fff;
+    border-radius: 3px;
+    padding: 10px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    font-weight: 700;
+    margin-top: 12px;
+    display: inline-block;
+  }
+
+  .conservation-check {
+    margin-top: 14px;
+    padding: 12px 16px;
+    background: #f4f4f4;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 13px;
+    color: #555;
+    line-height: 1.8;
+  }
+  .conservation-check .ok { color: var(--green); font-weight: 700; }
+
+  hr.divider {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 14px 0;
+  }
+
+  /* ── 운동량 바 ── */
+  .momentum-section { margin-top: 14px; }
+
+  .mom-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 7px;
+  }
+
+  .mom-label {
+    font-size: 12px;
+    color: var(--text-dim);
+    width: 76px;
+    flex-shrink: 0;
+  }
+
+  .bar-track {
+    flex: 1;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.5s cubic-bezier(.4,0,.2,1);
+  }
+
+  .bar-car   { background: #555; }
+  .bar-truck { background: #999; }
+
+  .mom-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #333;
+    width: 100px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>⚡ 에너지 효율 비교 문제</h1>
-        
-        <div class="problem-section">
-            <div class="problem-text" id="problemText"></div>
-            
-            <div class="device-grid" id="deviceGrid"></div>
-            
-            <div class="question-section">
-                <div class="question-text">에너지 효율이 높은 것부터 순서대로 나열하시오.</div>
-                <div class="answer-display" id="answerDisplay">기기를 클릭하여 순서를 선택하세요</div>
-            </div>
-        </div>
-        
-        <div class="button-group">
-            <button class="new-problem-btn" onclick="generateNewProblem()">🔄 새 문제</button>
-            <button class="submit-btn" id="submitBtn" onclick="checkAnswer()" disabled>✓ 정답 확인</button>
-        </div>
-        
-        <div class="feedback" id="feedback"></div>
-    </div>
 
-    <script>
-        let currentProblem = {};
-        let selectedOrder = [];
-        
-        function generateNewProblem() {
-            // 랜덤 값 생성 (10~100, 10단위)
-            const getRandomValue = () => (Math.floor(Math.random() * 20) + 1) * 10;
-            
-            const devices = [
-                {
-                    id: 'A',
-                    name: '전기히터 A',
-                    power: getRandomValue(),
-                    heat: getRandomValue()
-                },
-                {
-                    id: 'B',
-                    name: '전기히터 B',
-                    power: getRandomValue(),
-                    heat: getRandomValue()
-                },
-                {
-                    id: 'C',
-                    name: '전기히터 C',
-                    power: getRandomValue(),
-                    heat: getRandomValue()
-                }
-            ];
-            
-            // 효율 계산 및 정렬
-            devices.forEach(device => {
-                device.efficiency = (device.heat / device.power) * 100;
-            });
-            
-            devices.sort((a, b) => b.efficiency - a.efficiency);
-            const correctAnswer = devices.map(d => d.id).join(' > ');
-            
-            currentProblem = {
-                devices: devices,
-                correctAnswer: correctAnswer
-            };
-            
-            selectedOrder = [];
-            updateDisplay();
-            hideFeedback();
-        }
-        
-        function updateDisplay() {
-            // 문제 텍스트
-            document.getElementById('problemText').innerHTML = 
-                `다음은 세 가지 전기히터의 소비전력과 발열량을 나타낸 것입니다.`;
-            
-            // 기기 카드 (알파벳 순서로 표시)
-            const sortedDevices = [...currentProblem.devices].sort((a, b) => a.id.localeCompare(b.id));
-            const deviceGrid = document.getElementById('deviceGrid');
-            deviceGrid.innerHTML = '';
-            
-            sortedDevices.forEach(device => {
-                const index = selectedOrder.indexOf(device.id);
-                const card = document.createElement('div');
-                card.className = 'device-card' + (index !== -1 ? ' selected' : '');
-                card.onclick = () => toggleSelection(device.id);
-                card.innerHTML = `
-                    <div class="selection-badge">${index + 1}</div>
-                    <div class="device-name">${device.name}</div>
-                    <div class="device-info">
-                        • 소비전력: ${device.power}W<br>
-                        • 발열량: ${device.heat}W
-                    </div>
-                `;
-                deviceGrid.appendChild(card);
-            });
-            
-            // 답안 표시
-            const answerDisplay = document.getElementById('answerDisplay');
-            if (selectedOrder.length === 0) {
-                answerDisplay.textContent = '기기를 클릭하여 순서를 선택하세요';
-            } else {
-                answerDisplay.textContent = selectedOrder.join(' > ');
-            }
-            
-            // 제출 버튼 활성화
-            document.getElementById('submitBtn').disabled = selectedOrder.length !== 3;
-        }
-        
-        function toggleSelection(deviceId) {
-            const index = selectedOrder.indexOf(deviceId);
-            
-            if (index !== -1) {
-                // 이미 선택된 경우 선택 취소
-                selectedOrder.splice(index, 1);
-            } else {
-                // 새로 선택
-                if (selectedOrder.length < 3) {
-                    selectedOrder.push(deviceId);
-                }
-            }
-            
-            updateDisplay();
-            hideFeedback();
-        }
-        
-        function checkAnswer() {
-            const userAnswer = selectedOrder.join(' > ');
-            const isCorrect = userAnswer === currentProblem.correctAnswer;
-            
-            const feedback = document.getElementById('feedback');
-            feedback.className = 'feedback show ' + (isCorrect ? 'correct' : 'incorrect');
-            
-            let solutionHTML = '<div class="solution"><div class="solution-title">📚 풀이 과정</div>';
-            
-            // 이론 설명
-            solutionHTML += `
-                <p><strong>■ 에너지 효율 이론</strong></p>
-                <p>에너지 효율은 투입한 에너지 대비 유용하게 사용된 에너지의 비율을 의미합니다.</p>
-                <div class="formula">에너지 효율(%) = (유용한 에너지 출력 / 에너지 입력) × 100</div>
-                <p>전기히터의 경우:</p>
-                <div class="formula">에너지 효율(%) = (발열량 / 소비전력) × 100</div>
-                <br>
-                <p><strong>■ 각 기기의 에너지 효율 계산</strong></p>
-            `;
-            
-            currentProblem.devices.forEach(device => {
-                solutionHTML += `
-                    <p><strong>${device.name}:</strong><br>
-                    효율 = (${device.heat}W / ${device.power}W) × 100 = ${device.efficiency.toFixed(1)}%</p>
-                `;
-            });
-            
-            solutionHTML += `
-                <br>
-                <p><strong>■ 효율 순서 비교</strong></p>
-                <p>효율이 높은 순서: ${currentProblem.correctAnswer}</p>
-                <p style="margin-top: 10px; color: #666;">
-                    💡 에너지 효율이 높을수록 같은 전력으로 더 많은 열을 발생시킬 수 있어 에너지를 효율적으로 사용하는 것입니다.
-                </p>
-            `;
-            
-            solutionHTML += '</div>';
-            
-            if (isCorrect) {
-                feedback.innerHTML = `
-                    <div class="feedback-title">✅ 정답입니다!</div>
-                    <div class="feedback-content">
-                        <p>에너지 효율 순서를 정확하게 파악하셨습니다.</p>
-                        ${solutionHTML}
-                    </div>
-                `;
-            } else {
-                feedback.innerHTML = `
-                    <div class="feedback-title">❌ 오답입니다</div>
-                    <div class="feedback-content">
-                        <p>입력한 답: ${userAnswer}</p>
-                        <p>정답: ${currentProblem.correctAnswer}</p>
-                        ${solutionHTML}
-                    </div>
-                `;
-            }
-        }
-        
-        function hideFeedback() {
-            document.getElementById('feedback').className = 'feedback';
-        }
-        
-        // 초기 문제 생성
-        generateNewProblem();
-    </script>
+<header>
+  <div class="tag">2022 개정 교육과정 · 고등학교 물리학</div>
+  <h1>운동량 보존 법칙 연습</h1>
+  <p class="subtitle">충돌 전후의 운동량 합은 항상 보존된다</p>
+</header>
+
+<!-- 문제 카드 -->
+<div class="card" id="problemCard">
+  <div class="card-title">문제</div>
+  <div class="problem-header">
+    <span class="problem-num">6.</span>
+    <p class="problem-text" id="problemText"></p>
+  </div>
+
+  <!-- 씬 -->
+  <div class="scene-wrap">
+    <div class="scene">
+      <div class="scene-label">충돌 전</div>
+      <canvas class="scene-canvas" id="canvasBefore" width="600" height="240"></canvas>
+    </div>
+    <div class="scene">
+      <div class="scene-label">충돌 후</div>
+      <canvas class="scene-canvas" id="canvasAfter" width="600" height="240"></canvas>
+    </div>
+  </div>
+
+
+</div>
+
+<!-- 입력 카드 -->
+<div class="card">
+  <div class="card-title">답 입력</div>
+  <div class="input-row">
+    <div class="input-group">
+      <label>트럭의 나중 속도 v<sub>Tf</sub> =</label>
+      <input type="number" id="answerInput" placeholder="0" step="1">
+      <span class="unit">m/s</span>
+    </div>
+  </div>
+  <p class="input-note">동쪽 방향을 양(+)으로 입력하세요.</p>
+
+  <button class="hint-toggle" id="hintBtn" onclick="toggleHint()">💡 힌트 보기</button>
+  <div class="hint-box" id="hintBox">
+    <strong>운동량 보존 법칙:</strong> 충돌 전 전체 운동량 = 충돌 후 전체 운동량<br>
+    m<sub>C</sub>v<sub>Ci</sub> + m<sub>T</sub>v<sub>Ti</sub> = m<sub>C</sub>v<sub>Cf</sub> + m<sub>T</sub>v<sub>Tf</sub><br>
+    트럭의 나중 속도 v<sub>Tf</sub>에 대해 정리해 보세요.
+  </div>
+
+  <div class="btn-row">
+    <button class="btn btn-new" onclick="newProblem()">🔀 새 문제</button>
+    <button class="btn btn-check" onclick="checkAnswer()">✓ 확인</button>
+  </div>
+</div>
+
+<!-- 피드백 카드 -->
+<div class="card feedback" id="feedbackCard">
+  <div class="feedback-header" id="feedbackHeader"></div>
+  <div id="feedbackBody"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// 문제 생성 — 답이 반드시 정수가 되도록
+// ═══════════════════════════════════════════════
+let prob = {};
+
+function randInt(min, max, step = 1) {
+  const n = Math.floor((max - min) / step) + 1;
+  return min + Math.floor(Math.random() * n) * step;
+}
+
+function generateProblem() {
+  // 역방향 생성: vTf를 먼저 고른 뒤 조건을 맞춤 → 답이 다양한 정수로 나옴
+  for (let i = 0; i < 2000; i++) {
+    // 질량: mC는 mT의 약분이 잘 되도록 같은 단위 기반
+    const mT  = randInt(4, 12) * 500;          // 2000~6000 kg (500단위)
+    const mC  = randInt(2, 6)  * 500;          // 1000~3000 kg (500단위)
+    if (mC >= mT) continue;                    // 트럭이 더 무거워야 함
+
+    const vTi = randInt(5, 20, 1);             // 트럭 초기 속도 5~20 m/s
+    const vCi = randInt(vTi + 5, 40, 1);      // 승용차 초기 속도 (트럭보다 빠름)
+    const vTf = randInt(vTi + 1, vTi + 15, 1); // 원하는 정수 답 (트럭 나중 속도)
+    if (vTf >= vCi) continue;                  // 물리적으로 과도하지 않게
+
+    // vCf 역산: mC*vCf = mC*vCi + mT*vTi - mT*vTf
+    const numerator = mC * vCi + mT * vTi - mT * vTf;
+    if (numerator % mC !== 0) continue;        // 정수 아니면 skip
+    const vCf = numerator / mC;
+
+    if (vCf < 1)    continue;                  // 승용차 속도 양수
+    if (vCf >= vCi) continue;                  // 충돌 후 승용차가 느려져야 함
+    if (vCf >= vTf) continue;                  // 충돌 후 트럭이 승용차보다 빠름
+
+    return { mC, mT, vCi, vTi, vCf, vTf };
+  }
+  // fallback
+  return { mC: 1500, mT: 4500, vCi: 30, vTi: 10, vCf: 20, vTf: 13 };
+}
+
+function setProblem() {
+  prob = generateProblem();
+  renderProblem();
+
+  startAnimations();
+  document.getElementById('answerInput').value = '';
+  hideFeedback();
+  // 힌트 닫기
+  document.getElementById('hintBox').style.display = 'none';
+  document.getElementById('hintBtn').textContent = '💡 힌트 보기';
+}
+
+function newProblem() { setProblem(); }
+
+// ═══════════════════════════════════════════════
+// 문제 텍스트
+// ═══════════════════════════════════════════════
+function renderProblem() {
+  const { mC, vCi, mT, vTi, vCf } = prob;
+  document.getElementById('problemText').innerHTML =
+    `<span class="val">${mC.toLocaleString()}kg</span>의 승용차가 동쪽으로 <span class="val">${vCi}m/s</span>의 속도로 달리다가 같은 방향으로 <span class="val">${vTi}m/s</span>의 속도를 가지는 <span class="val">${mT.toLocaleString()}kg</span>의 트럭 뒷부분과 충돌한다. 충돌 직후 승용차의 속도는 동쪽 방향으로 <span class="val">${vCf}m/s</span>이다.<br><strong>충돌 직후 트럭의 속도는 얼마인가?</strong>`;
+}
+
+// ═══════════════════════════════════════════════
+// 운동량 바
+// ═══════════════════════════════════════════════
+function renderBars() {
+  const { mC, vCi, mT, vTi } = prob;
+  const pC = mC * vCi, pT = mT * vTi;
+  const mx = Math.max(pC, pT);
+  document.getElementById('barCar').style.width   = (pC / mx * 100) + '%';
+  document.getElementById('barTruck').style.width = (pT / mx * 100) + '%';
+  document.getElementById('momCar').textContent   = pC.toLocaleString() + ' kg·m/s';
+  document.getElementById('momTruck').textContent = pT.toLocaleString() + ' kg·m/s';
+}
+
+// ═══════════════════════════════════════════════
+// 애니메이션 — requestAnimationFrame 루프
+// ═══════════════════════════════════════════════
+let animBefore = null, animAfter = null;
+
+function startAnimations() {
+  if (animBefore) cancelAnimationFrame(animBefore);
+  if (animAfter)  cancelAnimationFrame(animAfter);
+  runBeforeScene();
+  runAfterScene(false); // 충돌 후는 ? 상태로 시작
+}
+
+// ──── 공통 드로잉 헬퍼 ────────────────────────
+function clearCanvas(ctx, W, H) {
+  ctx.clearRect(0, 0, W, H);
+  // 흰 배경
+  ctx.fillStyle = '#fafafa';
+  ctx.fillRect(0, 0, W, H);
+  // 도로
+  const groundY = H * 0.72;
+  ctx.fillStyle = '#e0e0e0';
+  ctx.fillRect(0, groundY, W, H - groundY);
+  // 도로 경계선
+  ctx.strokeStyle = '#999';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([]);
+  ctx.beginPath(); ctx.moveTo(0, groundY); ctx.lineTo(W, groundY); ctx.stroke();
+  // 중앙선 (점선)
+  ctx.strokeStyle = '#bbb';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([16, 12]);
+  const midY = groundY + (H - groundY) * 0.5;
+  ctx.beginPath(); ctx.moveTo(0, midY); ctx.lineTo(W, midY); ctx.stroke();
+  ctx.setLineDash([]);
+  return groundY;
+}
+
+// 승용차 (세단 실루엣, 흑백)
+function drawCar(ctx, cx, groundY, scale) {
+  scale = scale || 1;
+  const w = 100 * scale, h = 38 * scale;
+  const x = cx - w / 2, y = groundY - h;
+
+  // 차체
+  ctx.fillStyle = '#555';
+  roundRect(ctx, x, y, w, h * 0.65, 5 * scale); ctx.fill();
+  // 지붕
+  ctx.fillStyle = '#333';
+  roundRect(ctx, x + w*0.17, y - h*0.35, w*0.6, h*0.38, 5*scale); ctx.fill();
+  // 유리 (앞)
+  ctx.fillStyle = '#aaa';
+  roundRect(ctx, x + w*0.65, y - h*0.32, w*0.12, h*0.32, 2*scale); ctx.fill();
+  // 유리 (뒤)
+  ctx.fillStyle = '#aaa';
+  roundRect(ctx, x + w*0.21, y - h*0.3, w*0.12, h*0.28, 2*scale); ctx.fill();
+  // 바퀴
+  wheel(ctx, x + w*0.2,  groundY, 10*scale);
+  wheel(ctx, x + w*0.82, groundY, 10*scale);
+}
+
+// 트럭 (흑백)
+function drawTruck(ctx, cx, groundY, scale) {
+  scale = scale || 1;
+  const w = 160 * scale, h = 58 * scale;
+  const x = cx - w / 2, y = groundY - h;
+
+  // 화물칸
+  ctx.fillStyle = '#777';
+  roundRect(ctx, x, y, w*0.72, h, 4*scale); ctx.fill();
+  ctx.strokeStyle = '#444'; ctx.lineWidth = 1;
+  ctx.strokeRect(x+1, y+1, w*0.72-2, h-2);
+
+  // 캐빈
+  ctx.fillStyle = '#444';
+  roundRect(ctx, x + w*0.72, y + h*0.18, w*0.28, h*0.82, 5*scale); ctx.fill();
+  // 캐빈 유리
+  ctx.fillStyle = '#aaa';
+  roundRect(ctx, x + w*0.75, y + h*0.22, w*0.2, h*0.3, 3*scale); ctx.fill();
+  // 바퀴
+  wheel(ctx, x + w*0.15, groundY, 13*scale);
+  wheel(ctx, x + w*0.48, groundY, 13*scale);
+  wheel(ctx, x + w*0.84, groundY, 13*scale);
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.lineTo(x+w-r,y); ctx.arcTo(x+w,y,x+w,y+r,r);
+  ctx.lineTo(x+w,y+h-r); ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+  ctx.lineTo(x+r,y+h); ctx.arcTo(x,y+h,x,y+h-r,r);
+  ctx.lineTo(x,y+r); ctx.arcTo(x,y,x+r,y,r);
+  ctx.closePath();
+}
+
+function wheel(ctx, cx, groundY, r) {
+  ctx.beginPath(); ctx.arc(cx, groundY - r, r, 0, Math.PI*2);
+  ctx.fillStyle = '#111'; ctx.fill();
+  ctx.beginPath(); ctx.arc(cx, groundY - r, r*0.45, 0, Math.PI*2);
+  ctx.fillStyle = '#888'; ctx.fill();
+}
+
+function arrowRight(ctx, x, y, len, label) {
+  ctx.strokeStyle = '#111'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x+len, y); ctx.stroke();
+  ctx.fillStyle = '#111';
+  ctx.beginPath();
+  ctx.moveTo(x+len+7, y);
+  ctx.lineTo(x+len-3, y-5);
+  ctx.lineTo(x+len-3, y+5);
+  ctx.closePath(); ctx.fill();
+  if (label) {
+    ctx.fillStyle = '#111';
+    ctx.font = 'bold 13px JetBrains Mono, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(label, x + len/2, y - 7);
+  }
+}
+
+// ── 벡터 레이블 위에 그리기 ──
+function speedLabel(ctx, cx, topY, text, isQuestion) {
+  ctx.font = 'bold 14px JetBrains Mono, monospace';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = isQuestion ? '#b00' : '#111';
+  ctx.fillText(text, cx, topY - 6);
+}
+
+// ═══════════════════════════════════════════════
+// 충돌 전 씬 — 승용차·트럭 모두 앞으로 이동, 승용차가 트럭에 점점 접근 (루프)
+// ═══════════════════════════════════════════════
+function runBeforeScene() {
+  const canvas = document.getElementById('canvasBefore');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  // 속도 비율로 이동 거리 비례
+  const vC = prob.vCi, vT = prob.vTi;
+  const ratio = vT / vC; // 트럭은 승용차보다 느림
+
+  // 시작: 승용차 왼쪽, 트럭 오른쪽에 적당히 간격
+  const CAR_START   = W * 0.10;
+  const CAR_END     = W * 0.37;   // 트럭 뒤 바로 앞까지
+  const TRUCK_START = W * 0.68;
+  const TRUCK_END   = TRUCK_START + (CAR_END - CAR_START) * ratio; // 속도 비례 이동
+
+  const MOVE_FRAMES = 110;  // 이동 구간
+  const HOLD_FRAMES = 20;   // 멈춤 유지
+  const TOTAL = MOVE_FRAMES + HOLD_FRAMES;
+
+  let frame = 0;
+
+  function loop() {
+    const f = frame % TOTAL;
+    let t = f < MOVE_FRAMES ? f / MOVE_FRAMES : 1;
+    // ease-in-out
+    const e = t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2,2)/2;
+
+    const carCX   = CAR_START   + (CAR_END   - CAR_START)   * e;
+    const truckCX = TRUCK_START + (TRUCK_END - TRUCK_START) * e;
+
+    const groundY   = clearCanvas(ctx, W, H);
+    const carTopY   = groundY - 38;
+    const truckTopY = groundY - 58;
+
+    // 트럭 먼저 (뒤에 있는 것처럼)
+    drawTruck(ctx, truckCX, groundY, 1);
+    drawCar(ctx, carCX, groundY, 1);
+
+    // 승용차 화살표·레이블
+    arrowRight(ctx, carCX - 48, carTopY - 22, 48, null);
+    speedLabel(ctx, carCX, carTopY - 20, `v_Ci = ${prob.vCi} m/s`, false);
+
+    // 트럭 화살표·레이블
+    arrowRight(ctx, truckCX - 52, truckTopY - 22, 52, null);
+    speedLabel(ctx, truckCX, truckTopY - 20, `v_Ti = ${prob.vTi} m/s`, false);
+
+    frame++;
+    animBefore = requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+// ═══════════════════════════════════════════════
+// 충돌 후 씬 — 트럭 앞으로 이동, 승용차 접근 후 충돌 → 각자 이동 (루프)
+// ═══════════════════════════════════════════════
+function runAfterScene(revealed, vTfVal) {
+  if (animAfter) cancelAnimationFrame(animAfter);
+
+  const canvas = document.getElementById('canvasAfter');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  // 시작 위치: 충돌 직전처럼 약간 떨어져 있음
+  const CAR_INIT   = W * 0.15;   // 승용차 시작
+  const TRUCK_INIT = W * 0.58;   // 트럭 시작
+
+  // 충돌 위치 (승용차가 트럭에 닿는 순간)
+  const TRUCK_IMPACT = W * 0.64; // 트럭이 약간 앞으로 이동한 위치
+  const CAR_IMPACT   = TRUCK_IMPACT - 80 - 50; // 트럭 뒤 + 승용차 반너비
+
+  // 충돌 후 최종 위치
+  const vC = prob.vCf, vT = revealed ? vTfVal : (prob.vTi + 3);
+  const speedRatio = vT / Math.max(vC, 1);
+  const CAR_FINAL   = CAR_IMPACT   + 55;            // 약간만 더 이동
+  const TRUCK_FINAL = TRUCK_IMPACT + 55 * speedRatio; // 트럭은 더 빨리
+
+  // 페이즈
+  const P_APPROACH = 80;  // 접근: 둘 다 앞으로 이동
+  const P_IMPACT   = 25;  // 충돌 충격 흔들림
+  const P_SEPARATE = 70;  // 분리 이동
+  const P_HOLD     = 25;  // 유지
+  const TOTAL = P_APPROACH + P_IMPACT + P_SEPARATE + P_HOLD;
+
+  let frame = 0;
+
+  function loop() {
+    const f = frame % TOTAL;
+    let carCX, truckCX, shake = 0;
+
+    if (f < P_APPROACH) {
+      // 접근: 트럭은 일정 속도, 승용차는 더 빠르게 따라잡기
+      const t = f / P_APPROACH;
+      const eT = t;                              // 트럭: 선형
+      const eC = t < 0.5 ? 2*t*t : 1 - Math.pow(-2*t+2,2)/2; // 승용차: ease-in
+
+      truckCX = TRUCK_INIT + (TRUCK_IMPACT - TRUCK_INIT) * eT;
+      carCX   = CAR_INIT   + (CAR_IMPACT   - CAR_INIT)   * eC;
+    } else if (f < P_APPROACH + P_IMPACT) {
+      // 충돌 충격
+      const fi = f - P_APPROACH;
+      shake   = Math.sin(fi * 1.5) * 4 * (1 - fi / P_IMPACT);
+      carCX   = CAR_IMPACT   + shake;
+      truckCX = TRUCK_IMPACT + shake * 0.4;
+    } else if (f < P_APPROACH + P_IMPACT + P_SEPARATE) {
+      // 분리 이동
+      const t = (f - P_APPROACH - P_IMPACT) / P_SEPARATE;
+      const e = 1 - Math.pow(1 - t, 2); // ease-out
+      carCX   = CAR_IMPACT   + (CAR_FINAL   - CAR_IMPACT)   * e;
+      truckCX = TRUCK_IMPACT + (TRUCK_FINAL - TRUCK_IMPACT) * e;
+    } else {
+      carCX   = CAR_FINAL;
+      truckCX = TRUCK_FINAL;
+    }
+
+    const groundY   = clearCanvas(ctx, W, H);
+    const carTopY   = groundY - 38;
+    const truckTopY = groundY - 58;
+
+    drawTruck(ctx, truckCX, groundY, 1);
+    drawCar(ctx, carCX, groundY, 1);
+
+    // 승용차 화살표·레이블
+    arrowRight(ctx, carCX - 44, carTopY - 22, 44, null);
+    speedLabel(ctx, carCX, carTopY - 20, `v_Cf = ${prob.vCf} m/s`, false);
+
+    // 트럭 화살표·레이블
+    arrowRight(ctx, truckCX - 52, truckTopY - 22, 52, null);
+    if (revealed) {
+      speedLabel(ctx, truckCX, truckTopY - 20, `v_Tf = ${vTfVal} m/s`, false);
+    } else {
+      speedLabel(ctx, truckCX, truckTopY - 20, 'v_Tf = ? m/s', true);
+    }
+
+    frame++;
+    animAfter = requestAnimationFrame(loop);
+  }
+  loop();
+}
+
+// ═══════════════════════════════════════════════
+// 정답 확인
+// ═══════════════════════════════════════════════
+function checkAnswer() {
+  const raw = document.getElementById('answerInput').value.trim();
+  if (raw === '') { alert('속도를 입력해 주세요.'); return; }
+
+  const userAns = parseFloat(raw);
+  const { mC, mT, vCi, vTi, vCf, vTf } = prob;
+  const isCorrect = Math.abs(userAns - vTf) < 0.5;
+
+  const pBefore = mC * vCi + mT * vTi;
+  const pAfterC = mC * vCf;
+  const pAfterT = mT * vTf;
+
+  const card   = document.getElementById('feedbackCard');
+  const header = document.getElementById('feedbackHeader');
+  const body   = document.getElementById('feedbackBody');
+
+  card.className = 'card feedback ' + (isCorrect ? 'correct' : 'wrong');
+
+  header.innerHTML = isCorrect
+    ? '✅ 정답입니다!'
+    : `❌ 오답입니다 (입력값: ${userAns} m/s)`;
+
+  body.innerHTML = `
+    <div class="solution-step">
+      <span class="step-num">1</span>
+      <strong>운동량 보존 법칙 적용</strong><br>
+      &emsp;m<sub>C</sub>v<sub>Ci</sub> + m<sub>T</sub>v<sub>Ti</sub> = m<sub>C</sub>v<sub>Cf</sub> + m<sub>T</sub>v<sub>Tf</sub>
+    </div>
+    <div class="solution-step">
+      <span class="step-num">2</span>
+      <strong>수치 대입</strong><br>
+      &emsp;${mC.toLocaleString()} × ${vCi} + ${mT.toLocaleString()} × ${vTi} = ${mC.toLocaleString()} × ${vCf} + ${mT.toLocaleString()} × v<sub>Tf</sub>
+    </div>
+    <div class="solution-step">
+      <span class="step-num">3</span>
+      <strong>좌변 계산</strong><br>
+      &emsp;${(mC*vCi).toLocaleString()} + ${(mT*vTi).toLocaleString()} = <strong>${pBefore.toLocaleString()} kg·m/s</strong>
+    </div>
+    <div class="solution-step">
+      <span class="step-num">4</span>
+      <strong>v<sub>Tf</sub> 정리</strong><br>
+      &emsp;${mT.toLocaleString()} × v<sub>Tf</sub> = ${pBefore.toLocaleString()} − ${(mC*vCf).toLocaleString()} = <strong>${(pBefore - mC*vCf).toLocaleString()}</strong>
+    </div>
+    <div class="solution-step">
+      <span class="step-num">5</span>
+      <strong>v<sub>Tf</sub> 계산</strong><br>
+      &emsp;v<sub>Tf</sub> = ${(pBefore - mC*vCf).toLocaleString()} ÷ ${mT.toLocaleString()} = <strong>${vTf} m/s</strong>
+    </div>
+    <div class="answer-box">∴ v<sub>Tf</sub> = ${vTf} m/s (동쪽)</div>
+    <hr class="divider">
+    <div class="conservation-check">
+      <span class="ok">✔ 운동량 보존 검증</span><br>
+      충돌 전: ${pBefore.toLocaleString()} kg·m/s<br>
+      충돌 후: ${pAfterC.toLocaleString()} + ${pAfterT.toLocaleString()} = <strong>${(pAfterC+pAfterT).toLocaleString()} kg·m/s</strong>
+    </div>`;
+
+  card.style.display = 'block';
+  // 충돌 후 씬에 정답 속도 표시
+  runAfterScene(true, vTf);
+  card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function hideFeedback() {
+  document.getElementById('feedbackCard').style.display = 'none';
+}
+
+function toggleHint() {
+  const box = document.getElementById('hintBox');
+  const btn = document.getElementById('hintBtn');
+  const open = box.style.display === 'block';
+  box.style.display = open ? 'none' : 'block';
+  btn.textContent = open ? '💡 힌트 보기' : '💡 힌트 닫기';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkAnswer();
+});
+
+// 초기화
+setProblem();
+</script>
 </body>
 </html>
